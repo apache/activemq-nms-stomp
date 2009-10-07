@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$pkgname = "Apache.NMS.ActiveMQ"
+$pkgname = "Apache.NMS.Stomp"
 $pkgver = "1.2.0"
 $configurations = "release", "debug"
 $frameworks = "mono-2.0", "net-2.0", "net-3.5", "netcf-2.0"
@@ -61,7 +61,7 @@ write-progress "Packaging Source code files." "Scanning..."
 $pkgdir = "package"
 $zipfile = "$pkgdir\$pkgname-$pkgver-src.zip"
 
-zip -9 -u "$zipfile" LICENSE.txt NOTICE.txt nant-common.xml nant.build package.ps1 vs2008-activemq-test.csproj vs2008-activemq.csproj vs2008-activemq.sln nmsprovider*.config
+zip -9 -u "$zipfile" LICENSE.txt NOTICE.txt nant-common.xml nant.build package.ps1 vs2008-stomp-test.csproj vs2008-stomp.csproj vs2008-stomp.sln nmsprovider*.config
 zip -9 -u -r "$zipfile" keyfile src
 
 write-progress -Completed "Packaging" "Complete."

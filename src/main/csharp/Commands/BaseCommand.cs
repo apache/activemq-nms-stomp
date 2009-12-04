@@ -124,16 +124,8 @@ namespace Apache.NMS.Stomp.Commands
                 case RemoveInfo.ID_REMOVEINFO:
                     packetTypeStr = "REMOVE_INFO";
                     break;
-                case KeepAliveInfo.ID_KEEPALIVEINFO:
-                    packetTypeStr = "KEEP_ALIVE";
-                    break;
             }
             return packetTypeStr;
-        }
-
-        public virtual Response visit(ICommandVisitor visitor)
-        {
-            throw new ApplicationException("BaseCommand.Visit() not implemented");
         }
 
         public virtual bool IsBrokerInfo

@@ -16,6 +16,7 @@
  */
 
 using System;
+using Apache.NMS.Stomp.Protocol;
 
 namespace Apache.NMS.Stomp.Commands
 {
@@ -35,27 +36,27 @@ namespace Apache.NMS.Stomp.Commands
             return false;
         }
 
-        public virtual void BeforeMarshall(OpenWireFormat wireFormat)
+        public virtual void BeforeMarshall(StompWireFormat wireFormat)
         {
         }
 
-        public virtual void AfterMarshall(OpenWireFormat wireFormat)
+        public virtual void AfterMarshall(StompWireFormat wireFormat)
         {
         }
 
-        public virtual void BeforeUnmarshall(OpenWireFormat wireFormat)
+        public virtual void BeforeUnmarshall(StompWireFormat wireFormat)
         {
         }
 
-        public virtual void AfterUnmarshall(OpenWireFormat wireFormat)
+        public virtual void AfterUnmarshall(StompWireFormat wireFormat)
         {
         }
 
-        public virtual void SetMarshalledForm(OpenWireFormat wireFormat, byte[] data)
+        public virtual void SetMarshalledForm(StompWireFormat wireFormat, byte[] data)
         {
         }
 
-        public virtual byte[] GetMarshalledForm(OpenWireFormat wireFormat)
+        public virtual byte[] GetMarshalledForm(StompWireFormat wireFormat)
         {
             return null;
         }

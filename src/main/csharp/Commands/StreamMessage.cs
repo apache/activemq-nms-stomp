@@ -32,11 +32,9 @@ namespace Apache.NMS.Stomp.Commands
         private MemoryStream byteBuffer = null;
         private int bytesRemaining = -1;
 
-        public const byte ID_ACTIVEMQSTREAMMESSAGE = 27;
-
         public override byte GetDataStructureType()
         {
-            return ID_ACTIVEMQSTREAMMESSAGE;
+            return DataStructureTypes.StreamMessageType;
         }
 
         public bool ReadBoolean()

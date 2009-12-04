@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class ProducerInfo : BaseCommand
     {
-        public const byte ID_PRODUCERINFO = 6;
-
         ProducerId producerId;
         Destination destination;
         bool dispatchAsync;
@@ -37,7 +35,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_PRODUCERINFO;
+            return DataStructureTypes.ProducerInfoType;
         }
 
         ///

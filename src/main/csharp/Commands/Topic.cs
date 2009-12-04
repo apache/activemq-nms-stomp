@@ -24,8 +24,6 @@ namespace Apache.NMS.Stomp.Commands
     /// </summary>
     public class StompTopic : Destination, ITopic
     {
-        public const byte ID_ACTIVEMQTOPIC = 101;
-
         public StompTopic() : base()
         {
         }
@@ -49,7 +47,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override byte GetDataStructureType()
         {
-            return ID_ACTIVEMQTOPIC;
+            return DataStructureTypes.TopicType;
         }
 
         public override int GetDestinationType()

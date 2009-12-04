@@ -24,8 +24,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class BaseMessage : BaseCommand, MarshallAware, ICloneable
     {
-        public const byte ID_MESSAGE = 0;
-
         ProducerId producerId;
         Destination destination;
         TransactionId transactionId;
@@ -49,17 +47,6 @@ namespace Apache.NMS.Stomp.Commands
         private bool readOnlyMsgBody;
 
         public const int DEFAULT_MINIMUM_MESSAGE_SIZE = 1024;
-
-        ///
-        /// <summery>
-        ///  Get the unique identifier that this object and its own
-        ///  Marshaler share.
-        /// </summery>
-        ///
-        public override byte GetDataStructureType()
-        {
-            return ID_MESSAGE;
-        }
 
         ///
         /// <summery>

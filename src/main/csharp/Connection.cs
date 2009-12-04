@@ -656,9 +656,9 @@ namespace Apache.NMS.Stomp
         /// <summary>
         /// Creates a new local transaction ID
         /// </summary>
-        public LocalTransactionId CreateLocalTransactionId()
+        public TransactionId CreateLocalTransactionId()
         {
-            LocalTransactionId id = new LocalTransactionId();
+            TransactionId id = new TransactionId();
             id.ConnectionId = ConnectionId;
             id.Value = Interlocked.Increment(ref localTransactionCounter);
             return id;

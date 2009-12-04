@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class SessionInfo : BaseCommand
     {
-        public const byte ID_SESSIONINFO = 4;
-
         SessionId sessionId;
 
         public SessionInfo()
@@ -43,7 +41,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_SESSIONINFO;
+            return DataStructureTypes.SessionInfoType;
         }
 
         ///

@@ -23,8 +23,6 @@ namespace Apache.NMS.Stomp.Commands
     /// </summary>
     public class TempQueue : TempDestination, ITemporaryQueue
     {
-        public const byte ID_ACTIVEMQTEMPQUEUE = 102;
-
         public TempQueue()
             : base()
         {
@@ -50,7 +48,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override byte GetDataStructureType()
         {
-            return ID_ACTIVEMQTEMPQUEUE;
+            return DataStructureTypes.TempQueueType;
         }
 
         public override int GetDestinationType()

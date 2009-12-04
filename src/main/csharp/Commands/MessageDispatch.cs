@@ -22,13 +22,22 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class MessageDispatch : BaseCommand
     {
-        public const byte ID_MESSAGEDISPATCH = 21;
-
         ConsumerId consumerId;
         Destination destination;
         Message message;
         int redeliveryCounter;
 
+        ///
+        /// <summery>
+        ///  Get the unique identifier that this object and its own
+        ///  Marshaler share.
+        /// </summery>
+        ///
+        public override byte GetDataStructureType()
+        {
+            return DataStructureTypes.MessageDispatchType;
+        }
+        
         ///
         /// <summery>
         ///  Returns a string containing the information for this DataStructure

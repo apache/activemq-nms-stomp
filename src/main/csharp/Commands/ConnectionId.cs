@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class ConnectionId : BaseDataStructure
     {
-        public const byte ID_CONNECTIONID = 120;
-
         string value;
 
         public ConnectionId()
@@ -53,7 +51,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_CONNECTIONID;
+            return DataStructureTypes.ConnectionIdType;
         }
 
         ///

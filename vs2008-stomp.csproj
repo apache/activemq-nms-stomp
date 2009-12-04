@@ -93,6 +93,19 @@
     <Compile Include="src\main\csharp\ConnectionMetaData.cs" />
     <Compile Include="src\main\csharp\Commands\MessageDispatch.cs" />
     <Compile Include="src\main\csharp\Commands\ShutdownInfo.cs" />
+    <Compile Include="src\main\csharp\IDispatcher.cs" />
+    <Compile Include="src\main\csharp\ISynchronization.cs" />
+    <Compile Include="src\main\csharp\MessageConsumer.cs" />
+    <Compile Include="src\main\csharp\MessageProducer.cs" />
+    <Compile Include="src\main\csharp\PrefetchPolicy.cs" />
+    <Compile Include="src\main\csharp\Session.cs" />
+    <Compile Include="src\main\csharp\SessionExecutor.cs" />
+    <Compile Include="src\main\csharp\TransactionContext.cs" />
+    <Compile Include="src\main\csharp\Threads\DedicatedTaskRunner.cs" />
+    <Compile Include="src\main\csharp\Threads\Task.cs" />
+    <Compile Include="src\main\csharp\Threads\TaskRunner.cs" />
+    <Compile Include="src\main\csharp\Threads\TaskRunnerFactory.cs" />
+    <Compile Include="src\main\csharp\Commands\DataStructureTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile\NMSKey.snk" />

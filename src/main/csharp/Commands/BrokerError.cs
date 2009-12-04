@@ -38,6 +38,11 @@ namespace Apache.NMS.Stomp.Commands
         private StackTraceElement[] stackTraceElements = {};
         private BrokerError cause;
 
+        public override byte GetDataStructureType()
+        {
+            return DataStructureTypes.ErrorType;
+        }
+        
         public string Message
         {
             get { return message; }

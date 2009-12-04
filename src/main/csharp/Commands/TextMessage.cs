@@ -26,8 +26,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class TextMessage : Message, ITextMessage
     {
-        public const byte ID_ACTIVEMQTEXTMESSAGE = 28;
-
         private String text = null;
 
         public TextMessage()
@@ -58,7 +56,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override byte GetDataStructureType()
         {
-            return ID_ACTIVEMQTEXTMESSAGE;
+            return DataStructureTypes.TextMessageType;
         }
 
         // Properties

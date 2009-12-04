@@ -25,6 +25,11 @@ namespace Apache.NMS.Stomp.Commands
     {
         int correlationId;
 
+        public override byte GetDataStructureType()
+        {
+            return DataStructureTypes.ResponseType;
+        }
+                
         ///
         /// <summery>
         ///  Returns a string containing the information for this DataStructure

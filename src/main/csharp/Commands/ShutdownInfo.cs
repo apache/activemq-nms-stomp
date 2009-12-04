@@ -20,19 +20,8 @@ using System.Collections;
 
 namespace Apache.NMS.Stomp.Commands
 {
-    /*
-     *
-     *  Command code for OpenWire format for ShutdownInfo
-     *
-     *  NOTE!: This file is auto generated - do not modify!
-     *         if you need to make a change, please see the Java Classes
-     *         in the nms-activemq-openwire-generator module
-     *
-     */
     public class ShutdownInfo : BaseCommand
     {
-        public const byte ID_SHUTDOWNINFO = 11;
-
         ///
         /// <summery>
         ///  Get the unique identifier that this object and its own
@@ -41,7 +30,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_SHUTDOWNINFO;
+            return DataStructureTypes.ShutdownInfoType;
         }
 
         ///

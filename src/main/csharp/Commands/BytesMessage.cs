@@ -25,8 +25,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class BytesMessage : Message, IBytesMessage
     {
-        public const byte ID_ACTIVEMQBYTESMESSAGE = 24;
-
         private EndianBinaryReader dataIn = null;
         private EndianBinaryWriter dataOut = null;
         private MemoryStream outputBuffer = null;
@@ -34,7 +32,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override byte GetDataStructureType()
         {
-            return ID_ACTIVEMQBYTESMESSAGE;
+            return DataStructureTypes.BytesMessageType;
         }
 
         public override Object Clone()

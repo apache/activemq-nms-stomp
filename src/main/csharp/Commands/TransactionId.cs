@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class TransactionId
     {
-        public const byte ID_TRANSACTIONID = 111;
-
         long value;
         ConnectionId connectionId;
 
@@ -35,7 +33,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public byte GetDataStructureType()
         {
-            return ID_LOCALTRANSACTIONID;
+            return DataStructureTypes.TransactionIdType;
         }
 
         ///

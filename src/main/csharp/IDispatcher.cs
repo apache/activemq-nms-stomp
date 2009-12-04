@@ -16,71 +16,16 @@
  */
 
 using System;
+using Apache.NMS.Stomp.Commands;
 
-namespace Apache.NMS.Stomp.Commands
+namespace Apache.NMS.Stomp
 {
     /// <summary>
-    /// An Stomp command
+    /// Interface that provides for a Class to provide dispatching service for
+    /// an OpenWire MessageDispatch command.
     /// </summary>
-    public interface Command : ICloneable
+    public interface IDispatcher
     {
-        int CommandId
-        {
-            get;
-            set;
-        }
-
-        bool ResponseRequired
-        {
-            get;
-            set;
-        }
-
-        bool IsConnectionInfo
-        {
-            get;
-        }
-
-        bool IsErrorCommand
-        {
-            get;
-        }
-
-        bool IsDestinationInfo
-        {
-            get;
-        }
-
-        bool IsMessage
-        {
-            get;
-        }
-
-        bool IsMessageAck
-        {
-            get;
-        }
-
-        bool IsMessageDispatch
-        {
-            get;
-        }
-
-        bool IsRemoveInfo
-        {
-            get;
-        }
-
-        bool IsRemoveSubscriptionInfo
-        {
-            get;
-        }
-
-        bool IsResponse
-        {
-            get;
-        }
-
+        void Dispatch(MessageDispatch messageDispatch);
     }
 }
-

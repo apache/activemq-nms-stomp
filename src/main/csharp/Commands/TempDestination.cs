@@ -28,8 +28,7 @@ namespace Apache.NMS.Stomp.Commands
         /// <returns>An int</returns>
         public override int GetDestinationType()
         {
-            // TODO: Implement this method
-            return 0;
+            return DataStructureTypes.TempDestinationType;
         }
 
         /// <summary>

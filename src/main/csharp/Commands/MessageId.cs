@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class MessageId : BaseDataStructure
     {
-        public const byte ID_MESSAGEID = 110;
-
         ProducerId producerId;
         long producerSequenceId;
         long brokerSequenceId;
@@ -53,7 +51,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_MESSAGEID;
+            return DataStructureTypes.MessageIdType;
         }
 
         ///

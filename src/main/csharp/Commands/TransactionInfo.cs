@@ -22,11 +22,9 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class TransactionInfo : BaseCommand
     {
-        public const byte ID_TRANSACTIONINFO = 7;
-
         public const byte BEGIN = 0;
-        public const byte ROLLBACK = 1;
-        public const byte COMMIT = 2;
+        public const byte COMMIT = 1;
+        public const byte ROLLBACK = 2;
 
         ConnectionId connectionId;
         TransactionId transactionId;
@@ -40,7 +38,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_TRANSACTIONINFO;
+            return DataStructureTypes.TransactionInfoType;
         }
 
         ///

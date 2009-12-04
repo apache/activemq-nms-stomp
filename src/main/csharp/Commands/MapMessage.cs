@@ -25,14 +25,12 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class MapMessage : Message, IMapMessage
     {
-        public const byte ID_ACTIVEMQMAPMESSAGE = 25;
-
         private PrimitiveMap body;
         private PrimitiveMapInterceptor typeConverter;
 
         public override byte GetDataStructureType()
         {
-            return ID_ACTIVEMQMAPMESSAGE;
+            return DataStructureTypes.MapMessageType;
         }
 
         public override void ClearBody()

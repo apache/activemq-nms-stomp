@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class SubscriptionInfo : BaseDataStructure
     {
-        public const byte ID_SUBSCRIPTIONINFO = 55;
-
         string clientId;
         Destination destination;
         string selector;
@@ -38,7 +36,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_SUBSCRIPTIONINFO;
+            return DataStructureTypes.SubscriptionInfoType;
         }
 
         ///

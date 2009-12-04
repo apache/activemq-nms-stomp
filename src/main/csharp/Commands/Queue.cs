@@ -23,8 +23,6 @@ namespace Apache.NMS.Stomp.Commands
     /// </summary>
     public class Queue : Destination, IQueue
     {
-        public const byte ID_ACTIVEMQQUEUE = 100;
-
         public Queue()
             : base()
         {
@@ -50,7 +48,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override byte GetDataStructureType()
         {
-            return ID_ACTIVEMQQUEUE;
+            return DataStructureTypes.QueueType;
         }
 
         public override int GetDestinationType()

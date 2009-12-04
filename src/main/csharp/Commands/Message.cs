@@ -22,12 +22,10 @@ using Apache.NMS.Stomp.Protocol;
 
 namespace Apache.NMS.Stomp.Commands
 {
-    public delegate void AcknowledgeHandler(ActiveMQMessage message);
+    public delegate void AcknowledgeHandler(Message message);
 
     public class Message : BaseMessage, IMessage, MarshallAware
     {
-        public const byte ID_ACTIVEMQMESSAGE = 23;
-
         private MessagePropertyIntercepter propertyHelper;
         private PrimitiveMap properties;
         private Connection connection;
@@ -44,6 +42,11 @@ namespace Apache.NMS.Stomp.Commands
             Timestamp = DateUtils.ToJavaTimeUtc(DateTime.UtcNow);
         }
 
+        public override byte GetDataStructureType()
+        {
+            return DataStructureTypes.MessageType;
+        }
+        
         public override int GetHashCode()
         {
             MessageId id = this.MessageId;
@@ -56,11 +59,6 @@ namespace Apache.NMS.Stomp.Commands
             {
                 return base.GetHashCode();
             }
-        }
-
-        public override byte GetDataStructureType()
-        {
-            return ID_ACTIVEMQMESSAGE;
         }
 
         public override bool Equals(object that)

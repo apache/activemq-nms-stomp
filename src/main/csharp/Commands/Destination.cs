@@ -42,27 +42,6 @@ namespace Apache.NMS.Stomp.Commands
         /// Temporary Queue Destination object
         /// </summary>
         public const int STOMP_TEMPORARY_QUEUE = 4;
-        /// <summary>
-        /// prefix for Advisory message destinations
-        /// </summary>
-        public const String ADVISORY_PREFIX = "ActiveMQ.Advisory.";
-        /// <summary>
-        /// prefix for consumer advisory destinations
-        /// </summary>
-        public const String CONSUMER_ADVISORY_PREFIX = ADVISORY_PREFIX + "Consumers.";
-        /// <summary>
-        /// prefix for producer advisory destinations
-        /// </summary>
-        public const String PRODUCER_ADVISORY_PREFIX = ADVISORY_PREFIX + "Producers.";
-        /// <summary>
-        /// prefix for connection advisory destinations
-        /// </summary>
-        public const String CONNECTION_ADVISORY_PREFIX = ADVISORY_PREFIX + "Connections.";
-
-        /// <summary>
-        /// The default target for ordered destinations
-        /// </summary>
-        public const String DEFAULT_ORDERED_TARGET = "coordinator";
 
         private const String TEMP_PREFIX = "{TD{";
         private const String TEMP_POSTFIX = "}TD}";
@@ -70,12 +49,6 @@ namespace Apache.NMS.Stomp.Commands
 
         private String physicalName = "";
         private StringDictionary options = null;
-
-        // Cached transient data
-        private bool exclusive;
-        private bool ordered;
-        private bool advisory;
-        private String orderedTarget = DEFAULT_ORDERED_TARGET;
 
         /// <summary>
         /// The Default Constructor
@@ -91,7 +64,6 @@ namespace Apache.NMS.Stomp.Commands
         protected Destination(String name)
         {
             setPhysicalName(name);
-            //this.advisory = name != null && name.StartsWith(ADVISORY_PREFIX);
         }
 
         public bool IsTopic
@@ -148,94 +120,6 @@ namespace Apache.NMS.Stomp.Commands
         }
 
         /// <summary>
-        /// </summary>
-        /// <returns>Returns the advisory.</returns>
-        public bool IsAdvisory()
-        {
-            return advisory;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="advisory">The advisory to set.</param>
-        public void SetAdvisory(bool advisory)
-        {
-            this.advisory = advisory;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>true if this is a destination for Consumer advisories</returns>
-        public bool IsConsumerAdvisory()
-        {
-            return IsAdvisory() && physicalName.StartsWith(CONSUMER_ADVISORY_PREFIX);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>true if this is a destination for Producer advisories</returns>
-        public bool IsProducerAdvisory()
-        {
-            return IsAdvisory() && physicalName.StartsWith(PRODUCER_ADVISORY_PREFIX);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>true if this is a destination for Connection advisories</returns>
-        public bool IsConnectionAdvisory()
-        {
-            return IsAdvisory() && physicalName.StartsWith(CONNECTION_ADVISORY_PREFIX);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>Returns the exclusive.</returns>
-        public bool IsExclusive()
-        {
-            return exclusive;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="exclusive">The exclusive to set.</param>
-        public void SetExclusive(bool exclusive)
-        {
-            this.exclusive = exclusive;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>Returns the ordered.</returns>
-        public bool IsOrdered()
-        {
-            return ordered;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="ordered">The ordered to set.</param>
-        public void SetOrdered(bool ordered)
-        {
-            this.ordered = ordered;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>Returns the orderedTarget.</returns>
-        public String GetOrderedTarget()
-        {
-            return orderedTarget;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="orderedTarget">The orderedTarget to set.</param>
-        public void SetOrderedTarget(String orderedTarget)
-        {
-            this.orderedTarget = orderedTarget;
-        }
-
-        /// <summary>
         /// A helper method to return a descriptive string for the topic or queue
         /// </summary>
         /// <param name="destination"></param>
@@ -269,19 +153,19 @@ namespace Apache.NMS.Stomp.Commands
                 {
                     if(destination is ITemporaryQueue)
                     {
-                        result = new ActiveMQTempQueue(((IQueue) destination).QueueName);
+                        result = new TempQueue(((IQueue) destination).QueueName);
                     }
                     else if(destination is ITemporaryTopic)
                     {
-                        result = new ActiveMQTempTopic(((ITopic) destination).TopicName);
+                        result = new TempTopic(((ITopic) destination).TopicName);
                     }
                     else if(destination is IQueue)
                     {
-                        result = new ActiveMQQueue(((IQueue) destination).QueueName);
+                        result = new Queue(((IQueue) destination).QueueName);
                     }
                     else if(destination is ITopic)
                     {
-                        result = new ActiveMQTopic(((ITopic) destination).TopicName);
+                        result = new Topic(((ITopic) destination).TopicName);
                     }
                 }
             }

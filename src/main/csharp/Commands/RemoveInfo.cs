@@ -18,27 +18,12 @@
 using System;
 using System.Collections;
 
-using Apache.NMS.ActiveMQ.State;
-
 namespace Apache.NMS.Stomp.Commands
 {
     public class RemoveInfo : BaseCommand
     {
-        public const byte ID_REMOVEINFO = 12;
-
         DataStructure objectId;
         long lastDeliveredSequenceId;
-
-        ///
-        /// <summery>
-        ///  Get the unique identifier that this object and its own
-        ///  Marshaler share.
-        /// </summery>
-        ///
-        public override byte GetDataStructureType()
-        {
-            return ID_REMOVEINFO;
-        }
 
         ///
         /// <summery>
@@ -54,6 +39,11 @@ namespace Apache.NMS.Stomp.Commands
                 "]";
         }
 
+        public override byte GetDataStructureType()
+        {
+            return DataStructureTypes.RemoveInfoType;
+        }
+        
         public DataStructure ObjectId
         {
             get { return objectId; }

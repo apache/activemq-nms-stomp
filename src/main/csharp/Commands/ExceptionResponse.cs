@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class ExceptionResponse : Response
     {
-        public const byte ID_EXCEPTIONRESPONSE = 31;
-
         BrokerError exception;
 
         ///
@@ -34,7 +32,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_EXCEPTIONRESPONSE;
+            return DataStructureTypes.ErrorResponseType;
         }
 
         ///

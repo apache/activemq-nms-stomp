@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class MessageAck : BaseCommand
     {
-        public const byte ID_MESSAGEACK = 22;
-
         Destination destination;
         TransactionId transactionId;
         ConsumerId consumerId;
@@ -40,7 +38,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_MESSAGEACK;
+            return DataStructureTypes.MessageAckType;
         }
 
         ///

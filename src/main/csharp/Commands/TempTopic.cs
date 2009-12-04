@@ -24,8 +24,6 @@ namespace Apache.NMS.Stomp.Commands
     /// </summary>
     public class TempTopic : TempDestination, ITemporaryTopic
     {
-        public const byte ID_ACTIVEMQTEMPTOPIC = 103;
-
         public TempTopic()
             : base()
         {
@@ -52,7 +50,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override byte GetDataStructureType()
         {
-            return ID_ACTIVEMQTEMPTOPIC;
+            return DataStructureTypes.TempTopicType;
         }
 
         public override int GetDestinationType()

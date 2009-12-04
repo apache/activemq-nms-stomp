@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class ProducerId : BaseDataStructure
     {
-        public const byte ID_PRODUCERID = 123;
-
         private SessionId parentId;
 
         string connectionId;
@@ -60,7 +58,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_PRODUCERID;
+            return DataStructureTypes.ProducerIdType;
         }
 
         ///

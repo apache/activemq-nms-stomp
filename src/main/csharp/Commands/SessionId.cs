@@ -22,8 +22,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class SessionId : BaseDataStructure
     {
-        public const byte ID_SESSIONID = 121;
-
         private ConnectionId parentId;
 
         string connectionId;
@@ -59,7 +57,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_SESSIONID;
+            return DataStructureTypes.SessionIdType;
         }
 
         ///

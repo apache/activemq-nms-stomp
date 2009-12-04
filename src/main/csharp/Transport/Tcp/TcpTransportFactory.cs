@@ -19,7 +19,7 @@ using System;
 using System.Collections.Specialized;
 using System.Net;
 using System.Net.Sockets;
-using Apache.NMS.Stomp.Transport.Stomp;
+using Apache.NMS.Stomp.Transport;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport.Tcp

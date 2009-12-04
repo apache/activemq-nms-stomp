@@ -50,14 +50,14 @@ namespace Apache.NMS.Stomp.Protocol
             return 0;
         }
 
-        public static ActiveMQDestination ToDestination(string text)
+        public static Destination ToDestination(string text)
         {
             if(text == null)
             {
                 return null;
             }
 
-            int type = ActiveMQDestination.ACTIVEMQ_QUEUE;
+            int type = Destination.STOMP_QUEUE;
             string lowertext = text.ToLower();
             if(lowertext.StartsWith("/queue/"))
             {
@@ -66,31 +66,31 @@ namespace Apache.NMS.Stomp.Protocol
             else if(lowertext.StartsWith("/topic/"))
             {
                 text = text.Substring("/topic/".Length);
-                type = ActiveMQDestination.ACTIVEMQ_TOPIC;
+                type = Destination.STOMP_TOPIC;
             }
             else if(lowertext.StartsWith("/temp-topic/"))
             {
                 text = text.Substring("/temp-topic/".Length);
-                type = ActiveMQDestination.ACTIVEMQ_TEMPORARY_TOPIC;
+                type = Destination.STOMP_TEMPORARY_TOPIC;
             }
             else if(lowertext.StartsWith("/temp-queue/"))
             {
                 text = text.Substring("/temp-queue/".Length);
-                type = ActiveMQDestination.ACTIVEMQ_TEMPORARY_QUEUE;
+                type = Destination.STOMP_TEMPORARY_QUEUE;
             }
             else if(lowertext.StartsWith("/remote-temp-topic/"))
             {
-                type = ActiveMQDestination.ACTIVEMQ_TEMPORARY_TOPIC;
+                type = Destination.STOMP_TEMPORARY_TOPIC;
             }
             else if(lowertext.StartsWith("/remote-temp-queue/"))
             {
-                type = ActiveMQDestination.ACTIVEMQ_TEMPORARY_QUEUE;
+                type = Destination.STOMP_TEMPORARY_QUEUE;
             }
 
-            return ActiveMQDestination.CreateDestination(type, text);
+            return Destination.CreateDestination(type, text);
         }
 
-        public static string ToStomp(ActiveMQDestination destination)
+        public static string ToStomp(Destination destination)
         {
             if(destination == null)
             {
@@ -248,17 +248,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         public static string ToStomp(TransactionId id)
         {
-            if(id is LocalTransactionId)
-            {
-                return ToStomp(id as LocalTransactionId);
-            }
-
-            return id.ToString();
-        }
-
-        public static string ToStomp(LocalTransactionId transactionId)
-        {
-            return transactionId.ConnectionId.Value + ":" + transactionId.Value;
+            return id.ConnectionId.Value + ":" + id.Value;
         }
 
         public static bool ToBool(string text, bool defaultValue)

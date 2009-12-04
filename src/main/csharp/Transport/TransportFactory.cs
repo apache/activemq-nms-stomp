@@ -16,9 +16,7 @@
  */
 
 using System;
-using Apache.NMS.Stomp.Transport.Discovery;
-using Apache.NMS.Stomp.Transport.Failover;
-using Apache.NMS.Stomp.Transport.Mock;
+
 using Apache.NMS.Stomp.Transport.Tcp;
 
 namespace Apache.NMS.Stomp.Transport

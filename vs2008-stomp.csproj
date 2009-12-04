@@ -49,7 +49,7 @@
     <Compile Include="src\main\csharp\Commands\DataStructure.cs" />
     <Compile Include="src\main\csharp\Commands\ExceptionResponse.cs" />
     <Compile Include="src\main\csharp\Commands\MarshallAware.cs" />
-    <Compile Include="src\main\csharp\Commands\Message.cs" />
+    <Compile Include="src\main\csharp\Commands\BaseMessage.cs" />
     <Compile Include="src\main\csharp\Commands\MessageAck.cs" />
     <Compile Include="src\main\csharp\Commands\MessageId.cs" />
     <Compile Include="src\main\csharp\Commands\ProducerId.cs" />
@@ -58,17 +58,17 @@
     <Compile Include="src\main\csharp\Commands\Response.cs" />
     <Compile Include="src\main\csharp\Commands\SessionId.cs" />
     <Compile Include="src\main\csharp\Commands\SessionInfo.cs" />
-    <Compile Include="src\main\csharp\Commands\StompBytesMessage.cs" />
-    <Compile Include="src\main\csharp\Commands\StompDestination.cs" />
-    <Compile Include="src\main\csharp\Commands\StompMapMessage.cs" />
-    <Compile Include="src\main\csharp\Commands\StompMessage.cs" />
-    <Compile Include="src\main\csharp\Commands\StompQueue.cs" />
-    <Compile Include="src\main\csharp\Commands\StompStreamMessage.cs" />
-    <Compile Include="src\main\csharp\Commands\StompTempDestination.cs" />
-    <Compile Include="src\main\csharp\Commands\StompTempQueue.cs" />
-    <Compile Include="src\main\csharp\Commands\StompTempTopic.cs" />
-    <Compile Include="src\main\csharp\Commands\StompTextMessage.cs" />
-    <Compile Include="src\main\csharp\Commands\StompTopic.cs" />
+    <Compile Include="src\main\csharp\Commands\BytesMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\Destination.cs" />
+    <Compile Include="src\main\csharp\Commands\MapMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\Message.cs" />
+    <Compile Include="src\main\csharp\Commands\Queue.cs" />
+    <Compile Include="src\main\csharp\Commands\StreamMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\TempDestination.cs" />
+    <Compile Include="src\main\csharp\Commands\TempQueue.cs" />
+    <Compile Include="src\main\csharp\Commands\TempTopic.cs" />
+    <Compile Include="src\main\csharp\Commands\TextMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\Topic.cs" />
     <Compile Include="src\main\csharp\Commands\SubscriptionInfo.cs" />
     <Compile Include="src\main\csharp\Commands\TransactionId.cs" />
     <Compile Include="src\main\csharp\Commands\TransactionInfo.cs" />
@@ -91,6 +91,8 @@
     <Compile Include="src\main\csharp\Connection.cs" />
     <Compile Include="src\main\csharp\ConnectionFactory.cs" />
     <Compile Include="src\main\csharp\ConnectionMetaData.cs" />
+    <Compile Include="src\main\csharp\Commands\MessageDispatch.cs" />
+    <Compile Include="src\main\csharp\Commands\ShutdownInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile\NMSKey.snk" />

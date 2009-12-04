@@ -444,7 +444,7 @@ namespace Apache.NMS.Stomp.Protocol
             }
         }
 
-        protected virtual void WriteMessage(ActiveMQMessage command, StompFrameStream ss)
+        protected virtual void WriteMessage(Message command, StompFrameStream ss)
         {
             ss.WriteCommand(command, "SEND");
             ss.WriteHeader("destination", StompHelper.ToStomp(command.Destination));
@@ -466,7 +466,7 @@ namespace Apache.NMS.Stomp.Protocol
             // lets force the content to be marshalled
 
             command.BeforeMarshall(null);
-            if (command is ActiveMQTextMessage)
+            if (command is TextMessage)
             {
                 ActiveMQTextMessage textMessage = command as ActiveMQTextMessage;
                 ss.Content = encoding.GetBytes(textMessage.Text);

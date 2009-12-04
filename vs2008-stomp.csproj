@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AA51947C-1370-44DC-8692-1C8EFC5945F7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Apache.NMS.Stomp</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\net-2.0\debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET,NET_2_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\net-2.0\release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <DefineConstants>TRACE;NET,NET_2_0</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Apache.NMS, Version=1.3.0.1797, Culture=neutral, PublicKeyToken=82756feee3957618">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\NMS\build\mono-2.0\debug\Apache.NMS.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="src\main\csharp\Commands\BaseCommand.cs" />
+    <Compile Include="src\main\csharp\Commands\BaseDataStructure.cs" />
+    <Compile Include="src\main\csharp\Commands\BrokerError.cs" />
+    <Compile Include="src\main\csharp\Commands\Command.cs" />
+    <Compile Include="src\main\csharp\Commands\ConnectionId.cs" />
+    <Compile Include="src\main\csharp\Commands\ConnectionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\ConsumerId.cs" />
+    <Compile Include="src\main\csharp\Commands\ConsumerInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\DataStructure.cs" />
+    <Compile Include="src\main\csharp\Commands\ExceptionResponse.cs" />
+    <Compile Include="src\main\csharp\Commands\MarshallAware.cs" />
+    <Compile Include="src\main\csharp\Commands\Message.cs" />
+    <Compile Include="src\main\csharp\Commands\MessageAck.cs" />
+    <Compile Include="src\main\csharp\Commands\MessageId.cs" />
+    <Compile Include="src\main\csharp\Commands\ProducerId.cs" />
+    <Compile Include="src\main\csharp\Commands\ProducerInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\RemoveInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\Response.cs" />
+    <Compile Include="src\main\csharp\Commands\SessionId.cs" />
+    <Compile Include="src\main\csharp\Commands\SessionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\StompBytesMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\StompDestination.cs" />
+    <Compile Include="src\main\csharp\Commands\StompMapMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\StompMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\StompQueue.cs" />
+    <Compile Include="src\main\csharp\Commands\StompStreamMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\StompTempDestination.cs" />
+    <Compile Include="src\main\csharp\Commands\StompTempQueue.cs" />
+    <Compile Include="src\main\csharp\Commands\StompTempTopic.cs" />
+    <Compile Include="src\main\csharp\Commands\StompTextMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\StompTopic.cs" />
+    <Compile Include="src\main\csharp\Commands\SubscriptionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\TransactionId.cs" />
+    <Compile Include="src\main\csharp\Commands\TransactionInfo.cs" />
+    <Compile Include="src\main\csharp\Protocol\StompFrameStream.cs" />
+    <Compile Include="src\main\csharp\Protocol\StompHelper.cs" />
+    <Compile Include="src\main\csharp\Protocol\StompWireFormat.cs" />
+    <Compile Include="src\main\csharp\Transport\Tcp\TcpTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\Tcp\TcpTransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\FutureResponse.cs" />
+    <Compile Include="src\main\csharp\Transport\ITransport.cs" />
+    <Compile Include="src\main\csharp\Transport\ITransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\IWireFormat.cs" />
+    <Compile Include="src\main\csharp\Transport\LoggingTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\MutexTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\ResponseCorrelator.cs" />
+    <Compile Include="src\main\csharp\Transport\TransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\TransportFilter.cs" />
+    <Compile Include="src\main\csharp\Util\MessageDispatchChannel.cs" />
+    <Compile Include="src\main\csharp\CommonAssemblyInfo.cs" />
+    <Compile Include="src\main\csharp\Connection.cs" />
+    <Compile Include="src\main\csharp\ConnectionFactory.cs" />
+    <Compile Include="src\main\csharp\ConnectionMetaData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="keyfile\NMSKey.snk" />
+    <None Include="NOTICE.txt" />
+    <None Include="LICENSE.txt" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy FileWidth="120" TabWidth="4" TabsToSpaces="True" NoTabsAfterNonTabs="False" RemoveTrailingWhitespace="True" EolMarker="Native" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

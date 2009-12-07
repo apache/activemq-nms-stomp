@@ -47,7 +47,8 @@ namespace Apache.NMS.Stomp.Commands
         public const byte ShutdownInfoType = 23;
         public const byte ResponseType = 24;
         public const byte RemoveInfoType = 25;
-        public const byte ErrorResponseType = 26;
+        public const byte RemoveSubscriptionInfoType = 26;
+        public const byte ErrorResponseType = 27;
         
         public const byte DestinationType = 48;
         public const byte TempDestinationType = 49;

@@ -153,7 +153,6 @@ namespace Apache.NMS.Stomp
             CheckClosed();
             CheckMessageListener();
 
-            SendPullRequest(0);
             MessageDispatch dispatch = this.Dequeue(TimeSpan.FromMilliseconds(-1));
 
             if(dispatch == null)
@@ -164,7 +163,7 @@ namespace Apache.NMS.Stomp
             BeforeMessageIsConsumed(dispatch);
             AfterMessageIsConsumed(dispatch, false);
 
-            return CreateActiveMQMessage(dispatch);
+            return CreateStompMessage(dispatch);
         }
 
         public IMessage Receive(TimeSpan timeout)
@@ -172,17 +171,7 @@ namespace Apache.NMS.Stomp
             CheckClosed();
             CheckMessageListener();
 
-            MessageDispatch dispatch = null;
-            SendPullRequest((long) timeout.TotalMilliseconds);
-
-            if(this.PrefetchSize == 0)
-            {
-                dispatch = this.Dequeue(TimeSpan.FromMilliseconds(-1));
-            }
-            else
-            {
-                dispatch = this.Dequeue(timeout);
-            }
+            MessageDispatch dispatch = this.Dequeue(timeout);
 
             if(dispatch == null)
             {
@@ -192,7 +181,7 @@ namespace Apache.NMS.Stomp
             BeforeMessageIsConsumed(dispatch);
             AfterMessageIsConsumed(dispatch, false);
 
-            return CreateActiveMQMessage(dispatch);
+            return CreateStompMessage(dispatch);
         }
 
         public IMessage ReceiveNoWait()
@@ -200,17 +189,7 @@ namespace Apache.NMS.Stomp
             CheckClosed();
             CheckMessageListener();
 
-            MessageDispatch dispatch = null;
-            SendPullRequest(-1);
-
-            if(this.PrefetchSize == 0)
-            {
-                dispatch = this.Dequeue(TimeSpan.FromMilliseconds(-1));
-            }
-            else
-            {
-                dispatch = this.Dequeue(TimeSpan.Zero);
-            }
+            MessageDispatch dispatch = this.Dequeue(TimeSpan.Zero);
 
             if(dispatch == null)
             {
@@ -220,7 +199,7 @@ namespace Apache.NMS.Stomp
             BeforeMessageIsConsumed(dispatch);
             AfterMessageIsConsumed(dispatch, false);
 
-            return CreateActiveMQMessage(dispatch);
+            return CreateStompMessage(dispatch);
         }
 
         public void Dispose()
@@ -308,25 +287,6 @@ namespace Apache.NMS.Stomp
         }
 
         #endregion
-
-        protected void SendPullRequest(long timeout)
-        {
-            if(this.info.PrefetchSize == 0 && this.unconsumedMessages.Empty)
-            {
-                MessagePull messagePull = new MessagePull();
-                messagePull.ConsumerId = this.info.ConsumerId;
-                messagePull.Destination = this.info.Destination;
-                messagePull.Timeout = timeout;
-                messagePull.ResponseRequired = false;
-
-                if(Tracer.IsDebugEnabled)
-                {
-                    Tracer.Debug("Sending MessagePull: " + messagePull);
-                }
-
-                session.Connection.Oneway(messagePull);
-            }
-        }
 
         protected void DoIndividualAcknowledge(Message message)
         {
@@ -482,7 +442,7 @@ namespace Apache.NMS.Stomp
                     {
                         if(listener != null && this.unconsumedMessages.Running)
                         {
-                            ActiveMQMessage message = CreateActiveMQMessage(dispatch);
+                            Message message = CreateStompMessage(dispatch);
 
                             this.BeforeMessageIsConsumed(dispatch);
 

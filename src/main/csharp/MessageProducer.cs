@@ -119,11 +119,6 @@ namespace Apache.NMS.Stomp
                     Tracer.ErrorFormat("Error during producer close: {0}", ex);
                 }
 
-                if(this.usage != null)
-                {
-                    this.usage.Stop();
-                }
-
                 closed = true;
             }
         }
@@ -193,7 +188,7 @@ namespace Apache.NMS.Stomp
                     throw new ConnectionClosedException();
                 }
 
-                session.DoSend(stompMessage, this, this.usage, this.RequestTimeout);
+                session.DoSend(stompMessage, this, this.RequestTimeout);
             }
         }
 

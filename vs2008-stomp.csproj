@@ -104,8 +104,11 @@
     <Compile Include="src\main\csharp\Threads\DedicatedTaskRunner.cs" />
     <Compile Include="src\main\csharp\Threads\Task.cs" />
     <Compile Include="src\main\csharp\Threads\TaskRunner.cs" />
-    <Compile Include="src\main\csharp\Threads\TaskRunnerFactory.cs" />
     <Compile Include="src\main\csharp\Commands\DataStructureTypes.cs" />
+    <Compile Include="src\main\csharp\BrokerException.cs" />
+    <Compile Include="src\main\csharp\ConnectionClosedException.cs" />
+    <Compile Include="src\main\csharp\Commands\ConnectionError.cs" />
+    <Compile Include="src\main\csharp\Commands\RemoveSubscriptionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile\NMSKey.snk" />

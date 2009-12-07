@@ -462,7 +462,7 @@ namespace Apache.NMS.Stomp
             RemoveSubscriptionInfo command = new RemoveSubscriptionInfo();
             command.ConnectionId = Connection.ConnectionId;
             command.ClientId = Connection.ClientId;
-            command.SubcriptionName = name;
+            command.SubscriptionName = name;
             this.connection.SyncRequest(command);
         }
 
@@ -478,25 +478,23 @@ namespace Apache.NMS.Stomp
 
         public IQueue GetQueue(string name)
         {
-            return new ActiveMQQueue(name);
+            return new Commands.Queue(name);
         }
 
         public ITopic GetTopic(string name)
         {
-            return new ActiveMQTopic(name);
+            return new Commands.Topic(name);
         }
 
         public ITemporaryQueue CreateTemporaryQueue()
         {
-            ActiveMQTempQueue answer = new ActiveMQTempQueue(Connection.CreateTemporaryDestinationName());
-            CreateTemporaryDestination(answer);
+            TempQueue answer = new TempQueue(Connection.CreateTemporaryDestinationName());
             return answer;
         }
 
         public ITemporaryTopic CreateTemporaryTopic()
         {
-            ActiveMQTempTopic answer = new ActiveMQTempTopic(Connection.CreateTemporaryDestinationName());
-            CreateTemporaryDestination(answer);
+            TempTopic answer = new TempTopic(Connection.CreateTemporaryDestinationName());
             return answer;
         }
 
@@ -505,12 +503,7 @@ namespace Apache.NMS.Stomp
         /// </summary>
         public void DeleteDestination(IDestination destination)
         {
-            DestinationInfo command = new DestinationInfo();
-            command.ConnectionId = Connection.ConnectionId;
-            command.OperationType = DestinationInfo.REMOVE_OPERATION_TYPE; // 1 is remove
-            command.Destination = (Destination) destination;
-
-            this.connection.Oneway(command);
+            // Not Possible with Stomp
         }
 
         public IMessage CreateMessage()
@@ -521,24 +514,24 @@ namespace Apache.NMS.Stomp
 
         public ITextMessage CreateTextMessage()
         {
-            ActiveMQTextMessage answer = new ActiveMQTextMessage();
+            TextMessage answer = new TextMessage();
             return ConfigureMessage(answer) as ITextMessage;
         }
 
         public ITextMessage CreateTextMessage(string text)
         {
-            ActiveMQTextMessage answer = new ActiveMQTextMessage(text);
+            TextMessage answer = new TextMessage(text);
             return ConfigureMessage(answer) as ITextMessage;
         }
 
         public IMapMessage CreateMapMessage()
         {
-            return ConfigureMessage(new ActiveMQMapMessage()) as IMapMessage;
+            return ConfigureMessage(new MapMessage()) as IMapMessage;
         }
 
         public IBytesMessage CreateBytesMessage()
         {
-            return ConfigureMessage(new ActiveMQBytesMessage()) as IBytesMessage;
+            return ConfigureMessage(new BytesMessage()) as IBytesMessage;
         }
 
         public IBytesMessage CreateBytesMessage(byte[] body)
@@ -550,12 +543,12 @@ namespace Apache.NMS.Stomp
 
         public IStreamMessage CreateStreamMessage()
         {
-            return ConfigureMessage(new ActiveMQStreamMessage()) as IStreamMessage;
+            return ConfigureMessage(new StreamMessage()) as IStreamMessage;
         }
 
         public IObjectMessage CreateObjectMessage(object body)
         {
-            throw NotSupportedException("No Object Message in Stomp");
+            throw new NotSupportedException("No Object Message in Stomp");
         }
 
         public void Commit()
@@ -584,16 +577,6 @@ namespace Apache.NMS.Stomp
 
         #endregion
 
-        protected void CreateTemporaryDestination(Destination tempDestination)
-        {
-            DestinationInfo command = new DestinationInfo();
-            command.ConnectionId = Connection.ConnectionId;
-            command.OperationType = DestinationInfo.ADD_OPERATION_TYPE; // 0 is add
-            command.Destination = tempDestination;
-
-            this.connection.SyncRequest(command);
-        }
-
         public void DoSend( Message message, MessageProducer producer, TimeSpan sendTimeout )
         {
             Message msg = message;
@@ -605,7 +588,6 @@ namespace Apache.NMS.Stomp
             }
 
             msg.RedeliveryCounter = 0;
-            msg.BrokerPath = null;
 
             if(this.connection.CopyMessageOnSend)
             {

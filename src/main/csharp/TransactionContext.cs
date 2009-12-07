@@ -110,7 +110,7 @@ namespace Apache.NMS.Stomp
             TransactionInfo info = new TransactionInfo();
             info.ConnectionId = this.session.Connection.ConnectionId;
             info.TransactionId = transactionId;
-            info.Type = (int) TransactionType.CommitOnePhase;
+            info.Type = (int) TransactionType.Commit;
 
             this.transactionId = null;
             this.session.Connection.SyncRequest(info);

@@ -20,6 +20,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Net.Sockets;
 using Apache.NMS.Stomp.Transport;
+using Apache.NMS.Stomp.Protocol;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport.Tcp
@@ -131,11 +132,6 @@ namespace Apache.NMS.Stomp.Transport.Tcp
             if(UseLogging)
             {
                 transport = new LoggingTransport(transport);
-            }
-
-            if(wireformat is OpenWireFormat)
-            {
-                transport = new WireFormatNegotiator(transport, (OpenWireFormat) wireformat);
             }
 
             transport.RequestTimeout = this.requestTimeout;

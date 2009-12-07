@@ -304,7 +304,6 @@ namespace Apache.NMS.Stomp.Commands
             set
             {
                 this.physicalName = value;
-                this.advisory = (value != null && value.StartsWith(ADVISORY_PREFIX));
             }
         }
 
@@ -403,19 +402,6 @@ namespace Apache.NMS.Stomp.Commands
                     && this.physicalName.Equals(other.physicalName);
             }
             return result;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>true if the destination matches multiple possible destinations</returns>
-        public bool IsWildcard()
-        {
-            if(physicalName != null)
-            {
-                return physicalName.IndexOf(DestinationFilter.ANY_CHILD) >= 0
-                    || physicalName.IndexOf(DestinationFilter.ANY_DESCENDENT) >= 0;
-            }
-            return false;
         }
 
         /// <summary>

@@ -58,7 +58,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override Destination CreateDestination(String name)
         {
-            return new StompTempQueue(name);
+            return new TempQueue(name);
         }
 
         public override Object Clone()

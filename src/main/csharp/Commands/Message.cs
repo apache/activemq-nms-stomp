@@ -209,7 +209,9 @@ namespace Apache.NMS.Stomp.Commands
             {
                 if(null != MessageId)
                 {
-                    return BaseDataStreamMarshaller.ToString(MessageId);
+                    return MessageId.ProducerId.ConnectionId + ":" +
+                           MessageId.ProducerId.SessionId + ":" +
+                           MessageId.ProducerId.Value;
                 }
 
                 return String.Empty;
@@ -343,7 +345,7 @@ namespace Apache.NMS.Stomp.Commands
 
                 if(null != txnId)
                 {
-                    return BaseDataStreamMarshaller.ToString(txnId);
+                    return "" + txnId.Value;
                 }
 
                 return String.Empty;

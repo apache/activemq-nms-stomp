@@ -22,13 +22,13 @@ namespace Apache.NMS.Stomp.Commands
     /// <summary>
     /// Summary description for Topic.
     /// </summary>
-    public class StompTopic : Destination, ITopic
+    public class Topic : Destination, ITopic
     {
-        public StompTopic() : base()
+        public Topic() : base()
         {
         }
 
-        public StompTopic(String name) : base(name)
+        public Topic(String name) : base(name)
         {
         }
 
@@ -52,7 +52,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override int GetDestinationType()
         {
-            return ACTIVEMQ_TOPIC;
+            return STOMP_TOPIC;
         }
 
         public override Destination CreateDestination(String name)

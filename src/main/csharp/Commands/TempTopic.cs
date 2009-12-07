@@ -60,7 +60,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override Destination CreateDestination(String name)
         {
-            return new StompTempTopic(name);
+            return new TempTopic(name);
         }
 
         public override Object Clone()

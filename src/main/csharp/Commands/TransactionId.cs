@@ -20,7 +20,7 @@ using System.Collections;
 
 namespace Apache.NMS.Stomp.Commands
 {
-    public class TransactionId
+    public class TransactionId : BaseDataStructure
     {
         long value;
         ConnectionId connectionId;
@@ -31,7 +31,7 @@ namespace Apache.NMS.Stomp.Commands
         ///  Marshaler share.
         /// </summery>
         ///
-        public byte GetDataStructureType()
+        public override byte GetDataStructureType()
         {
             return DataStructureTypes.TransactionIdType;
         }

@@ -92,7 +92,7 @@ namespace Apache.NMS.Stomp.Commands
             {
                 MemoryStream buffer = new MemoryStream();
                 this.body.Marshal(buffer);
-                target.Close();
+                buffer.Close();
 
                 this.Content = buffer.ToArray();
             }

@@ -18,6 +18,8 @@
 using System;
 using System.Collections;
 
+using Apache.NMS;
+
 namespace Apache.NMS.Stomp.Commands
 {
     public class ConsumerInfo : BaseCommand
@@ -25,8 +27,8 @@ namespace Apache.NMS.Stomp.Commands
         public const byte ID_CONSUMERINFO = 5;
 
         ConsumerId consumerId;
-        bool browser;
         Destination destination;
+        AcknowledgementMode ackMode;
         int prefetchSize;
         int maximumPendingMessageLimit;
         bool dispatchAsync;
@@ -58,8 +60,8 @@ namespace Apache.NMS.Stomp.Commands
         {
             return GetType().Name + "[" +
                 "ConsumerId=" + ConsumerId +
-                "Browser=" + Browser +
                 "Destination=" + Destination +
+                "Ack Mode=" + AckMode +
                 "PrefetchSize=" + PrefetchSize +
                 "MaximumPendingMessageLimit=" + MaximumPendingMessageLimit +
                 "DispatchAsync=" + DispatchAsync +
@@ -78,16 +80,16 @@ namespace Apache.NMS.Stomp.Commands
             set { this.consumerId = value; }
         }
 
-        public bool Browser
-        {
-            get { return browser; }
-            set { this.browser = value; }
-        }
-
         public Destination Destination
         {
             get { return destination; }
             set { this.destination = value; }
+        }
+
+        public AcknowledgementMode AckMode
+        {
+            get { return this.ackMode; }
+            set { this.ackMode = value; }
         }
 
         public int PrefetchSize

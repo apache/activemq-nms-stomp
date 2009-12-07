@@ -37,12 +37,14 @@ namespace Apache.NMS.Stomp.Protocol
         {
         }
 
-        public ITransport Transport {
+        public ITransport Transport 
+        {
             get { return transport; }
             set { transport = value; }
         }
 
-        public int Version {
+        public int Version 
+        {
             get { return 1; }
         }
 

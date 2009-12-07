@@ -89,7 +89,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         public void WriteHeader(String name, Object value)
         {
-            if (value != null)
+            if(value != null)
             {
                 builder.Append(name);
                 builder.Append(SEPARATOR);
@@ -100,7 +100,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         public void WriteHeader(String name, bool value)
         {
-            if (value)
+            if(value)
             {
                 builder.Append(name);
                 builder.Append(SEPARATOR);

@@ -55,9 +55,9 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 WriteConnectionInfo((ConnectionInfo) o, ds);
             }
-            else if (o is ActiveMQMessage)
+            else if (o is Message)
             {
-                WriteMessage((ActiveMQMessage) o, ds);
+                WriteMessage((Message) o, ds);
             }
             else if (o is ConsumerInfo)
             {
@@ -241,15 +241,15 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual Command ReadMessage(string command, IDictionary headers, byte[] content)
         {
-            ActiveMQMessage message = null;
+            Message message = null;
             if (headers.Contains("content-length"))
             {
-                message = new ActiveMQBytesMessage();
+                message = new BytesMessage();
                 message.Content = content;
             }
             else
             {
-                message = new ActiveMQTextMessage(encoding.GetString(content, 0, content.Length));
+                message = new TextMessage(encoding.GetString(content, 0, content.Length));
             }
 
             // TODO now lets set the various headers
@@ -421,13 +421,13 @@ namespace Apache.NMS.Stomp.Protocol
         protected virtual void WriteTransactionInfo(TransactionInfo command, StompFrameStream ss)
         {
             TransactionId id = command.TransactionId;
-            if (id is LocalTransactionId)
+            if (id is TransactionId)
             {
                 string type = "BEGIN";
                 TransactionType transactionType = (TransactionType) command.Type;
                 switch (transactionType)
                 {
-                    case TransactionType.CommitOnePhase:
+                    case TransactionType.Commit:
                         command.ResponseRequired = true;
                         type = "COMMIT";
                         break;
@@ -468,7 +468,7 @@ namespace Apache.NMS.Stomp.Protocol
             command.BeforeMarshall(null);
             if (command is TextMessage)
             {
-                ActiveMQTextMessage textMessage = command as ActiveMQTextMessage;
+                TextMessage textMessage = command as TextMessage;
                 ss.Content = encoding.GetBytes(textMessage.Text);
             }
             else

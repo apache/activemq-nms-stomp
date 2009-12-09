@@ -67,13 +67,6 @@ namespace Apache.NMS.Stomp.Commands
             {
                 try
                 {
-                    if(this.text == null && this.Content != null)
-                    {
-                        Stream stream = new MemoryStream(this.Content);
-                        EndianBinaryReader reader = new EndianBinaryReader(stream);
-                        this.text = reader.ReadString32();
-                        this.Content = null;
-                    }
                     return this.text;
                 }
                 catch(IOException ex)
@@ -96,17 +89,7 @@ namespace Apache.NMS.Stomp.Commands
 
             if(this.Content == null && text != null)
             {
-                byte[] data = null;
-
-                // Set initial size to the size of the string the UTF-8 encode could
-                // result in more if there are chars that encode to multibye values.
-                MemoryStream buffer = new MemoryStream(text.Length);
-                EndianBinaryWriter writer = new EndianBinaryWriter(buffer);
-                writer.WriteString32(text);
-                buffer.Close();
-                data = buffer.ToArray();
-
-                this.Content = data;
+                this.Content = wireFormat.Encoder.GetBytes(this.text);
                 this.text = null;
             }
         }

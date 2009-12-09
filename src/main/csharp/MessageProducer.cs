@@ -94,9 +94,6 @@ namespace Apache.NMS.Stomp
                 }
 
                 DoClose();
-                RemoveInfo removeInfo = new RemoveInfo();
-                removeInfo.ObjectId = this.info.ProducerId;
-                this.session.Connection.Oneway(removeInfo);
                 this.session = null;
             }
         }

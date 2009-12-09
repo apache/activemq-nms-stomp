@@ -23,7 +23,6 @@ namespace Apache.NMS.Stomp.Commands
     public class RemoveInfo : BaseCommand
     {
         DataStructure objectId;
-        long lastDeliveredSequenceId;
 
         ///
         /// <summery>
@@ -35,7 +34,6 @@ namespace Apache.NMS.Stomp.Commands
         {
             return GetType().Name + "[" +
                 "ObjectId=" + ObjectId +
-                "LastDeliveredSequenceId=" + LastDeliveredSequenceId +
                 "]";
         }
 
@@ -48,12 +46,6 @@ namespace Apache.NMS.Stomp.Commands
         {
             get { return objectId; }
             set { this.objectId = value; }
-        }
-
-        public long LastDeliveredSequenceId
-        {
-            get { return lastDeliveredSequenceId; }
-            set { this.lastDeliveredSequenceId = value; }
         }
 
         ///

@@ -25,7 +25,6 @@ namespace Apache.NMS.Stomp.Commands
         ProducerId producerId;
         Destination destination;
         bool dispatchAsync;
-        int windowSize;
 
         ///
         /// <summery>
@@ -50,7 +49,6 @@ namespace Apache.NMS.Stomp.Commands
                 "ProducerId=" + ProducerId +
                 "Destination=" + Destination +
                 "DispatchAsync=" + DispatchAsync +
-                "WindowSize=" + WindowSize +
                 "]";
         }
 
@@ -70,12 +68,6 @@ namespace Apache.NMS.Stomp.Commands
         {
             get { return dispatchAsync; }
             set { this.dispatchAsync = value; }
-        }
-
-        public int WindowSize
-        {
-            get { return windowSize; }
-            set { this.windowSize = value; }
         }
 
         ///

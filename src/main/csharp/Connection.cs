@@ -36,14 +36,12 @@ namespace Apache.NMS.Stomp
         private AcknowledgementMode acknowledgementMode = AcknowledgementMode.AutoAcknowledge;
         private TimeSpan requestTimeout;
         private readonly IList sessions = ArrayList.Synchronized(new ArrayList());
-        private readonly IDictionary producers = Hashtable.Synchronized(new Hashtable());
         private readonly IDictionary dispatchers = Hashtable.Synchronized(new Hashtable());
         private readonly object myLock = new object();
         private bool asyncSend = false;
         private bool alwaysSyncSend = false;
         private bool asyncClose = true;
         private bool copyMessageOnSend = true;
-        private int producerWindowSize = 0;
         private bool connected = false;
         private bool closed = false;
         private bool closing = false;
@@ -121,19 +119,6 @@ namespace Apache.NMS.Stomp
         public string AckMode
         {
             set { this.acknowledgementMode = NMSConvert.ToAcknowledgementMode(value); }
-        }
-
-        /// <summary>
-        /// This property is the maximum number of bytes in memory that a producer will transmit
-        /// to a broker before waiting for acknowledgement messages from the broker that it has
-        /// accepted the previously sent messages. In other words, this how you configure the
-        /// producer flow control window that is used for async sends where the client is responsible
-        /// for managing memory usage. The default value of 0 means no flow control at the client
-        /// </summary>
-        public int ProducerWindowSize
-        {
-            get { return producerWindowSize; }
-            set { producerWindowSize = value; }
         }
 
         /// <summary>
@@ -318,16 +303,6 @@ namespace Apache.NMS.Stomp
         internal void removeDispatcher( ConsumerId id )
         {
             this.dispatchers.Remove( id );
-        }
-
-        internal void addProducer( ProducerId id, MessageProducer producer )
-        {
-            this.producers.Add( id, producer );
-        }
-
-        internal void removeProducer( ProducerId id )
-        {
-            this.producers.Remove( id );
         }
 
         public void Close()

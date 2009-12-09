@@ -52,7 +52,6 @@ namespace Apache.NMS.Stomp
         private int maximumRedeliveryCount = 10;
         private int redeliveryTimeout = 500;
         protected bool disposed = false;
-        private long lastDeliveredSequenceId = 0;
         private int deliveredCounter = 0;
         private int additionalWindowSize = 0;
         private long redeliveryDelay = 0;
@@ -81,11 +80,6 @@ namespace Apache.NMS.Stomp
         }
 
         #region Property Accessors
-
-        public long LastDeliveredSequenceId
-        {
-            get { return this.lastDeliveredSequenceId; }
-        }
 
         public ConsumerId ConsumerId
         {
@@ -273,11 +267,10 @@ namespace Apache.NMS.Stomp
                 }
 
                 this.unconsumedMessages.Close();
-                this.session.DisposeOf(this.info.ConsumerId, this.lastDeliveredSequenceId);
+                this.session.DisposeOf(this.info.ConsumerId);
 
                 RemoveInfo removeCommand = new RemoveInfo();
                 removeCommand.ObjectId = this.info.ConsumerId;
-                removeCommand.LastDeliveredSequenceId = this.lastDeliveredSequenceId;
 
                 this.session.Connection.Oneway(removeCommand);
                 this.session = null;
@@ -603,8 +596,6 @@ namespace Apache.NMS.Stomp
 
         public void BeforeMessageIsConsumed(MessageDispatch dispatch)
         {
-            this.lastDeliveredSequenceId = dispatch.Message.MessageId.BrokerSequenceId;
-
             if(!IsAutoAcknowledgeBatch)
             {
                 lock(this.dispatchedMessages)

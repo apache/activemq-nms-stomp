@@ -50,7 +50,6 @@ namespace Apache.NMS.Stomp
         private int consumerCounter;
         private int producerCounter;
         private long nextDeliveryId;
-        private long lastDeliveredSequenceId;
         private bool disposed = false;
         private bool closed = false;
         private bool closing = false;
@@ -260,7 +259,6 @@ namespace Apache.NMS.Stomp
                     // Make sure we attempt to inform the broker this Session is done.
                     RemoveInfo info = new RemoveInfo();
                     info.ObjectId = this.info.SessionId;
-                    info.LastDeliveredSequenceId = this.lastDeliveredSequenceId;
                     this.connection.Oneway(info);
                     this.connection = null;
                     this.closed = true;
@@ -290,8 +288,6 @@ namespace Apache.NMS.Stomp
                         foreach(MessageConsumer consumer in consumers.Values)
                         {
                             consumer.DoClose();
-                            this.lastDeliveredSequenceId =
-                                Math.Min(this.lastDeliveredSequenceId, consumer.LastDeliveredSequenceId);
                         }
                     }
                     consumers.Clear();
@@ -357,9 +353,6 @@ namespace Apache.NMS.Stomp
 
                 throw;
             }
-
-            // Registered with Connection so it can process Producer Acks.
-            connection.addProducer(producerId, producer);
 
             return producer;
         }
@@ -626,11 +619,9 @@ namespace Apache.NMS.Stomp
             }
         }
 
-        public void DisposeOf(ConsumerId objectId, long lastDeliveredSequenceId)
+        public void DisposeOf(ConsumerId objectId)
         {
             connection.removeDispatcher(objectId);
-            this.lastDeliveredSequenceId = Math.Min(this.lastDeliveredSequenceId, lastDeliveredSequenceId);
-
             if(!this.closing)
             {
                 consumers.Remove(objectId);
@@ -639,7 +630,6 @@ namespace Apache.NMS.Stomp
 
         public void DisposeOf(ProducerId objectId)
         {
-            connection.removeProducer(objectId);
             if(!this.closing)
             {
                 producers.Remove(objectId);
@@ -691,7 +681,6 @@ namespace Apache.NMS.Stomp
             id.Value = Interlocked.Increment(ref producerCounter);
             answer.ProducerId = id;
             answer.Destination = Destination.Transform(destination);
-            answer.WindowSize = connection.ProducerWindowSize;
 
             // If the destination contained a URI query, then use it to set public
             // properties on the ProducerInfo

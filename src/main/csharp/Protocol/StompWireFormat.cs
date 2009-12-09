@@ -29,7 +29,7 @@ namespace Apache.NMS.Stomp.Protocol
     /// </summary>
     public class StompWireFormat : IWireFormat
     {
-        private Encoding encoding = new UTF8Encoding();
+        private Encoding encoder = new UTF8Encoding();
         private ITransport transport;
         private IDictionary consumers = Hashtable.Synchronized(new Hashtable());
 
@@ -48,143 +48,78 @@ namespace Apache.NMS.Stomp.Protocol
             get { return 1; }
         }
 
-        public void Marshal(Object o, BinaryWriter binaryWriter)
+        public Encoding Encoder
         {
-            Tracer.Debug(">>>> " + o);
-            StompFrameStream ds = new StompFrameStream(binaryWriter, encoding);
+            get { return this.encoder; }
+            set { this.encoder = value; }
+        }
 
-            if (o is ConnectionInfo)
+        public void Marshal(Object o, BinaryWriter dataOut)
+        {
+            Tracer.Debug("StompWireFormat - Marshaling: " + o);
+
+            if(o is ConnectionInfo)
             {
-                WriteConnectionInfo((ConnectionInfo) o, ds);
+                WriteConnectionInfo((ConnectionInfo) o, dataOut);
             }
-            else if (o is Message)
+            else if(o is Message)
             {
-                WriteMessage((Message) o, ds);
+                WriteMessage((Message) o, dataOut);
             }
-            else if (o is ConsumerInfo)
+            else if(o is ConsumerInfo)
             {
-                WriteConsumerInfo((ConsumerInfo) o, ds);
+                WriteConsumerInfo((ConsumerInfo) o, dataOut);
             }
-            else if (o is MessageAck)
+            else if(o is MessageAck)
             {
-                WriteMessageAck((MessageAck) o, ds);
+                WriteMessageAck((MessageAck) o, dataOut);
             }
-            else if (o is TransactionInfo)
+            else if(o is TransactionInfo)
             {
-                WriteTransactionInfo((TransactionInfo) o, ds);
+                WriteTransactionInfo((TransactionInfo) o, dataOut);
             }
-            else if (o is ShutdownInfo)
+            else if(o is ShutdownInfo)
             {
-                WriteShutdownInfo((ShutdownInfo) o, ds);
+                WriteShutdownInfo((ShutdownInfo) o, dataOut);
             }
-            else if (o is RemoveInfo)
+            else if(o is RemoveInfo)
             {
-                WriteRemoveInfo((RemoveInfo) o, ds);
+                WriteRemoveInfo((RemoveInfo) o, dataOut);
             }
-            else if (o is Command)
+            else if(o is Command)
             {
                 Command command = o as Command;
-                if (command.ResponseRequired)
+                if(command.ResponseRequired)
                 {
                     Response response = new Response();
                     response.CorrelationId = command.CommandId;
                     SendCommand(response);
-                    Tracer.Debug("#### Autorespond to command: " + o.GetType());
+                    Tracer.Debug("StompWireFormat - Autorespond to command: " + o.GetType());
                 }
             }
             else
             {
-                Tracer.Debug("#### Ignored command: " + o.GetType());
+                Tracer.Debug("StompWireFormat - Ignored command: " + o.GetType());
             }
         }
 
-
-        internal String ReadLine(BinaryReader dis)
+        public Object Unmarshal(BinaryReader dataIn)
         {
-            MemoryStream ms = new MemoryStream();
-            while (true)
-            {
-                int nextChar = dis.Read();
-                if (nextChar < 0)
-                {
-                    throw new IOException("Peer closed the stream.");
-                }
-                if( nextChar == 10 )
-                {
-                    break;
-                }
-                ms.WriteByte((byte)nextChar);
-            }
-            byte[] data = ms.ToArray();
-            return encoding.GetString(data, 0, data.Length);
-        }
-
-        public Object Unmarshal(BinaryReader dis)
-        {
-            string command;
-            do {
-                command = ReadLine(dis);
-            }
-            while (command == "");
-
-            Tracer.Debug("<<<< command: " + command);
-
-            IDictionary headers = new Hashtable();
-            string line;
-            while ((line = ReadLine(dis)) != "")
-            {
-                int idx = line.IndexOf(':');
-                if (idx > 0)
-                {
-                    string key = line.Substring(0, idx);
-                    string value = line.Substring(idx + 1);
-                    headers[key] = value;
-
-                    Tracer.Debug("<<<< header: " + key + " = " + value);
-                }
-                else
-                {
-                    // lets ignore this bad header!
-                }
-            }
-            byte[] content = null;
-            string length = ToString(headers["content-length"]);
-            if (length != null)
-            {
-                int size = Int32.Parse(length);
-                content = dis.ReadBytes(size);
-                // Read the terminating NULL byte for this frame.
-                int nullByte = dis.Read();
-                if(nullByte != 0)
-                {
-                    Tracer.Debug("<<<< error reading frame null byte.");
-                }
-            }
-            else
-            {
-                MemoryStream ms = new MemoryStream();
-                int nextChar;
-                while((nextChar = dis.Read()) != 0)
-                {
-                    if( nextChar < 0 )
-                    {
-                        // EOF ??
-                        break;
-                    }
-                    ms.WriteByte((byte)nextChar);
-                }
-                content = ms.ToArray();
-            }
-            Object answer = CreateCommand(command, headers, content);
-            Tracer.Debug("<<<< received: " + answer);
+            StompFrame frame = new StompFrame();
+            frame.FromStream(dataIn);
+            
+            Object answer = CreateCommand(frame);
+            Tracer.Debug("StompWireFormat - Command received: " + answer);
             return answer;
         }
 
-        protected virtual Object CreateCommand(string command, IDictionary headers, byte[] content)
+        protected virtual Object CreateCommand(StompFrame frame)
         {
+            string command = frame.Command;
+            
             if(command == "RECEIPT" || command == "CONNECTED")
             {
-                string text = RemoveHeader(headers, "receipt-id");
+                string text = frame.RemoveProperty("receipt-id");
                 if(text != null)
                 {
                     Response answer = new Response();
@@ -198,8 +133,8 @@ namespace Apache.NMS.Stomp.Protocol
                 }
                 else if(command == "CONNECTED")
                 {
-                    text = RemoveHeader(headers, "response-id");
-                    if (text != null)
+                    text = frame.RemoveProperty("response-id");
+                    if(text != null)
                     {
                         Response answer = new Response();
                         answer.CorrelationId = Int32.Parse(text);
@@ -209,7 +144,7 @@ namespace Apache.NMS.Stomp.Protocol
             }
             else if(command == "ERROR")
             {
-                string text = RemoveHeader(headers, "receipt-id");
+                string text = frame.RemoveProperty("receipt-id");
 
                 if(text != null && text.StartsWith("ignore:"))
                 {
@@ -226,146 +161,169 @@ namespace Apache.NMS.Stomp.Protocol
                     }
 
                     BrokerError error = new BrokerError();
-                    error.Message = RemoveHeader(headers, "message");
-                    error.ExceptionClass = RemoveHeader(headers, "exceptionClass");
-                    // TODO is this the right header?
+                    error.Message = frame.RemoveProperty("message");
                     answer.Exception = error;
                     return answer;
                 }
             }
-            else if (command == "MESSAGE")
+            else if(command == "MESSAGE")
             {
-                return ReadMessage(command, headers, content);
+                return CreateMessage(frame);
             }
-            Tracer.Error("Unknown command: " + command + " headers: " + headers);
+            
+            Tracer.Error("Unknown command: " + frame.Command + " headers: " + frame.Properties);
+            
             return null;
         }
 
-        protected virtual Command ReadMessage(string command, IDictionary headers, byte[] content)
+        protected virtual Command CreateMessage(StompFrame frame)
         {
             Message message = null;
-            if (headers.Contains("content-length"))
+            if(frame.HasProperty("content-length"))
             {
                 message = new BytesMessage();
-                message.Content = content;
+                message.Content = frame.Content;
             }
             else
             {
-                message = new TextMessage(encoding.GetString(content, 0, content.Length));
+                message = new TextMessage(encoder.GetString(frame.Content, 0, frame.Content.Length));
             }
 
-            // TODO now lets set the various headers
+            message.Type = frame.RemoveProperty("type");
+            message.Destination = StompHelper.ToDestination(frame.RemoveProperty("destination"));
+            message.ReplyTo = StompHelper.ToDestination(frame.RemoveProperty("reply-to"));
+            message.TargetConsumerId = StompHelper.ToConsumerId(frame.RemoveProperty("subscription"));
+            message.CorrelationId = frame.RemoveProperty("correlation-id");
+            message.MessageId = StompHelper.ToMessageId(frame.RemoveProperty("message-id"));
+            message.Persistent = StompHelper.ToBool(frame.RemoveProperty("persistent"), true);
 
-            message.Type = RemoveHeader(headers, "type");
-            message.Destination = StompHelper.ToDestination(RemoveHeader(headers, "destination"));
-            message.ReplyTo = StompHelper.ToDestination(RemoveHeader(headers, "reply-to"));
-            message.TargetConsumerId = StompHelper.ToConsumerId(RemoveHeader(headers, "subscription"));
-            message.CorrelationId = RemoveHeader(headers, "correlation-id");
-            message.MessageId = StompHelper.ToMessageId(RemoveHeader(headers, "message-id"));
-            message.Persistent = StompHelper.ToBool(RemoveHeader(headers, "persistent"), true);
-
-            string header = RemoveHeader(headers, "priority");
-            if (header != null) message.Priority = Byte.Parse(header);
-
-            header = RemoveHeader(headers, "timestamp");
-            if (header != null) message.Timestamp = Int64.Parse(header);
-
-            header = RemoveHeader(headers, "expires");
-            if (header != null) message.Expiration = Int64.Parse(header);
+            if(frame.HasProperty("priority"))
+            {
+                message.Priority = Byte.Parse(frame.RemoveProperty("priority"));
+            }
+            
+            if(frame.HasProperty("timestamp"))
+            {
+                message.Timestamp = Int64.Parse(frame.RemoveProperty("timestamp"));
+            }
+            
+            if(frame.HasProperty("expires"))
+            {
+                message.Expiration = Int64.Parse(frame.RemoveProperty("expires"));
+            }
 
             // now lets add the generic headers
-            foreach (string key in headers.Keys)
+            foreach(string key in frame.Properties.Keys)
             {
-                Object value = headers[key];
-                if (value != null)
+                Object value = frame.Properties[key];
+                if(value != null)
                 {
                     // lets coerce some standard header extensions
-                    if (key == "NMSXGroupSeq")
+                    if(key == "NMSXGroupSeq")
                     {
                         value = Int32.Parse(value.ToString());
                     }
                 }
                 message.Properties[key] = value;
             }
+            
             MessageDispatch dispatch = new MessageDispatch();
             dispatch.Message = message;
             dispatch.ConsumerId = message.TargetConsumerId;
             dispatch.Destination = message.Destination;
+            
             return dispatch;
         }
 
-        protected virtual void WriteConnectionInfo(ConnectionInfo command, StompFrameStream ss)
+        protected virtual void WriteConnectionInfo(ConnectionInfo command, BinaryWriter dataOut)
         {
-            // lets force a receipt
-            command.ResponseRequired = true;
+            // lets force a receipt for the Connect Frame.
+            
+            StompFrame frame = new StompFrame("CONNECT");
 
-            ss.WriteCommand(command, "CONNECT");
-            ss.WriteHeader("client-id", command.ClientId);
-            ss.WriteHeader("login", command.UserName);
-            ss.WriteHeader("passcode", command.Password);
+            frame.SetProperty("client-id", command.ClientId);
+            frame.SetProperty("login", command.UserName);
+            frame.SetProperty("passcode", command.Password);
+            frame.SetProperty("request-id", command.CommandId.ToString());
 
-            if (command.ResponseRequired)
-            {
-                ss.WriteHeader("request-id", command.CommandId);
-            }
-
-            ss.Flush();
+            frame.ToStream(dataOut);
         }
 
-        protected virtual void WriteShutdownInfo(ShutdownInfo command, StompFrameStream ss)
+        protected virtual void WriteShutdownInfo(ShutdownInfo command, BinaryWriter dataOut)
         {
-            ss.WriteCommand(command, "DISCONNECT");
             System.Diagnostics.Debug.Assert(!command.ResponseRequired);
-            ss.Flush();
+            
+            new StompFrame("DISCONNECT").ToStream(dataOut);
         }
 
-        protected virtual void WriteConsumerInfo(ConsumerInfo command, StompFrameStream ss)
+        protected virtual void WriteConsumerInfo(ConsumerInfo command, BinaryWriter dataOut)
         {
-            ss.WriteCommand(command, "SUBSCRIBE");
-            ss.WriteHeader("destination", StompHelper.ToStomp(command.Destination));
-            ss.WriteHeader("id", StompHelper.ToStomp(command.ConsumerId));
-            ss.WriteHeader("durable-subscriber-name", command.SubscriptionName);
-            ss.WriteHeader("selector", command.Selector);
-            if ( command.NoLocal )
-                ss.WriteHeader("no-local", command.NoLocal);
-            ss.WriteHeader("ack", "client");
+            StompFrame frame = new StompFrame("SUBSCRIBE");
+
+            if(command.ResponseRequired)
+            {
+                frame.SetProperty("receipt", command.CommandId);
+            }
+            
+            frame.SetProperty("destination", StompHelper.ToStomp(command.Destination));
+            frame.SetProperty("id", StompHelper.ToStomp(command.ConsumerId));
+            frame.SetProperty("durable-subscriber-name", command.SubscriptionName);
+            frame.SetProperty("selector", command.Selector);
+            frame.SetProperty("ack", StompHelper.ToStomp(command.AckMode));
+            
+            if(command.NoLocal)
+            {
+                frame.SetProperty("no-local", command.NoLocal.ToString());
+            }
 
             // ActiveMQ extensions to STOMP
-            ss.WriteHeader("activemq.dispatchAsync", command.DispatchAsync);
-            if ( command.Exclusive )
-                ss.WriteHeader("activemq.exclusive", command.Exclusive);
-
-            if( command.SubscriptionName != null )
+            frame.SetProperty("activemq.dispatchAsync", command.DispatchAsync);
+            
+            if(command.Exclusive)
             {
-                ss.WriteHeader("activemq.subscriptionName", command.SubscriptionName);
-                // For an older 4.0 broker we need to set this header so they get the
-                // subscription as wel..
-                ss.WriteHeader("activemq.subcriptionName", command.SubscriptionName);
+                frame.SetProperty("activemq.exclusive", command.Exclusive);
             }
 
-            ss.WriteHeader("activemq.maximumPendingMessageLimit", command.MaximumPendingMessageLimit);
-            ss.WriteHeader("activemq.prefetchSize", command.PrefetchSize);
-            ss.WriteHeader("activemq.priority", command.Priority);
-            if ( command.Retroactive )
-                ss.WriteHeader("activemq.retroactive", command.Retroactive);
+            if(command.SubscriptionName != null)
+            {
+                frame.SetProperty("activemq.subscriptionName", command.SubscriptionName);
+                // For an older 4.0 broker we need to set this header so they get the
+                // subscription as well..
+                frame.SetProperty("activemq.subcriptionName", command.SubscriptionName);
+            }
 
+            frame.SetProperty("activemq.maximumPendingMessageLimit", command.MaximumPendingMessageLimit);
+            frame.SetProperty("activemq.prefetchSize", command.PrefetchSize);
+            frame.SetProperty("activemq.priority", command.Priority);
+            
+            if(command.Retroactive)
+            {
+                frame.SetProperty("activemq.retroactive", command.Retroactive);
+            }
+
+            // TODO - The Session should do this one.
             consumers[command.ConsumerId] = command.ConsumerId;
-            ss.Flush();
+            
+            frame.ToStream(dataOut);
         }
 
-        protected virtual void WriteRemoveInfo(RemoveInfo command, StompFrameStream ss)
+        protected virtual void WriteRemoveInfo(RemoveInfo command, BinaryWriter dataOut)
         {
+            StompFrame frame = new StompFrame("UNSUBSCRIBE");
             object id = command.ObjectId;
 
-            if (id is ConsumerId)
+            if(id is ConsumerId)
             {
                 ConsumerId consumerId = id as ConsumerId;
-                ss.WriteCommand(command, "UNSUBSCRIBE");
-                ss.WriteHeader("id", StompHelper.ToStomp(consumerId));
-                ss.Flush();
+                if(command.ResponseRequired)
+                {
+                    frame.SetProperty("receipt", command.CommandId);
+                }                
+                frame.SetProperty("id", StompHelper.ToStomp(consumerId));
+                frame.ToStream(dataOut);
                 consumers.Remove(consumerId);
             }
-            else if (id is SessionId)
+            else if(id is SessionId)
             {
                 // When a session is removed, it needs to remove it's consumers too.
                 // Find all the consumer that were part of the session.
@@ -383,134 +341,149 @@ namespace Apache.NMS.Stomp.Protocol
                 bool unsubscribedConsumer = false;
 
                 // Un-subscribe them.
-                foreach (ConsumerId consumerId in matches)
+                foreach(ConsumerId consumerId in matches)
                 {
-                    ss.WriteCommand(command, "UNSUBSCRIBE");
-                    ss.WriteHeader("id", StompHelper.ToStomp(consumerId));
-                    ss.Flush();
+                    if(command.ResponseRequired)
+                    {
+                        frame.SetProperty("receipt", command.CommandId);
+                    }                
+                    frame.SetProperty("id", StompHelper.ToStomp(consumerId));
+                    frame.ToStream(dataOut);
                     consumers.Remove(consumerId);
                     unsubscribedConsumer = true;
                 }
 
                 if(!unsubscribedConsumer && command.ResponseRequired)
                 {
-                    ss.WriteCommand(command, "UNSUBSCRIBE", true);
-                    ss.WriteHeader("id", sessionId);
-                    ss.Flush();
-                }
-            }
-            else if(id is ProducerId)
-            {
-                if(command.ResponseRequired)
-                {
-                    ss.WriteCommand(command, "UNSUBSCRIBE", true);
-                    ss.WriteHeader("id", id);
-                    ss.Flush();
+                    if(command.ResponseRequired)
+                    {
+                        frame.SetProperty("receipt", "ignore:" + command.CommandId);
+                    }                
+                    frame.SetProperty("id", sessionId);
+                    frame.ToStream(dataOut);
                 }
             }
             else if(id is ConnectionId)
             {
                 if(command.ResponseRequired)
                 {
-                    ss.WriteCommand(command, "UNSUBSCRIBE", true);
-                    ss.WriteHeader("id", id);
-                    ss.Flush();
+                    if(command.ResponseRequired)
+                    {
+                        frame.SetProperty("receipt", "ignore:" + command.CommandId);
+                    }   
+                    frame.SetProperty("id", id);
+                    frame.ToStream(dataOut);
                 }
             }
         }
 
-
-        protected virtual void WriteTransactionInfo(TransactionInfo command, StompFrameStream ss)
+        protected virtual void WriteTransactionInfo(TransactionInfo command, BinaryWriter dataOut)
         {
-            TransactionId id = command.TransactionId;
-            if (id is TransactionId)
+            string type = "BEGIN";
+            TransactionType transactionType = (TransactionType) command.Type;
+            switch(transactionType)
             {
-                string type = "BEGIN";
-                TransactionType transactionType = (TransactionType) command.Type;
-                switch (transactionType)
-                {
-                    case TransactionType.Commit:
-                        command.ResponseRequired = true;
-                        type = "COMMIT";
-                        break;
-                    case TransactionType.Rollback:
-                        command.ResponseRequired = true;
-                        type = "ABORT";
-                        break;
-                }
-
-                Tracer.Debug(">>> For transaction type: " + transactionType + " we are using command type: " + type);
-                ss.WriteCommand(command, type);
-                ss.WriteHeader("transaction", StompHelper.ToStomp(id));
-                ss.Flush();
+                case TransactionType.Commit:
+                    command.ResponseRequired = true;
+                    type = "COMMIT";
+                    break;
+                case TransactionType.Rollback:
+                    command.ResponseRequired = true;
+                    type = "ABORT";
+                    break;
             }
+
+            Tracer.Debug("StompWireFormat - For transaction type: " + transactionType + 
+                         " we are using command type: " + type);
+
+            StompFrame frame = new StompFrame(type);
+            if(command.ResponseRequired)
+            {
+                frame.SetProperty("receipt", command.CommandId);
+            }
+            
+            frame.SetProperty("transaction", StompHelper.ToStomp(command.TransactionId));
+            frame.ToStream(dataOut);
         }
 
-        protected virtual void WriteMessage(Message command, StompFrameStream ss)
+        protected virtual void WriteMessage(Message command, BinaryWriter dataOut)
         {
-            ss.WriteCommand(command, "SEND");
-            ss.WriteHeader("destination", StompHelper.ToStomp(command.Destination));
-            if (command.ReplyTo != null)
-                ss.WriteHeader("reply-to", StompHelper.ToStomp(command.ReplyTo));
-            if (command.CorrelationId != null )
-                ss.WriteHeader("correlation-id", command.CorrelationId);
-            if (command.Expiration != 0)
-                ss.WriteHeader("expires", command.Expiration);
-            if (command.Priority != 4)
-                ss.WriteHeader("priority", command.Priority);
-            if (command.Type != null)
-                ss.WriteHeader("type", command.Type);
-            if (command.TransactionId!=null)
-                ss.WriteHeader("transaction", StompHelper.ToStomp(command.TransactionId));
-
-            ss.WriteHeader("persistent", command.Persistent);
-
-            // lets force the content to be marshalled
-
-            command.BeforeMarshall(null);
-            if (command is TextMessage)
+            StompFrame frame = new StompFrame("SEND");
+            if(command.ResponseRequired)
             {
-                TextMessage textMessage = command as TextMessage;
-                ss.Content = encoding.GetBytes(textMessage.Text);
+                frame.SetProperty("receipt", command.CommandId);
             }
-            else
+            
+            frame.SetProperty("destination", StompHelper.ToStomp(command.Destination));
+            
+            if(command.ReplyTo != null)
             {
-                ss.Content = command.Content;
-                if(null != command.Content)
-                {
-                    ss.ContentLength = command.Content.Length;
-                }
-                else
-                {
-                    ss.ContentLength = 0;
-                }
+                frame.SetProperty("reply-to", StompHelper.ToStomp(command.ReplyTo));
+            }
+            if(command.CorrelationId != null )
+            {
+                frame.SetProperty("correlation-id", command.CorrelationId);
+            }
+            if(command.Expiration != 0)
+            {
+                frame.SetProperty("expires", command.Expiration);
+            }
+            if(command.Priority != 4)
+            {                
+                frame.SetProperty("priority", command.Priority);
+            }
+            if(command.Type != null)
+            {
+                frame.SetProperty("type", command.Type);
+            }
+            if(command.TransactionId!=null)
+            {
+                frame.SetProperty("transaction", StompHelper.ToStomp(command.TransactionId));
             }
 
+            frame.SetProperty("persistent", command.Persistent);
+
+            // Perform any Content Marshaling.
+            command.BeforeMarshall(this);
+            
+            // Store the Marshaled Content.
+            frame.Content = command.Content;
+
+            if(command is BytesMessage && command.Content != null && command.Content.Length > 0)
+            {
+                frame.SetProperty("content-length", command.Content.Length);
+            }
+
+            // Marshal all properties to the Frame.
             IPrimitiveMap map = command.Properties;
-            foreach (string key in map.Keys)
+            foreach(string key in map.Keys)
             {
-                ss.WriteHeader(key, map[key]);
+                frame.SetProperty(key, map[key]);
             }
-            ss.Flush();
+            
+            frame.ToStream(dataOut);
         }
 
-        protected virtual void WriteMessageAck(MessageAck command, StompFrameStream ss)
+        protected virtual void WriteMessageAck(MessageAck command, BinaryWriter dataOut)
         {
-            ss.WriteCommand(command, "ACK", true);
+            StompFrame frame = new StompFrame("SEND");
+            if(command.ResponseRequired)
+            {
+                frame.SetProperty("receipt", "ignore:" + command.CommandId);
+            }   
 
-            // TODO handle bulk ACKs?
-            ss.WriteHeader("message-id", StompHelper.ToStomp(command.LastMessageId));
+            frame.SetProperty("message-id", StompHelper.ToStomp(command.LastMessageId));
             if(command.TransactionId != null)
             {
-                ss.WriteHeader("transaction", StompHelper.ToStomp(command.TransactionId));
+                frame.SetProperty("transaction", StompHelper.ToStomp(command.TransactionId));
             }
 
-            ss.Flush();
+            frame.ToStream(dataOut);
         }
 
         protected virtual void SendCommand(Command command)
         {
-            if (transport == null)
+            if(transport == null)
             {
                 Tracer.Fatal("No transport configured so cannot return command: " + command);
             }
@@ -520,24 +493,9 @@ namespace Apache.NMS.Stomp.Protocol
             }
         }
 
-        protected virtual string RemoveHeader(IDictionary headers, string name)
-        {
-            object value = headers[name];
-            if (value == null)
-            {
-                return null;
-            }
-            else
-            {
-                headers.Remove(name);
-                return value.ToString();
-            }
-        }
-
-
         protected virtual string ToString(object value)
         {
-            if (value != null)
+            if(value != null)
             {
                 return value.ToString();
             }

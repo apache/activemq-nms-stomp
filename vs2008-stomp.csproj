@@ -8,6 +8,7 @@
     <ProjectGuid>{AA51947C-1370-44DC-8692-1C8EFC5945F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Apache.NMS.Stomp</AssemblyName>
+    <RootNamespace>Apache.NMS.Stomp</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -109,6 +110,7 @@
     <Compile Include="src\main\csharp\ConnectionClosedException.cs" />
     <Compile Include="src\main\csharp\Commands\ConnectionError.cs" />
     <Compile Include="src\main\csharp\Commands\RemoveSubscriptionInfo.cs" />
+    <Compile Include="src\main\csharp\Protocol\StompFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile\NMSKey.snk" />
@@ -120,6 +122,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy FileWidth="120" TabWidth="4" TabsToSpaces="True" NoTabsAfterNonTabs="False" RemoveTrailingWhitespace="True" EolMarker="Native" />
+          <StandardHeader Text="/*&#xA; * Licensed to the Apache Software Foundation (ASF) under one or more&#xA; * contributor license agreements.  See the NOTICE file distributed with&#xA; * this work for additional information regarding copyright ownership.&#xA; * The ASF licenses this file to You under the Apache License, Version 2.0&#xA; * (the &quot;License&quot;); you may not use this file except in compliance with&#xA; * the License.  You may obtain a copy of the License at&#xA; *&#xA; *     http://www.apache.org/licenses/LICENSE-2.0&#xA; *&#xA; * Unless required by applicable law or agreed to in writing, software&#xA; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&#xA; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA; * See the License for the specific language governing permissions and&#xA; * limitations under the License.&#xA; */&#xA;" inheritsSet="MITX11License" />
         </Policies>
       </Properties>
     </MonoDevelop>

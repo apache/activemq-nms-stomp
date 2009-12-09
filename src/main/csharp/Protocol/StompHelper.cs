@@ -123,6 +123,22 @@ namespace Apache.NMS.Stomp.Protocol
             }
         }
 
+        public static string ToStomp(AcknowledgementMode ackMode)
+        {
+            if(ackMode == AcknowledgementMode.ClientAcknowledge)
+            {
+                return "client";
+            }
+            else if(ackMode == AcknowledgementMode.IndividualAcknowledge)
+            {
+                return "client-individual";
+            }
+            else
+            {
+                return "auto";
+            }
+        }
+        
         public static string ToStomp(ConsumerId id)
         {
             return id.ConnectionId + ":" + id.SessionId + ":" + id.Value;

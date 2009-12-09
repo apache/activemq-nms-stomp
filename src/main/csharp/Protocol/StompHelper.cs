@@ -125,17 +125,13 @@ namespace Apache.NMS.Stomp.Protocol
 
         public static string ToStomp(AcknowledgementMode ackMode)
         {
-            if(ackMode == AcknowledgementMode.ClientAcknowledge)
-            {
-                return "client";
-            }
-            else if(ackMode == AcknowledgementMode.IndividualAcknowledge)
+            if(ackMode == AcknowledgementMode.IndividualAcknowledge)
             {
                 return "client-individual";
             }
             else
             {
-                return "auto";
+                return "client";
             }
         }
         

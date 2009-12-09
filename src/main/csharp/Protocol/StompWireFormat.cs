@@ -31,7 +31,6 @@ namespace Apache.NMS.Stomp.Protocol
     {
         private Encoding encoder = new UTF8Encoding();
         private ITransport transport;
-        private IDictionary consumers = Hashtable.Synchronized(new Hashtable());
 
         public StompWireFormat()
         {
@@ -301,9 +300,6 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty("activemq.retroactive", command.Retroactive);
             }
 
-            // TODO - The Session should do this one.
-            consumers[command.ConsumerId] = command.ConsumerId;
-            
             frame.ToStream(dataOut);
         }
 
@@ -321,59 +317,6 @@ namespace Apache.NMS.Stomp.Protocol
                 }                
                 frame.SetProperty("id", StompHelper.ToStomp(consumerId));
                 frame.ToStream(dataOut);
-                consumers.Remove(consumerId);
-            }
-            else if(id is SessionId)
-            {
-                // When a session is removed, it needs to remove it's consumers too.
-                // Find all the consumer that were part of the session.
-                SessionId sessionId = (SessionId) id;
-                ArrayList matches = new ArrayList();
-                foreach (DictionaryEntry entry in consumers)
-                {
-                    ConsumerId t = (ConsumerId) entry.Key;
-                    if( sessionId.ConnectionId==t.ConnectionId && sessionId.Value==t.SessionId )
-                    {
-                        matches.Add(t);
-                    }
-                }
-
-                bool unsubscribedConsumer = false;
-
-                // Un-subscribe them.
-                foreach(ConsumerId consumerId in matches)
-                {
-                    if(command.ResponseRequired)
-                    {
-                        frame.SetProperty("receipt", command.CommandId);
-                    }                
-                    frame.SetProperty("id", StompHelper.ToStomp(consumerId));
-                    frame.ToStream(dataOut);
-                    consumers.Remove(consumerId);
-                    unsubscribedConsumer = true;
-                }
-
-                if(!unsubscribedConsumer && command.ResponseRequired)
-                {
-                    if(command.ResponseRequired)
-                    {
-                        frame.SetProperty("receipt", "ignore:" + command.CommandId);
-                    }                
-                    frame.SetProperty("id", sessionId);
-                    frame.ToStream(dataOut);
-                }
-            }
-            else if(id is ConnectionId)
-            {
-                if(command.ResponseRequired)
-                {
-                    if(command.ResponseRequired)
-                    {
-                        frame.SetProperty("receipt", "ignore:" + command.CommandId);
-                    }   
-                    frame.SetProperty("id", id);
-                    frame.ToStream(dataOut);
-                }
             }
         }
 

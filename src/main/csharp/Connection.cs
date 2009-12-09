@@ -40,7 +40,6 @@ namespace Apache.NMS.Stomp
         private readonly object myLock = new object();
         private bool asyncSend = false;
         private bool alwaysSyncSend = false;
-        private bool asyncClose = true;
         private bool copyMessageOnSend = true;
         private bool connected = false;
         private bool closed = false;
@@ -97,18 +96,6 @@ namespace Apache.NMS.Stomp
         {
             get { return asyncSend; }
             set { asyncSend = value; }
-        }
-
-        /// <summary>
-        /// This property indicates whether or not async close is enabled.
-        /// When the connection is closed, it will either send a synchronous
-        /// DisposeOf command to the broker and wait for confirmation (if true),
-        /// or it will send the DisposeOf command asynchronously.
-        /// </summary>
-        public bool AsyncClose
-        {
-            get { return asyncClose; }
-            set { asyncClose = value; }
         }
 
         /// <summary>
@@ -271,7 +258,6 @@ namespace Apache.NMS.Stomp
         public ISession CreateSession(AcknowledgementMode sessionAcknowledgementMode)
         {
             SessionInfo info = CreateSessionInfo(sessionAcknowledgementMode);
-            SyncRequest(info, this.RequestTimeout);
             Session session = new Session(this, info, sessionAcknowledgementMode);
 
             // Set properties on session using parameters prefixed with "session."
@@ -329,7 +315,6 @@ namespace Apache.NMS.Stomp
 
                     if(connected)
                     {
-                        DisposeOf(ConnectionId);
                         ShutdownInfo shutdowninfo = new ShutdownInfo();
                         transport.Oneway(shutdowninfo);
                     }
@@ -435,37 +420,6 @@ namespace Apache.NMS.Stomp
             catch(Exception ex)
             {
                 throw NMSExceptionSupport.Create(ex);
-            }
-        }
-
-        private void DisposeOf(DataStructure objectId)
-        {
-            try
-            {
-                RemoveInfo command = new RemoveInfo();
-                command.ObjectId = objectId;
-                if(asyncClose)
-                {
-                    Tracer.Info("Asynchronously disposing of Connection.");
-                    if(connected)
-                    {
-                        transport.Oneway(command);
-                    }
-                    Tracer.Info("Oneway command sent to broker.");
-                }
-                else
-                {
-                    // Ensure that the object is disposed to avoid potential race-conditions
-                    // of trying to re-create the same object in the broker faster than
-                    // the broker can dispose of the object.  Allow up to 5 seconds to process.
-                    Tracer.Info("Synchronously disposing of Connection.");
-                    SyncRequest(command, TimeSpan.FromSeconds(5));
-                    Tracer.Info("Synchronously closed Connection.");
-                }
-            }
-            catch // (BrokerException)
-            {
-                // Ignore exceptions while shutting down.
             }
         }
 

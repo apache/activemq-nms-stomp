@@ -256,10 +256,6 @@ namespace Apache.NMS.Stomp
                 }
                 finally
                 {
-                    // Make sure we attempt to inform the broker this Session is done.
-                    RemoveInfo info = new RemoveInfo();
-                    info.ObjectId = this.info.SessionId;
-                    this.connection.Oneway(info);
                     this.connection = null;
                     this.closed = true;
                     this.closing = false;
@@ -342,7 +338,6 @@ namespace Apache.NMS.Stomp
             {
                 producer = new MessageProducer(this, command);
                 producers[producerId] = producer;
-                this.connection.Oneway(command);
             }
             catch(Exception)
             {
@@ -519,7 +514,7 @@ namespace Apache.NMS.Stomp
 
         public IMapMessage CreateMapMessage()
         {
-            return ConfigureMessage(new MapMessage()) as IMapMessage;
+            throw new NotSupportedException("No Object Message in Stomp");
         }
 
         public IBytesMessage CreateBytesMessage()
@@ -536,7 +531,7 @@ namespace Apache.NMS.Stomp
 
         public IStreamMessage CreateStreamMessage()
         {
-            return ConfigureMessage(new StreamMessage()) as IStreamMessage;
+            throw new NotSupportedException("No Object Message in Stomp");
         }
 
         public IObjectMessage CreateObjectMessage(object body)

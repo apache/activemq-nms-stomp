@@ -2,5 +2,6 @@
   <Settings activeconfig="Default" />
   <Config name="Default" binpathtype="Auto">
     <assembly path="Apache.NMS.Stomp.Test.dll" />
+    <assembly path="Apache.NMS.Test.dll" />
   </Config>
 </NUnitProject>

@@ -74,6 +74,11 @@ namespace Apache.NMS.Stomp.Protocol
 
         public void SetProperty(string name, Object value)
         {
+            if(value == null)
+            {
+                return;
+            }
+            
             this.Properties[name] = value.ToString();
         }
 

@@ -127,12 +127,17 @@ namespace Apache.NMS.Stomp.Protocol
                         text = text.Substring("ignore:".Length);
                     }
 
+                    Tracer.Debug("StompWireFormat - Received RESPONSE command: CorrelationId = " + text);
+                    
                     answer.CorrelationId = Int32.Parse(text);
                     return answer;
                 }
                 else if(command == "CONNECTED")
                 {
                     text = frame.RemoveProperty("response-id");
+
+                    Tracer.Debug("StompWireFormat - Received CONNECTED command: ResponseId = " + text);
+                    
                     if(text != null)
                     {
                         Response answer = new Response();
@@ -145,6 +150,8 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 string text = frame.RemoveProperty("receipt-id");
 
+                Tracer.Debug("StompWireFormat - Received ERROR command: CorrelationId = " + text);
+                
                 if(text != null && text.StartsWith("ignore:"))
                 {
                     Response answer = new Response();
@@ -167,6 +174,7 @@ namespace Apache.NMS.Stomp.Protocol
             }
             else if(command == "MESSAGE")
             {
+                Tracer.Debug("StompWireFormat - Received MESSAGE command");
                 return CreateMessage(frame);
             }
             
@@ -243,7 +251,7 @@ namespace Apache.NMS.Stomp.Protocol
             frame.SetProperty("client-id", command.ClientId);
             frame.SetProperty("login", command.UserName);
             frame.SetProperty("passcode", command.Password);
-            frame.SetProperty("request-id", command.CommandId.ToString());
+            frame.SetProperty("request-id", command.CommandId);
 
             frame.ToStream(dataOut);
         }

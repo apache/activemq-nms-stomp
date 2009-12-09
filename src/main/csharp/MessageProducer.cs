@@ -184,7 +184,6 @@ namespace Apache.NMS.Stomp
                 {
                     throw new ConnectionClosedException();
                 }
-
                 session.DoSend(stompMessage, this, this.RequestTimeout);
             }
         }

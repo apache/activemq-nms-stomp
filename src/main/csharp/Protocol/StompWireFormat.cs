@@ -104,6 +104,8 @@ namespace Apache.NMS.Stomp.Protocol
 
         public Object Unmarshal(BinaryReader dataIn)
         {
+            Tracer.Debug("StompWireFormat - Command Read in Progress...");
+            
             StompFrame frame = new StompFrame();
             frame.FromStream(dataIn);
             
@@ -249,9 +251,9 @@ namespace Apache.NMS.Stomp.Protocol
             StompFrame frame = new StompFrame("CONNECT");
 
             frame.SetProperty("client-id", command.ClientId);
-            frame.SetProperty("login", command.UserName);
-            frame.SetProperty("passcode", command.Password);
-            frame.SetProperty("request-id", command.CommandId);
+            //frame.SetProperty("login", command.UserName);
+            //frame.SetProperty("passcode", command.Password);
+            //frame.SetProperty("request-id", command.CommandId);
 
             frame.ToStream(dataOut);
         }

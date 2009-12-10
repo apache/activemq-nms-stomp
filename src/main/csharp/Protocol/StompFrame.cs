@@ -152,11 +152,9 @@ namespace Apache.NMS.Stomp.Protocol
         {
             do 
             {
-                Tracer.Debug("Attempting to read in new Command");
                 this.command = ReadLine(dataIn);
             }
             while(this.command == "");            
-            Tracer.Debug("Read new Command: " + this.command);
         }
 
         private void ReadHeaders(BinaryReader dataIn)
@@ -172,8 +170,6 @@ namespace Apache.NMS.Stomp.Protocol
                     string value = line.Substring(idx + 1);
                     
                     this.properties[key] = value;
-
-                    Tracer.Debug("StompFrame - Read Header: " + key + " = " + value);
                 }
                 else
                 {
@@ -221,14 +217,12 @@ namespace Apache.NMS.Stomp.Protocol
             while(true)
             {
                 int nextChar = dataIn.Read();
-                Tracer.Debug( "Value read: " + ((Int32)nextChar).ToString());
                 if(nextChar < 0)
                 {
                     throw new IOException("Peer closed the stream.");
                 }
                 if(nextChar == 10)
                 {
-                    Tracer.Debug("Read The end of Line");
                     break;
                 }
                 ms.WriteByte((byte)nextChar);

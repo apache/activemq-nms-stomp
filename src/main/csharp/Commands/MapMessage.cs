@@ -17,7 +17,6 @@
 
 using System;
 using System.IO;
-using System.IO.Compression;
 using Apache.NMS.Util;
 using Apache.NMS.Stomp.Protocol;
 

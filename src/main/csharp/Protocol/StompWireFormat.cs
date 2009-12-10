@@ -103,14 +103,11 @@ namespace Apache.NMS.Stomp.Protocol
         }
 
         public Object Unmarshal(BinaryReader dataIn)
-        {
-            Tracer.Debug("StompWireFormat - Command Read in Progress...");
-            
+        {            
             StompFrame frame = new StompFrame();
             frame.FromStream(dataIn);
             
             Object answer = CreateCommand(frame);
-            Tracer.Debug("StompWireFormat - Command received: " + answer);
             return answer;
         }
 
@@ -152,7 +149,7 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 string text = frame.RemoveProperty("receipt-id");
 
-                Tracer.Debug("StompWireFormat - Received ERROR command: CorrelationId = " + text);
+                Tracer.Debug("StompWireFormat - Received ERROR command:");
                 
                 if(text != null && text.StartsWith("ignore:"))
                 {
@@ -419,7 +416,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual void WriteMessageAck(MessageAck command, BinaryWriter dataOut)
         {
-            StompFrame frame = new StompFrame("SEND");
+            StompFrame frame = new StompFrame("ACK");
             if(command.ResponseRequired)
             {
                 frame.SetProperty("receipt", "ignore:" + command.CommandId);

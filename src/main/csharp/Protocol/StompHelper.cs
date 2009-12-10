@@ -255,6 +255,7 @@ namespace Apache.NMS.Stomp.Protocol
                 }
             }
             answer.ProducerId = ToProducerId(text);
+
             return answer;
         }
 

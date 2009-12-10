@@ -85,8 +85,8 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 
                     // As reported in AMQ-988 it appears that NetworkStream is not thread safe
                     // so lets use an instance for each of the 2 streams
-                    socketWriter = new EndianBinaryWriter(new NetworkStream(socket));
-                    socketReader = new EndianBinaryReader(new NetworkStream(socket));
+                    socketWriter = new BinaryWriter(new NetworkStream(socket));
+                    socketReader = new BinaryReader(new NetworkStream(socket));
 
                     // now lets create the background read thread
                     readThread = new Thread(new ThreadStart(ReadLoop));

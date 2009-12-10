@@ -34,7 +34,7 @@ namespace Apache.NMS.Stomp.Protocol
         /// Used to mark the End of the Frame.
         public const byte FRAME_TERMINUS = (byte) 0;
         
-        private string commoand;
+        private string command;
         private IDictionary properties = new Hashtable();
         private byte[] content;
 
@@ -46,7 +46,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         public StompFrame(string command)
         {
-            this.commoand = command;
+            this.command = command;
         }
         
         public byte[] Content
@@ -57,8 +57,8 @@ namespace Apache.NMS.Stomp.Protocol
 
         public string Command
         {
-            get { return this.commoand; }
-            set { this.commoand = value; }
+            get { return this.command; }
+            set { this.command = value; }
         }
 
         public IDictionary Properties
@@ -150,14 +150,13 @@ namespace Apache.NMS.Stomp.Protocol
 
         private void ReadCommandHeader(BinaryReader dataIn)
         {
-            string command;
             do 
             {
                 Tracer.Debug("Attempting to read in new Command");
-                command = ReadLine(dataIn);
+                this.command = ReadLine(dataIn);
             }
-            while(command == "");            
-            Tracer.Debug("Read new Command: " + command);
+            while(this.command == "");            
+            Tracer.Debug("Read new Command: " + this.command);
         }
 
         private void ReadHeaders(BinaryReader dataIn)

@@ -32,7 +32,7 @@ namespace Apache.NMS.Stomp.Protocol
 
             for(int idx = 0; idx < text.Length; idx++)
             {
-                if(char.IsNumber(text, idx))
+                if(char.IsNumber(text, idx) || text[idx] == '-')
                 {
                     sbtext.Append(text[idx]);
                 }
@@ -207,7 +207,7 @@ namespace Apache.NMS.Stomp.Protocol
                     answer.Value = ParseInt(text.Substring(idx + 1));
                     text = text.Substring(0, idx);
                     idx = text.LastIndexOf(':');
-                    if (idx >= 0)
+                    if(idx >= 0)
                     {
                         answer.SessionId = ParseInt(text.Substring(idx + 1));
                         text = text.Substring(0, idx);

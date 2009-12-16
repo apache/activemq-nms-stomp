@@ -109,6 +109,9 @@ namespace Apache.NMS.Stomp
             URISupport.CompositeData c = URISupport.parseComposite(uri);
             URISupport.SetProperties(connection, c.Parameters, "connection.");
 
+            // Apply any URI options to the Prefetch policy in the Connection.
+            URISupport.SetProperties(connection.PrefetchPolicy, c.Parameters, "nms.PrefetchPolicy.");
+
             connection.ITransport.Start();
             return connection;
         }

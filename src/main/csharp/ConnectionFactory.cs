@@ -89,7 +89,7 @@ namespace Apache.NMS.Stomp
         public IConnection CreateConnection(string userName, string password)
         {
             // Strip off the activemq prefix, if it exists.
-            Uri uri = new Uri(URISupport.stripPrefix(brokerUri.OriginalString, "activemq:"));
+            Uri uri = new Uri(URISupport.stripPrefix(brokerUri.OriginalString, "stomp:"));
 
             Tracer.InfoFormat("Connecting to: {0}", uri.ToString());
 

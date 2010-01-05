@@ -155,10 +155,25 @@ namespace Apache.NMS.Stomp
                 throw new Apache.NMS.InvalidDestinationException();
             }
 
+            Destination dest = null;
+
+            if(destination == this.info.Destination)
+            {
+                dest = destination as Destination;
+            }
+            else if(info.Destination == null)
+            {
+                dest = Destination.Transform(destination);
+            }
+            else
+            {
+                throw new NotSupportedException("This producer can only send messages to: " + this.info.Destination.PhysicalName);
+            }
+
             Message stompMessage = (Message) message;
 
             stompMessage.ProducerId = info.ProducerId;
-            stompMessage.FromDestination = destination;
+            stompMessage.FromDestination = dest;
             stompMessage.NMSDeliveryMode = deliveryMode;
             stompMessage.NMSPriority = priority;
 

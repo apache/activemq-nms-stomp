@@ -67,6 +67,10 @@ namespace Apache.NMS.Stomp
             {
                 this.transactionContext = new TransactionContext(this);
             }
+            else if(acknowledgementMode == AcknowledgementMode.DupsOkAcknowledge)
+            {
+                this.acknowledgementMode = AcknowledgementMode.AutoAcknowledge;
+            }
 
             this.executor = new SessionExecutor(this, this.consumers);
         }

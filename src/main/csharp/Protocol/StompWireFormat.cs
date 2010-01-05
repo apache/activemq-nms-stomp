@@ -202,9 +202,16 @@ namespace Apache.NMS.Stomp.Protocol
             message.CorrelationId = frame.RemoveProperty("correlation-id");
 
             Tracer.Debug("RECV - Inbound MessageId = " + frame.GetProperty("message-id"));
-            
+          
             message.MessageId = StompHelper.ToMessageId(frame.RemoveProperty("message-id"));
-            message.Persistent = StompHelper.ToBool(frame.RemoveProperty("persistent"), true);
+            message.Persistent = StompHelper.ToBool(frame.RemoveProperty("persistent"), false);
+
+            // If it came from NMS.Stomp we added this header to ensure its reported on the
+            // receiver side.
+			if(frame.HasProperty("NMSXDeliveryMode"))
+			{
+                message.Persistent = StompHelper.ToBool(frame.RemoveProperty("NMSXDeliveryMode"), false);
+            }
 
             if(frame.HasProperty("priority"))
             {
@@ -228,10 +235,17 @@ namespace Apache.NMS.Stomp.Protocol
                 if(value != null)
                 {
                     // lets coerce some standard header extensions
-                    if(key == "NMSXGroupSeq")
+                    if(key == "JMSXGroupSeq" || key == "NMSXGroupSeq")
                     {
                         value = Int32.Parse(value.ToString());
+		                message.Properties["NMSXGroupSeq"] = value;
+						continue;
                     }
+					else if(key == "JMSXGroupID" || key == "NMSXGroupID")
+					{
+		                message.Properties["NMSXGroupID"] = value;
+						continue;
+					}
                 }
                 message.Properties[key] = value;
             }
@@ -279,8 +293,15 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty("transaction", StompHelper.ToStomp(command.TransactionId));
             }
 
-            frame.SetProperty("persistent", command.Persistent);
+            frame.SetProperty("persistent", command.Persistent.ToString().ToLower());
+            frame.SetProperty("NMSXDeliveryMode", command.Persistent.ToString().ToLower());
 
+			if(command.NMSXGroupID != null)
+			{
+				frame.SetProperty("JMSXGroupID", command.NMSXGroupID);
+				frame.SetProperty("NMSXGroupID", command.NMSXGroupID);
+			}
+			
             // Perform any Content Marshaling.
             command.BeforeMarshall(this);
             
@@ -291,7 +312,7 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 frame.SetProperty("content-length", command.Content.Length);
             }
-
+			
             // Marshal all properties to the Frame.
             IPrimitiveMap map = command.Properties;
             foreach(string key in map.Keys)

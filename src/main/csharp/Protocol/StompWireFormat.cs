@@ -195,6 +195,10 @@ namespace Apache.NMS.Stomp.Protocol
                 message = new TextMessage(encoder.GetString(frame.Content, 0, frame.Content.Length));
             }
 
+            // Remove any receipt header we might have attached if the outbound command was
+            // sent with response required set to true
+            frame.RemoveProperty("receipt");
+
             message.Type = frame.RemoveProperty("type");
             message.Destination = StompHelper.ToDestination(frame.RemoveProperty("destination"));
             message.ReplyTo = StompHelper.ToDestination(frame.RemoveProperty("reply-to"));
@@ -300,8 +304,10 @@ namespace Apache.NMS.Stomp.Protocol
 			{
 				frame.SetProperty("JMSXGroupID", command.NMSXGroupID);
 				frame.SetProperty("NMSXGroupID", command.NMSXGroupID);
+                frame.SetProperty("JMSXGroupSeq", command.NMSXGroupSeq);
+                frame.SetProperty("NMSXGroupSeq", command.NMSXGroupSeq);
 			}
-			
+
             // Perform any Content Marshaling.
             command.BeforeMarshall(this);
             
@@ -319,7 +325,7 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 frame.SetProperty(key, map[key]);
             }
-            
+
             frame.ToStream(dataOut);
         }
 

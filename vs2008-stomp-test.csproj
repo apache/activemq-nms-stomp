@@ -80,5 +80,7 @@
     <Compile Include="src\test\csharp\ConnectionTest.cs" />
     <Compile Include="src\test\csharp\MessageTest.cs" />
     <Compile Include="src\test\csharp\ProducerTest.cs" />
+    <Compile Include="src\test\csharp\TextMessageTest.cs" />
+    <Compile Include="src\test\csharp\ConsumerTest.cs" />
   </ItemGroup>
 </Project>

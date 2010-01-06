@@ -86,5 +86,10 @@
     <Compile Include="src\test\csharp\NMSPropertyTest.cs" />
     <Compile Include="src\test\csharp\TempDestinationTest.cs" />
     <Compile Include="src\test\csharp\TransactionTest.cs" />
+    <Compile Include="src\test\csharp\StompRedeliveryPolicyTest.cs" />
+    <Compile Include="src\test\csharp\IndividualAckTest.cs" />
+    <Compile Include="src\test\csharp\ExclusiveConsumerTest.cs" />
+    <Compile Include="src\test\csharp\Util\MessageDispatchChannelTest.cs" />
+    <Compile Include="src\test\csharp\MessageListenerRedeliveryTest.cs" />
   </ItemGroup>
 </Project>

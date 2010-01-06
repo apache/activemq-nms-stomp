@@ -112,6 +112,9 @@ namespace Apache.NMS.Stomp
             // Apply any URI options to the Prefetch policy in the Connection.
             URISupport.SetProperties(connection.PrefetchPolicy, c.Parameters, "nms.PrefetchPolicy.");
 
+            // Apply any URI options to the Redelivery policy in the Connection.
+            URISupport.SetProperties(connection.RedeliveryPolicy, c.Parameters, "nms.RedeliveryPolicy.");
+
             connection.ITransport.Start();
             return connection;
         }

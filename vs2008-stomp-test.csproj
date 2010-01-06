@@ -74,5 +74,11 @@
   </ProjectExtensions>
   <ItemGroup>
     <Compile Include="src\test\csharp\StompHelperTest.cs" />
+    <Compile Include="src\test\csharp\AsyncConsumeTest.cs" />
+    <Compile Include="src\test\csharp\BadConsumeTest.cs" />
+    <Compile Include="src\test\csharp\BytesMessageTest.cs" />
+    <Compile Include="src\test\csharp\ConnectionTest.cs" />
+    <Compile Include="src\test\csharp\MessageTest.cs" />
+    <Compile Include="src\test\csharp\ProducerTest.cs" />
   </ItemGroup>
 </Project>

@@ -82,5 +82,6 @@
     <Compile Include="src\test\csharp\ProducerTest.cs" />
     <Compile Include="src\test\csharp\TextMessageTest.cs" />
     <Compile Include="src\test\csharp\ConsumerTest.cs" />
+    <Compile Include="src\test\csharp\DurableTest.cs" />
   </ItemGroup>
 </Project>

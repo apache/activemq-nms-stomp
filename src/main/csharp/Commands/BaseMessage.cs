@@ -61,7 +61,7 @@ namespace Apache.NMS.Stomp.Commands
             // this method is an override.
             Message o = (Message) base.Clone();
 
-            if( this.messageId != null )
+            if(this.messageId != null)
             {
                 o.MessageId = (MessageId) this.messageId.Clone();
             }

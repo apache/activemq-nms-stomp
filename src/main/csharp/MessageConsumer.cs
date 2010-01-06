@@ -755,40 +755,10 @@ namespace Apache.NMS.Stomp
                     if(this.redeliveryPolicy.MaximumRedeliveries >= 0 &&
                        lastMd.Message.RedeliveryCounter > this.redeliveryPolicy.MaximumRedeliveries)
                     {
-//                        // We need to NACK the messages so that they get sent to the DLQ.
-//                        MessageAck ack = new MessageAck();
-//
-//                        ack.AckType = (byte) AckType.PoisonAck;
-//                        ack.ConsumerId = this.info.ConsumerId;
-//                        ack.Destination = lastMd.Destination;
-//                        ack.LastMessageId = lastMd.Message.MessageId;
-//                        ack.MessageCount = this.dispatchedMessages.Count;
-//                        ack.FirstMessageId = firstMsgId;
-//
-//                        this.session.Connection.Oneway(ack);
-//
-//                        // Adjust the window size.
-//                        additionalWindowSize = Math.Max(0, this.additionalWindowSize - this.dispatchedMessages.Count);
-
                         this.redeliveryDelay = 0;
                     }
                     else
                     {
-//                        // We only send a RedeliveryAck after the first redelivery
-//                        if(currentRedeliveryCount > 0)
-//                        {
-//                            MessageAck ack = new MessageAck();
-//
-//                            ack.AckType = (byte) AckType.RedeliveredAck;
-//                            ack.ConsumerId = this.info.ConsumerId;
-//                            ack.Destination = lastMd.Destination;
-//                            ack.LastMessageId = lastMd.Message.MessageId;
-//                            ack.MessageCount = this.dispatchedMessages.Count;
-//                            ack.FirstMessageId = firstMsgId;
-//
-//                            this.session.Connection.Oneway(ack);
-//                        }
-
                         // stop the delivery of messages.
                         this.unconsumedMessages.Stop();
 

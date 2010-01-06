@@ -232,6 +232,13 @@ namespace Apache.NMS.Stomp.Protocol
                 message.Expiration = Int64.Parse(frame.RemoveProperty("expires"));
             }
 
+            if(frame.RemoveProperty("redelivered") != null)
+            {
+                // We aren't told how many times that the message was redelivered so if it
+                // is tagged as redelivered we always set the counter to one.
+                message.RedeliveryCounter = 1;
+            }
+
             // now lets add the generic headers
             foreach(string key in frame.Properties.Keys)
             {
@@ -258,6 +265,7 @@ namespace Apache.NMS.Stomp.Protocol
             dispatch.Message = message;
             dispatch.ConsumerId = message.TargetConsumerId;
             dispatch.Destination = message.Destination;
+            dispatch.RedeliveryCounter = message.RedeliveryCounter;
             
             return dispatch;
         }

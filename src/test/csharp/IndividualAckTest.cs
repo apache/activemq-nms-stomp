@@ -73,7 +73,7 @@ namespace Apache.NMS.Stomp.Test
             session.Close();
         }
 
-        //[Test]
+        [Test]
         public void TestLastMessageAcked()
         {
             ISession session = connection.CreateSession(AcknowledgementMode.IndividualAcknowledge);
@@ -88,11 +88,11 @@ namespace Apache.NMS.Stomp.Test
 
             // Consume the message...
             IMessageConsumer consumer = session.CreateConsumer(queue);
-            IMessage msg = consumer.Receive(TimeSpan.FromMilliseconds(1000));
+            ITextMessage msg = consumer.Receive(TimeSpan.FromMilliseconds(1000)) as ITextMessage;
             Assert.IsNotNull(msg);
-            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000));
+            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000)) as ITextMessage;
             Assert.IsNotNull(msg);
-            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000));
+            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000)) as ITextMessage;
             Assert.IsNotNull(msg);
             msg.Acknowledge();
 
@@ -102,13 +102,13 @@ namespace Apache.NMS.Stomp.Test
 
             // Attempt to Consume the message...
             consumer = session.CreateConsumer(queue);
-            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000));
+            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000)) as ITextMessage;
             Assert.IsNotNull(msg);
-            Assert.AreEqual(msg1,msg);
-            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000));
+            Assert.AreEqual(msg1.Text, msg.Text);
+            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000)) as ITextMessage;
             Assert.IsNotNull(msg);
-            Assert.AreEqual(msg2,msg);
-            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000));
+            Assert.AreEqual(msg2.Text, msg.Text);
+            msg = consumer.Receive(TimeSpan.FromMilliseconds(1000)) as ITextMessage;
             Assert.IsNull(msg);
             session.Close();
         }

@@ -16,6 +16,7 @@
  */
 
 using System;
+using Apache.NMS.Stomp.Util;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Transport;
 using Apache.NMS;
@@ -30,13 +31,21 @@ namespace Apache.NMS.Stomp
     public class ConnectionFactory : IConnectionFactory
     {
         public const string DEFAULT_BROKER_URL = "tcp://localhost:61613";
-        public const string ENV_BROKER_URL = "STOMP_BROKER_URL";
+        public const string ENV_BROKER_URL = "ACTIVEMQ_BROKER_URL";
 
         private static event ExceptionListener onException;
         private Uri brokerUri;
         private string connectionUserName;
         private string connectionPassword;
         private string clientId;
+        private string clientIdPrefix;
+        private IdGenerator clientIdGenerator;
+
+        private bool copyMessageOnSend = true;
+        private bool asyncSend;
+        private bool alwaysSyncSend;
+        private bool sendAcksAsync=true;
+        private AcknowledgementMode acknowledgementMode = AcknowledgementMode.AutoAcknowledge;
 
         private IRedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         private PrefetchPolicy prefetchPolicy = new PrefetchPolicy();
@@ -77,8 +86,8 @@ namespace Apache.NMS.Stomp
 
         public ConnectionFactory(Uri brokerUri, string clientID)
         {
-            this.brokerUri = brokerUri;
-            this.clientId = clientID;
+            this.BrokerUri = brokerUri;
+            this.ClientId = clientID;
         }
 
         public IConnection CreateConnection()
@@ -88,38 +97,60 @@ namespace Apache.NMS.Stomp
 
         public IConnection CreateConnection(string userName, string password)
         {
-            // Strip off the activemq prefix, if it exists.
-            Uri uri = new Uri(URISupport.stripPrefix(brokerUri.OriginalString, "stomp:"));
+            Connection connection = null;
 
-            Tracer.InfoFormat("Connecting to: {0}", uri.ToString());
+            try
+            {
+                // Strip off the activemq prefix, if it exists.
+                Uri uri = new Uri(URISupport.stripPrefix(brokerUri.OriginalString, "stomp:"));
 
-            ConnectionInfo info = CreateConnectionInfo(userName, password);
-            ITransport transport = TransportFactory.CreateTransport(uri);
-            Connection connection = new Connection(uri, transport, info);
+                Tracer.InfoFormat("Connecting to: {0}", uri.ToString());
 
-            // Set the Factory level configuration to the Connection, this can be overriden by
-            // the params on the Connection URI so we do this before applying the params.
-            connection.RedeliveryPolicy = this.redeliveryPolicy.Clone() as IRedeliveryPolicy;
-            connection.PrefetchPolicy = this.prefetchPolicy.Clone() as PrefetchPolicy;
+                ITransport transport = TransportFactory.CreateTransport(uri);
 
-            // Set properties on connection using parameters prefixed with "connection."
-            // Since this could be a composite Uri, assume the connection-specific parameters
-            // are associated with the outer-most specification of the composite Uri. What's nice
-            // is that this works with simple Uri as well.
-            URISupport.CompositeData c = URISupport.parseComposite(uri);
-            URISupport.SetProperties(connection, c.Parameters, "connection.");
+                connection = new Connection(uri, transport, this.ClientIdGenerator);
 
-            // Apply any URI options to the Prefetch policy in the Connection.
-            URISupport.SetProperties(connection.PrefetchPolicy, c.Parameters, "nms.PrefetchPolicy.");
+                ConfigureConnection(connection);
 
-            // Apply any URI options to the Redelivery policy in the Connection.
-            URISupport.SetProperties(connection.RedeliveryPolicy, c.Parameters, "nms.RedeliveryPolicy.");
+                connection.UserName = this.connectionUserName;
+                connection.Password = this.connectionPassword;
 
-            connection.ITransport.Start();
-            return connection;
+                if(this.clientId != null)
+                {
+                    connection.DefaultClientId = this.clientId;
+                }
+
+                connection.ITransport.Start();
+
+                return connection;
+            }
+            catch(NMSException e)
+            {
+                try
+                {
+                    connection.Close();
+                }
+                catch
+                {
+                }
+
+                throw e;
+            }
+            catch(Exception e)
+            {
+                try
+                {
+                    connection.Close();
+                }
+                catch
+                {
+                }
+
+                throw NMSExceptionSupport.Create("Could not connect to broker URL: " + this.brokerUri + ". Reason: " + e.Message, e);
+            }
         }
 
-        // Properties
+        #region ConnectionFactory Properties
 
         /// <summary>
         /// Get/or set the broker Uri.
@@ -127,7 +158,17 @@ namespace Apache.NMS.Stomp
         public Uri BrokerUri
         {
             get { return brokerUri; }
-            set { brokerUri = value; }
+            set
+            {
+                brokerUri = value;
+
+                Uri uri = new Uri(URISupport.stripPrefix(brokerUri.OriginalString, "stomp:"));
+
+                URISupport.CompositeData c = URISupport.parseComposite(uri);
+                URISupport.SetProperties(this, c.Parameters, "connection.");
+                URISupport.SetProperties(this.PrefetchPolicy, c.Parameters, "nms.PrefetchPolicy.");
+                URISupport.SetProperties(this.RedeliveryPolicy, c.Parameters, "nms.RedeliveryPolicy.");
+            }
         }
 
         public string UserName
@@ -148,6 +189,53 @@ namespace Apache.NMS.Stomp
             set { clientId = value; }
         }
 
+        public string ClientIdPrefix
+        {
+            get { return clientIdPrefix; }
+            set { clientIdPrefix = value; }
+        }
+
+        public bool CopyMessageOnSend
+        {
+            get { return copyMessageOnSend; }
+            set { copyMessageOnSend = value; }
+        }
+
+        public bool AlwaysSyncSend
+        {
+            get { return alwaysSyncSend; }
+            set { alwaysSyncSend = value; }
+        }
+
+        public bool SendAcksAsync
+        {
+            get { return sendAcksAsync; }
+            set { sendAcksAsync = value; }
+        }
+
+        public bool AsyncSend
+        {
+            get { return asyncSend; }
+            set { asyncSend = value; }
+        }
+
+        public string AckMode
+        {
+            set { this.acknowledgementMode = NMSConvert.ToAcknowledgementMode(value); }
+        }
+
+        public AcknowledgementMode AcknowledgementMode
+        {
+            get { return acknowledgementMode; }
+            set { this.acknowledgementMode = value; }
+        }
+
+        public PrefetchPolicy PrefetchPolicy
+        {
+            get { return this.prefetchPolicy; }
+            set { this.prefetchPolicy = value; }
+        }
+
         public IRedeliveryPolicy RedeliveryPolicy
         {
             get { return this.redeliveryPolicy; }
@@ -156,6 +244,30 @@ namespace Apache.NMS.Stomp
                 if(value != null)
                 {
                     this.redeliveryPolicy = value;
+                }
+            }
+        }
+
+        public IdGenerator ClientIdGenerator
+        {
+            set { this.clientIdGenerator = value; }
+            get
+            {
+                lock(this)
+                {
+                    if(this.clientIdGenerator == null)
+                    {
+                        if(this.clientIdPrefix != null)
+                        {
+                            this.clientIdGenerator = new IdGenerator(this.clientIdPrefix);
+                        }
+                        else
+                        {
+                            this.clientIdGenerator = new IdGenerator();
+                        }
+                    }
+
+                    return this.clientIdGenerator;
                 }
             }
         }
@@ -172,23 +284,17 @@ namespace Apache.NMS.Stomp
             }
         }
 
-        protected virtual ConnectionInfo CreateConnectionInfo(string userName, string password)
+        #endregion
+
+        protected virtual void ConfigureConnection(Connection connection)
         {
-            ConnectionInfo answer = new ConnectionInfo();
-            ConnectionId connectionId = new ConnectionId();
-            connectionId.Value = CreateNewGuid();
-
-            answer.ConnectionId = connectionId;
-            answer.UserName = userName;
-            answer.Password = password;
-            answer.ClientId = clientId ?? CreateNewGuid();
-
-            return answer;
-        }
-
-        protected static string CreateNewGuid()
-        {
-            return Guid.NewGuid().ToString();
+            connection.AsyncSend = this.AsyncSend;
+            connection.CopyMessageOnSend = this.CopyMessageOnSend;
+            connection.AlwaysSyncSend = this.AlwaysSyncSend;
+            connection.SendAcksAsync = this.SendAcksAsync;
+            connection.AcknowledgementMode = this.acknowledgementMode;
+            connection.RedeliveryPolicy = this.redeliveryPolicy.Clone() as IRedeliveryPolicy;
+            connection.PrefetchPolicy = this.prefetchPolicy.Clone() as PrefetchPolicy;
         }
 
         protected static void ExceptionHandler(Exception ex)

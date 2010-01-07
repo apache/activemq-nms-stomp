@@ -20,6 +20,7 @@ using System.Collections;
 using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Transport;
+using Apache.NMS.Stomp.Util;
 using Apache.NMS;
 using Apache.NMS.Util;
 
@@ -30,17 +31,25 @@ namespace Apache.NMS.Stomp
     /// </summary>
     public class Connection : IConnection
     {
+        private static readonly IdGenerator CONNECTION_ID_GENERATOR = new IdGenerator();
+
         private readonly Uri brokerUri;
         private ITransport transport;
         private readonly ConnectionInfo info;
+
         private AcknowledgementMode acknowledgementMode = AcknowledgementMode.AutoAcknowledge;
+        private bool asyncSend = false;
+        private bool alwaysSyncSend = false;
+        private bool copyMessageOnSend = true;
+        private bool sendAcksAsync = false;
+        private IRedeliveryPolicy redeliveryPolicy;
+        private PrefetchPolicy prefetchPolicy = new PrefetchPolicy();
+
+        private bool userSpecifiedClientID;
         private TimeSpan requestTimeout;
         private readonly IList sessions = ArrayList.Synchronized(new ArrayList());
         private readonly IDictionary dispatchers = Hashtable.Synchronized(new Hashtable());
         private readonly object myLock = new object();
-        private bool asyncSend = false;
-        private bool alwaysSyncSend = false;
-        private bool copyMessageOnSend = true;
         private bool connected = false;
         private bool closed = false;
         private bool closing = false;
@@ -50,19 +59,25 @@ namespace Apache.NMS.Stomp
         private readonly Atomic<bool> started = new Atomic<bool>(false);
         private ConnectionMetaData metaData = null;
         private bool disposed = false;
-        private IRedeliveryPolicy redeliveryPolicy;
-        private PrefetchPolicy prefetchPolicy = new PrefetchPolicy();
+        private IdGenerator clientIdGenerator;
 
-        public Connection(Uri connectionUri, ITransport transport, ConnectionInfo info)
+        public Connection(Uri connectionUri, ITransport transport, IdGenerator clientIdGenerator)
         {
             this.brokerUri = connectionUri;
-            this.info = info;
             this.requestTimeout = transport.RequestTimeout;
+            this.clientIdGenerator = clientIdGenerator;
+
             this.transport = transport;
             this.transport.Command = new CommandHandler(OnCommand);
             this.transport.Exception = new ExceptionHandler(OnException);
             this.transport.Interrupted = new InterruptedHandler(OnTransportInterrupted);
             this.transport.Resumed = new ResumedHandler(OnTransportResumed);
+
+            ConnectionId id = new ConnectionId();
+            id.Value = CONNECTION_ID_GENERATOR.GenerateId();
+
+            this.info = new ConnectionInfo();
+            this.info.ConnectionId = id;
         }
 
         ~Connection()
@@ -88,6 +103,18 @@ namespace Apache.NMS.Stomp
         public event ConnectionResumedListener ConnectionResumedListener;
 
         #region Properties
+
+        public String UserName
+        {
+            get { return this.info.UserName; }
+            set { this.info.UserName = value; }
+        }
+
+        public String Password
+        {
+            get { return this.info.Password; }
+            set { this.info.Password = value; }
+        }
 
         /// <summary>
         /// This property indicates whether or not async send is enabled.
@@ -134,6 +161,17 @@ namespace Apache.NMS.Stomp
             set { copyMessageOnSend = value; }
         }
 
+        /// <summary>
+        /// This property indicates whether or not async sends are used for
+        /// message acknowledgement messages.  Sending Acks async can improve
+        /// performance but may decrease reliability.
+        /// </summary>
+        public bool SendAcksAsync
+        {
+            get { return sendAcksAsync; }
+            set { sendAcksAsync = value; }
+        }
+
         public IConnectionMetaData MetaData
         {
             get { return this.metaData ?? (this.metaData = new ConnectionMetaData()); }
@@ -167,11 +205,26 @@ namespace Apache.NMS.Stomp
             get { return info.ClientId; }
             set
             {
-                if(connected)
+                if(this.connected)
                 {
                     throw new NMSException("You cannot change the ClientId once the Connection is connected");
                 }
-                info.ClientId = value;
+
+                this.info.ClientId = value;
+                this.userSpecifiedClientID = true;
+                CheckConnected();
+            }
+        }
+
+        /// <summary>
+        /// The Default Client Id used if the ClientId property is not set explicity.
+        /// </summary>
+        public string DefaultClientId
+        {
+            set
+            {
+                this.info.ClientId = value;
+                this.userSpecifiedClientID = true;
             }
         }
 
@@ -432,6 +485,11 @@ namespace Apache.NMS.Stomp
 
             if(!connected)
             {
+                if(!this.userSpecifiedClientID)
+                {
+                    this.info.ClientId = this.clientIdGenerator.GenerateId();
+                }
+
                 connected = true;
                 // now lets send the connection and see if we get an ack/nak
                 if(null == SyncRequest(info))

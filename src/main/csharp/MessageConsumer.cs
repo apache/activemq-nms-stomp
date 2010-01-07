@@ -282,7 +282,7 @@ namespace Apache.NMS.Stomp
             ack.MessageCount = 1;
 
             Tracer.Debug("Sending Individual Ack for MessageId: " + ack.LastMessageId.ToString());
-            this.session.Connection.Oneway(ack);
+            this.session.SendAck(ack);
         }
 
         protected void DoNothingAcknowledge(Message message)
@@ -344,7 +344,7 @@ namespace Apache.NMS.Stomp
 
                     try
                     {
-                        this.session.Connection.Oneway(ackToSend);
+                        this.session.SendAck(ackToSend);
                     }
                     catch(Exception e)
                     {
@@ -599,8 +599,8 @@ namespace Apache.NMS.Stomp
 			                ack.Destination = dispatch.Destination;
 			                ack.LastMessageId = dispatch.Message.MessageId;
 			                ack.MessageCount = 1;
-			
-                            this.session.Connection.Oneway(ack);
+
+                            this.session.SendAck(ack);
                         }
 						
                         this.deliveringAcks.Value = false;
@@ -678,7 +678,7 @@ namespace Apache.NMS.Stomp
 
             if((0.5 * this.info.PrefetchSize) <= (this.deliveredCounter - this.additionalWindowSize))
             {
-                this.session.Connection.Oneway(pendingAck);
+                this.session.SendAck(pendingAck);
                 this.pendingAck = null;
                 this.deliveredCounter = 0;
                 this.additionalWindowSize = 0;
@@ -703,7 +703,7 @@ namespace Apache.NMS.Stomp
                     ack.TransactionId = this.session.TransactionContext.TransactionId;
                 }
 
-                this.session.Connection.Oneway(ack);
+                this.session.SendAck(ack);
                 this.pendingAck = null;
 
                 // Adjust the counters

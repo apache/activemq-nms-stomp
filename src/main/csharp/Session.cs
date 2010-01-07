@@ -788,6 +788,23 @@ namespace Apache.NMS.Stomp
             return message;
         }
 
+        internal void SendAck(MessageAck ack)
+        {
+            this.SendAck(ack, false);
+        }
+
+        internal void SendAck(MessageAck ack, bool lazy)
+        {
+            if(lazy || connection.SendAcksAsync || this.IsTransacted )
+            {
+                this.connection.Oneway(ack);
+            }
+            else
+            {
+                this.connection.SyncRequest(ack);
+            }
+        }
+        
         /// <summary>
         /// Prevents message from throwing an exception if a client calls Acknoweldge on
         /// a message that is part of a transaction either being produced or consumed.  The

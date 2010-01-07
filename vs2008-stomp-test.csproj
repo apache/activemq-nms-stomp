@@ -98,5 +98,7 @@
     <Compile Include="src\test\csharp\Commands\CommandTest.cs" />
     <Compile Include="src\test\csharp\Commands\MessageTest.cs" />
     <Compile Include="src\test\csharp\Commands\TextMessageTest.cs" />
+    <Compile Include="src\test\csharp\NMSConnectionFactoryTest.cs" />
+    <Compile Include="src\test\csharp\Threads\DedicatedTaskRunnerTest.cs" />
   </ItemGroup>
 </Project>

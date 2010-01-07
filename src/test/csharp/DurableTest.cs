@@ -75,6 +75,8 @@ namespace Apache.NMS.Stomp.Test
                             session.Commit();
                         }
 
+                        Thread.Sleep(1000);
+
                         consumer = consumeSession.CreateDurableConsumer(topic, CONSUMER_ID, null, false);
                         ITextMessage msg = consumer.Receive(TimeSpan.FromMilliseconds(1000)) as ITextMessage;
                         msg.Acknowledge();
@@ -141,6 +143,10 @@ namespace Apache.NMS.Stomp.Test
 
                         // Change the subscription.
                         consumer.Dispose();
+
+                        // Stomp connection at broker needs some time to cleanup.
+                        Thread.Sleep(1000);
+
                         consumer = session.CreateDurableConsumer(topic, CONSUMER_ID, "color='blue'", false);
 
                         sendMessage = session.CreateTextMessage("2nd");

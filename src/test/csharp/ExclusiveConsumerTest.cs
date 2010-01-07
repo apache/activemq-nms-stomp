@@ -33,7 +33,7 @@ namespace Apache.NMS.Stomp.Test
 
         private IConnection createConnection(bool start)
         {
-            IConnection conn = CreateConnection(TEST_CLIENT_ID);
+            IConnection conn = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next());
             if(start)
             {
                 conn.Start();
@@ -305,7 +305,7 @@ namespace Apache.NMS.Stomp.Test
             ISession exclusiveSession = null;
             ISession fallbackSession = null;
             ISession senderSession = null;
-
+            
             try
             {
                 exclusiveSession = conn.CreateSession(AcknowledgementMode.AutoAcknowledge);

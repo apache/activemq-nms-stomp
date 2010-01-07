@@ -94,5 +94,9 @@
     <Compile Include="src\test\csharp\StompTopicTransactionTest.cs" />
     <Compile Include="src\test\csharp\StompTransactionTestSupport.cs" />
     <Compile Include="src\test\csharp\StompQueueTransactionTest.cs" />
+    <Compile Include="src\test\csharp\Commands\BytesMessageTest.cs" />
+    <Compile Include="src\test\csharp\Commands\CommandTest.cs" />
+    <Compile Include="src\test\csharp\Commands\MessageTest.cs" />
+    <Compile Include="src\test\csharp\Commands\TextMessageTest.cs" />
   </ItemGroup>
 </Project>

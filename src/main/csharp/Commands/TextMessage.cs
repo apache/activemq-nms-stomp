@@ -65,14 +65,7 @@ namespace Apache.NMS.Stomp.Commands
         {
             get
             {
-                try
-                {
-                    return this.text;
-                }
-                catch(IOException ex)
-                {
-                    throw NMSExceptionSupport.Create(ex);
-                }
+                return this.text;
             }
 
             set

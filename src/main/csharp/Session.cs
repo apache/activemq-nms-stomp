@@ -650,6 +650,7 @@ namespace Apache.NMS.Stomp
             answer.DispatchAsync = this.DispatchAsync;
             answer.Retroactive = this.Retroactive;
             answer.MaximumPendingMessageLimit = this.connection.PrefetchPolicy.MaximumPendingMessageLimit;
+            answer.AckMode = this.AcknowledgementMode;
 
             if(destination is ITopic || destination is ITemporaryTopic)
             {

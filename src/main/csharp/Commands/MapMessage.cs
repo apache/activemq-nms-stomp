@@ -41,10 +41,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public override bool ReadOnlyBody
         {
-            get
-            {
-                return base.ReadOnlyBody;
-            }
+            get { return base.ReadOnlyBody; }
 
             set
             {
@@ -64,20 +61,24 @@ namespace Apache.NMS.Stomp.Commands
             {
                 if(this.body == null)
                 {
-                    if(this.Content != null && this.Content.Length > 0)
-                    {
-                        MemoryStream buffer = new MemoryStream(this.Content);
-                        this.body = PrimitiveMap.Unmarshal(buffer);
-                    }
-                    else
-                    {
-                        this.body = new PrimitiveMap();
-                    }
-
+                    this.body = new PrimitiveMap();
                     this.typeConverter = new PrimitiveMapInterceptor(this, this.body);
                 }
 
                 return this.typeConverter;
+            }
+
+            set
+            {
+                this.body = value as PrimitiveMap;
+                if(value != null)
+                {
+                    this.typeConverter = new PrimitiveMapInterceptor(this, value);
+                }
+                else
+                {
+                    this.typeConverter = null;
+                }
             }
         }
 

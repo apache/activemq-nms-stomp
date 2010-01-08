@@ -29,25 +29,23 @@ namespace Apache.NMS.Stomp.Test
         protected static string DESTINATION_NAME = "BytesMessageDestination";
         protected static string TEST_CLIENT_ID = "BytesMessageClientId";
         protected byte[] msgContent = {1, 2, 3, 4, 5, 6, 7, 8};
-        protected int postfix;
 
         [SetUp]
         public override void SetUp()
         {
-            this.postfix = new Random().Next();
         }
 
         [TearDown]
         public override void TearDown()
         {
         }
-
+        
         [RowTest]
         [Row(MsgDeliveryMode.Persistent)]
         [Row(MsgDeliveryMode.NonPersistent)]
         public void SendReceiveBytesMessage(MsgDeliveryMode deliveryMode)
         {
-            using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + this.postfix))
+            using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))
@@ -76,7 +74,7 @@ namespace Apache.NMS.Stomp.Test
         [Row(MsgDeliveryMode.NonPersistent)]
         public void SendReceiveBytesMessageContentTest(MsgDeliveryMode deliveryMode)
         {
-            using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + this.postfix))
+            using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))

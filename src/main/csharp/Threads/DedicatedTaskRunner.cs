@@ -26,6 +26,8 @@ namespace Apache.NMS.Stomp.Threads
     public class DedicatedTaskRunner : TaskRunner
     {
         private readonly Mutex mutex = new Mutex();
+        private readonly AutoResetEvent waiter = new AutoResetEvent(false);
+        private readonly ManualResetEvent isShutdown = new ManualResetEvent(true);
         private Thread theThread = null;
         private Task task = null;
 
@@ -49,25 +51,46 @@ namespace Apache.NMS.Stomp.Threads
 
         public void Shutdown(TimeSpan timeout)
         {
-            lock(mutex)
+            Monitor.Enter(this.mutex);
+
+            this.shutdown = true;
+            this.pending = true;
+
+            this.waiter.Set();
+
+            // Wait till the thread stops ( no need to wait if shutdown
+            // is called from thread that is shutting down)
+            if(Thread.CurrentThread != this.theThread && !this.terminated)
             {
-                this.shutdown = true;
-                this.pending = true;
-
-                Monitor.PulseAll(this.mutex);
-
-                // Wait till the thread stops ( no need to wait if shutdown
-                // is called from thread that is shutting down)
-                if(Thread.CurrentThread != this.theThread && !this.terminated)
-                {
-                    Monitor.Wait(this.mutex, timeout);
-                }
+                Monitor.Exit(this.mutex);
+                this.isShutdown.WaitOne(timeout.Milliseconds);
+            }
+            else
+            {
+                Monitor.Exit(this.mutex);
             }
         }
 
         public void Shutdown()
         {
-            this.Shutdown(TimeSpan.FromMilliseconds(-1));
+            Monitor.Enter(this.mutex);
+
+            this.shutdown = true;
+            this.pending = true;
+
+            this.waiter.Set();
+
+            // Wait till the thread stops ( no need to wait if shutdown
+            // is called from thread that is shutting down)
+            if(Thread.CurrentThread != this.theThread && !this.terminated)
+            {
+                Monitor.Exit(this.mutex);
+                this.isShutdown.WaitOne();
+            }
+            else
+            {
+                Monitor.Exit(this.mutex);
+            }
         }
 
         public void Wakeup()
@@ -81,12 +104,17 @@ namespace Apache.NMS.Stomp.Threads
 
                 this.pending = true;
 
-                Monitor.PulseAll(this.mutex);
+                this.waiter.Set();
             }
         }
 
         internal void Run()
         {
+            lock(this.mutex)
+            {
+                this.isShutdown.Reset();
+            }
+
             try
             {
                 while(true)
@@ -97,7 +125,6 @@ namespace Apache.NMS.Stomp.Threads
 
                         if(this.shutdown)
                         {
-
                             return;
                         }
                     }
@@ -105,18 +132,19 @@ namespace Apache.NMS.Stomp.Threads
                     if(!this.task.Iterate())
                     {
                         // wait to be notified.
-                        lock(this.mutex)
+                        Monitor.Enter(this.mutex);
+                        if(this.shutdown)
                         {
-                            if(this.shutdown)
-                            {
-                                return;
-                            }
-
-                            while(!this.pending)
-                            {
-                                Monitor.Wait(this.mutex);
-                            }
+                            return;
                         }
+
+                        while(!this.pending)
+                        {
+                            Monitor.Exit(this.mutex);
+                            this.waiter.WaitOne();
+                            Monitor.Enter(this.mutex);
+                        }
+                        Monitor.Exit(this.mutex);
                     }
                 }
             }
@@ -127,11 +155,12 @@ namespace Apache.NMS.Stomp.Threads
             {
                 // Make sure we notify any waiting threads that thread
                 // has terminated.
-                lock(this.mutex)
-                {
-                    this.terminated = true;
-                    Monitor.PulseAll(this.mutex);
-                }
+                //lock(this.mutex)
+                //{
+                Monitor.Enter(this.mutex);
+                this.terminated = true;
+                Monitor.Exit(this.mutex);
+                this.isShutdown.Set();
             }
         }
     }

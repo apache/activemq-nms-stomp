@@ -322,9 +322,14 @@ namespace Apache.NMS.Stomp.Protocol
             // Store the Marshaled Content.
             frame.Content = command.Content;
 
-            if(command is BytesMessage && command.Content != null && command.Content.Length > 0)
+            if(command is BytesMessage)
             {
-                frame.SetProperty("content-length", command.Content.Length);
+                if(command.Content != null && command.Content.Length > 0)
+                {
+                    frame.SetProperty("content-length", command.Content.Length);
+                }
+
+                frame.SetProperty("transformation", "jms-byte");
             }
 			
             // Marshal all properties to the Frame.
@@ -401,7 +406,7 @@ namespace Apache.NMS.Stomp.Protocol
             }
 
             // ActiveMQ extensions to STOMP
-            frame.SetProperty("transformation", "jms-map-xml");
+            // frame.SetProperty("transformation", "jms-map-xml");
             frame.SetProperty("activemq.dispatchAsync", command.DispatchAsync);
 
             if(command.Exclusive)

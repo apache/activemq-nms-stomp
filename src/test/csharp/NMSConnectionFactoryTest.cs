@@ -27,8 +27,10 @@ namespace Apache.NMS.Stomp.Test
     public class NMSConnectionFactoryTest
     {
         [RowTest]
+#if !NETCF
         [Row("stomp:tcp://${activemqhost}:61613")]
         [Row("stomp:tcp://${activemqhost}:61613?connection.asyncsend=false")]
+#endif
         [Row("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:tcp://InvalidHost:61613?connection.asyncsend=false", ExpectedException = typeof(NMSConnectionException))]

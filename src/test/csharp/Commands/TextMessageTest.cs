@@ -154,7 +154,9 @@ namespace Apache.NMS.Stomp.Test.Commands
             TextMessage nullMessage = new TextMessage();
             SetContent(nullMessage, null);
             Assert.IsNull(nullMessage.Text);
+#if !NETCF
             Assert.IsTrue(nullMessage.ToString().Contains("Text = null"));
+#endif
         }
 
         protected void SetContent(Message message, String text)

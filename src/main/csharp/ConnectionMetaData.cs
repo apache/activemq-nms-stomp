@@ -51,6 +51,13 @@ namespace Apache.NMS.Stomp
             this.nmsxProperties =
                 new String[]{ "NMSXGroupID", "NMSXGroupSeq", "NMSXDeliveryCount", "NMSXProducerTXID" };
 
+#if NETCF
+            this.nmsMajorVersion = 0;
+            this.nmsMinorVersion = 0;
+            this.nmsVersion = "Unknown";
+
+            return;
+#else
             foreach(AssemblyName name in self.GetReferencedAssemblies())
             {
                 if(0 == string.Compare(name.Name, "Apache.NMS", true))
@@ -62,6 +69,7 @@ namespace Apache.NMS.Stomp
                     return;
                 }
             }
+#endif
 
             throw new NMSException("Could not find a reference to the Apache.NMS Assembly.");
         }

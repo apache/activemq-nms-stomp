@@ -69,9 +69,9 @@ namespace Apache.NMS.Stomp
                     return;
                 }
             }
-#endif
 
             throw new NMSException("Could not find a reference to the Apache.NMS Assembly.");
+#endif
         }
 
         public int NMSMajorVersion

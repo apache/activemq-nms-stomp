@@ -428,7 +428,7 @@ namespace Apache.NMS.Stomp
                 if(++dispatchedCount % 1000 == 0)
                 {
                     dispatchedCount = 0;
-                    Thread.Sleep(1);
+                    Thread.Sleep((int)1);
                 }
             }
             catch(Exception e)
@@ -577,7 +577,7 @@ namespace Apache.NMS.Stomp
                     this.dispatchedMessages.Remove(dispatch);
                 }
 
-				// TODO - Not sure if we need to ack this in stomp.
+                // TODO - Not sure if we need to ack this in stomp.
                 // AckLater(dispatch, AckType.ConsumedAck);
             }
             else
@@ -592,23 +592,23 @@ namespace Apache.NMS.Stomp
                     {
                         lock(this.dispatchedMessages)
                         {
-			                MessageAck ack = new MessageAck();
-			
-			                ack.AckType = (byte) AckType.ConsumedAck;
-			                ack.ConsumerId = this.info.ConsumerId;
-			                ack.Destination = dispatch.Destination;
-			                ack.LastMessageId = dispatch.Message.MessageId;
-			                ack.MessageCount = 1;
+                            MessageAck ack = new MessageAck();
+
+                            ack.AckType = (byte) AckType.ConsumedAck;
+                            ack.ConsumerId = this.info.ConsumerId;
+                            ack.Destination = dispatch.Destination;
+                            ack.LastMessageId = dispatch.Message.MessageId;
+                            ack.MessageCount = 1;
 
                             this.session.SendAck(ack);
                         }
-						
+
                         this.deliveringAcks.Value = false;
                     }
                 }
                 else if(this.session.IsClientAcknowledge || this.session.IsIndividualAcknowledge)
                 {
-					// Do nothing.
+                    // Do nothing.
                 }
                 else
                 {
@@ -799,7 +799,7 @@ namespace Apache.NMS.Stomp
 
                 if(waitTime.CompareTo(TimeSpan.Zero) > 0)
                 {
-                    Thread.Sleep(waitTime);
+                    Thread.Sleep((int)waitTime.TotalMilliseconds);
                 }
 
                 this.Start();

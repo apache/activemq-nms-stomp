@@ -49,7 +49,7 @@ namespace Apache.NMS.Stomp
         private readonly SessionInfo info;
         private int consumerCounter;
         private int producerCounter;
-        private long nextDeliveryId;
+        private int nextDeliveryId;
         private bool disposed = false;
         private bool closed = false;
         private bool closing = false;
@@ -804,7 +804,7 @@ namespace Apache.NMS.Stomp
                 this.connection.SyncRequest(ack);
             }
         }
-        
+
         /// <summary>
         /// Prevents message from throwing an exception if a client calls Acknoweldge on
         /// a message that is part of a transaction either being produced or consumed.  The

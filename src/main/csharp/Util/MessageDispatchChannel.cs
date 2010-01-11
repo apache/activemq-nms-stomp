@@ -28,6 +28,7 @@ namespace Apache.NMS.Stomp.Util
     public class MessageDispatchChannel
     {
         private readonly Mutex mutex = new Mutex();
+        private readonly ManualResetEvent waiter = new ManualResetEvent(false);
         private bool closed;
         private bool running;
         private LinkedList<MessageDispatch> channel = new LinkedList<MessageDispatch>();
@@ -108,7 +109,8 @@ namespace Apache.NMS.Stomp.Util
                 if(!Closed)
                 {
                     this.running = true;
-                    Monitor.PulseAll(this.mutex);
+                    this.waiter.Set();
+                    this.waiter.Reset();
                 }
             }
         }
@@ -118,7 +120,8 @@ namespace Apache.NMS.Stomp.Util
             lock(mutex)
             {
                 this.running = false;
-                Monitor.PulseAll(this.mutex);
+                this.waiter.Set();
+                this.waiter.Reset();
             }
         }
 
@@ -132,7 +135,7 @@ namespace Apache.NMS.Stomp.Util
                     this.closed = true;
                 }
 
-                Monitor.PulseAll(this.mutex);
+                this.waiter.Set();
             }
         }
 
@@ -141,7 +144,8 @@ namespace Apache.NMS.Stomp.Util
             lock(this.mutex)
             {
                 this.channel.AddLast(dispatch);
-                Monitor.Pulse(this.mutex);
+                this.waiter.Set();
+                this.waiter.Reset();
             }
         }
 
@@ -150,27 +154,33 @@ namespace Apache.NMS.Stomp.Util
             lock(this.mutex)
             {
                 this.channel.AddFirst(dispatch);
-                Monitor.Pulse(this.mutex);
+                this.waiter.Set();
+                this.waiter.Reset();
             }
         }
 
         public MessageDispatch Dequeue(TimeSpan timeout)
         {
-            lock(this.mutex)
+            MessageDispatch result = null;
+
+            this.mutex.WaitOne();
+
+            // Wait until the channel is ready to deliver messages.
+            if( timeout != TimeSpan.Zero && !Closed && ( Empty || !Running ) )
             {
-                // Wait until the channel is ready to deliver messages.
-                if( timeout != TimeSpan.Zero && !Closed && ( Empty || !Running ) )
-                {
-                    Monitor.Wait(this.mutex, timeout);
-                }
-
-                if( Closed || !Running || Empty )
-                {
-                    return null;
-                }
-
-                return DequeueNoWait();
+                this.mutex.ReleaseMutex();
+                this.waiter.WaitOne(timeout, false);
+                this.mutex.WaitOne();
             }
+
+            if( !Closed && Running && !Empty )
+            {
+                result = DequeueNoWait();
+            }
+
+            this.mutex.ReleaseMutex();
+
+            return result;
         }
 
         public MessageDispatch DequeueNoWait()

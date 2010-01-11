@@ -63,7 +63,7 @@ namespace Apache.NMS.Stomp.Threads
             if(Thread.CurrentThread != this.theThread && !this.terminated)
             {
                 Monitor.Exit(this.mutex);
-                this.isShutdown.WaitOne(timeout.Milliseconds);
+                this.isShutdown.WaitOne((int)timeout.Milliseconds, false);
             }
             else
             {

@@ -169,7 +169,7 @@ namespace Apache.NMS.Stomp.Util
             if( timeout != TimeSpan.Zero && !Closed && ( Empty || !Running ) )
             {
                 this.mutex.ReleaseMutex();
-                this.waiter.WaitOne(timeout, false);
+                this.waiter.WaitOne((int)timeout.TotalMilliseconds, false);
                 this.mutex.WaitOne();
             }
 

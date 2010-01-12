@@ -69,11 +69,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override string ToString()
         {
-            return GetType().Name + "[" +
-                "ConnectionId=" + ConnectionId +
-                "Value=" + Value +
-                "SessionId=" + SessionId +
-                "]";
+            return ConnectionId + ":" + SessionId + ":" + Value;
         }
 
         public SessionId ParentId

@@ -34,8 +34,10 @@ namespace Apache.NMS.Stomp.Test
         [Row("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:tcp://InvalidHost:61613?connection.asyncsend=false", ExpectedException = typeof(NMSConnectionException))]
+#if !NETCF
         [Row("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
+#endif
         [Row("ftp://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("http://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("discovery://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]

@@ -43,8 +43,9 @@ namespace Apache.NMS.Stomp.Test
         [Row("discovery://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]
         [Row("sms://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:multicast://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]
+#if !NETCF
         [Row("stomp:(tcp://${activemqhost}:61613)?connection.asyncSend=false", ExpectedException = typeof(NMSConnectionException))]
-
+#endif
         [Row("(tcp://${activemqhost}:61613,tcp://${activemqhost}:61613)", ExpectedException = typeof(UriFormatException))]
         [Row("tcp://${activemqhost}:61613,tcp://${activemqhost}:61613", ExpectedException = typeof(UriFormatException))]
         public void TestURI(string connectionURI)

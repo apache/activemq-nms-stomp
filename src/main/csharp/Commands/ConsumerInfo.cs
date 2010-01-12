@@ -59,18 +59,18 @@ namespace Apache.NMS.Stomp.Commands
         public override string ToString()
         {
             return GetType().Name + "[" +
-                "ConsumerId=" + ConsumerId +
-                "Destination=" + Destination +
-                "Ack Mode=" + AckMode +
-                "PrefetchSize=" + PrefetchSize +
-                "MaximumPendingMessageLimit=" + MaximumPendingMessageLimit +
-                "DispatchAsync=" + DispatchAsync +
-                "Selector=" + Selector +
-                "SubscriptionName=" + SubscriptionName +
-                "NoLocal=" + NoLocal +
-                "Exclusive=" + Exclusive +
-                "Retroactive=" + Retroactive +
-                "Priority=" + Priority +
+                "ConsumerId=" + ConsumerId + ", " +
+                "Destination=" + Destination + ", " +
+                "Ack Mode=" + AckMode + ", " +
+                "PrefetchSize=" + PrefetchSize + ", " +
+                "MaximumPendingMessageLimit=" + MaximumPendingMessageLimit + ", " +
+                "DispatchAsync=" + DispatchAsync + ", " +
+                "Selector=" + Selector + ", " +
+                "SubscriptionName=" + SubscriptionName + ", " +
+                "NoLocal=" + NoLocal + ", " +
+                "Exclusive=" + Exclusive + ", " +
+                "Retroactive=" + Retroactive + ", " +
+                "Priority=" + Priority + ", " +
                 "]";
         }
 

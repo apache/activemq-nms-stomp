@@ -50,12 +50,12 @@ namespace Apache.NMS.Stomp.Commands
         public override string ToString()
         {
             return GetType().Name + "[" +
-                "Destination=" + Destination +
-                "TransactionId=" + TransactionId +
-                "ConsumerId=" + ConsumerId +
-                "AckType=" + AckType +
-                "FirstMessageId=" + FirstMessageId +
-                "LastMessageId=" + LastMessageId +
+                "Destination=" + Destination + ", " +
+                "TransactionId=" + TransactionId + ", " +
+                "ConsumerId=" + ConsumerId + ", " +
+                "AckType=" + AckType + ", " +
+                "FirstMessageId=" + FirstMessageId + ", " +
+                "LastMessageId=" + LastMessageId + ", " +
                 "MessageCount=" + MessageCount +
                 "]";
         }

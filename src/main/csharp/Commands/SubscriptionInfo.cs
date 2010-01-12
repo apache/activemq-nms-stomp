@@ -48,10 +48,10 @@ namespace Apache.NMS.Stomp.Commands
         public override string ToString()
         {
             return GetType().Name + "[" +
-                "ClientId=" + ClientId +
-                "Destination=" + Destination +
-                "Selector=" + Selector +
-                "SubscriptionName=" + SubscriptionName +
+                "ClientId=" + ClientId + ", " +
+                "Destination=" + Destination + ", " +
+                "Selector=" + Selector + ", " +
+                "SubscriptionName=" + SubscriptionName + ", " +
                 "SubscribedDestination=" + SubscribedDestination +
                 "]";
         }

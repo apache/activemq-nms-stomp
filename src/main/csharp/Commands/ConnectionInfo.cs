@@ -47,9 +47,9 @@ namespace Apache.NMS.Stomp.Commands
         public override string ToString()
         {
             return GetType().Name + "[" +
-                "ConnectionId=" + ConnectionId +
-                "ClientId=" + ClientId +
-                "Password=" + Password +
+                "ConnectionId=" + ConnectionId + ", " +
+                "ClientId=" + ClientId + ", " +
+                "Password=" + Password + ", " +
                 "UserName=" + UserName +
                 "]";
         }

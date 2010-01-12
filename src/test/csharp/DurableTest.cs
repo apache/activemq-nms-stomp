@@ -40,6 +40,11 @@ namespace Apache.NMS.Stomp.Test
             this.postfix = new Random().Next();
         }
 
+        [TearDown]
+        public override void TearDown()
+        {
+        }
+
         [RowTest]
         [Row(AcknowledgementMode.AutoAcknowledge)]
         [Row(AcknowledgementMode.ClientAcknowledge)]
@@ -98,6 +103,9 @@ namespace Apache.NMS.Stomp.Test
             }
             finally
             {
+                // Pause to allow Stomp to unregister at the broker.
+                Thread.Sleep(250);
+
                 UnregisterDurableConsumer(TEST_CLIENT_ID + ":" + this.postfix, CONSUMER_ID);
             }
         }
@@ -182,6 +190,9 @@ namespace Apache.NMS.Stomp.Test
             }
             finally
             {
+                // Pause to allow Stomp to unregister at the broker.
+                Thread.Sleep(250);
+
                 UnregisterDurableConsumer(TEST_CLIENT_ID  + ":" + this.postfix, CONSUMER_ID);
             }
         }
@@ -204,6 +215,9 @@ namespace Apache.NMS.Stomp.Test
             }
             finally
             {
+                // Pause to allow Stomp to unregister at the broker.
+                Thread.Sleep(250);
+                
                 UnregisterDurableConsumer(TEST_CLIENT_ID + ":" + this.postfix, CONSUMER_ID);
             }
         }

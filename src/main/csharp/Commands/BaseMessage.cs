@@ -78,23 +78,23 @@ namespace Apache.NMS.Stomp.Commands
         public override string ToString()
         {
             return GetType().Name + "[" +
-                "ProducerId=" + ProducerId +
-                "Destination=" + Destination +
-                "TransactionId=" + TransactionId +
-                "MessageId=" + MessageId +
-                "OriginalTransactionId=" + OriginalTransactionId +
-                "GroupID=" + GroupID +
-                "GroupSequence=" + GroupSequence +
-                "CorrelationId=" + CorrelationId +
-                "Persistent=" + Persistent +
-                "Expiration=" + Expiration +
-                "Priority=" + Priority +
-                "ReplyTo=" + ReplyTo +
-                "Timestamp=" + Timestamp +
-                "Type=" + Type +
-                "Content=" + Content +
-                "MarshalledProperties=" + MarshalledProperties +
-                "TargetConsumerId=" + TargetConsumerId +
+                "ProducerId=" + ProducerId + ", " +
+                "Destination=" + Destination + ", " +
+                "TransactionId=" + TransactionId + ", " +
+                "MessageId=" + MessageId + ", " +
+                "OriginalTransactionId=" + OriginalTransactionId + ", " +
+                "GroupID=" + GroupID + ", " +
+                "GroupSequence=" + GroupSequence + ", " +
+                "CorrelationId=" + CorrelationId + ", " +
+                "Persistent=" + Persistent + ", " +
+                "Expiration=" + Expiration + ", " +
+                "Priority=" + Priority + ", " +
+                "ReplyTo=" + ReplyTo + ", " +
+                "Timestamp=" + Timestamp + ", " +
+                "Type=" + Type + ", " +
+                "Content=" + Content + ", " +
+                "MarshalledProperties=" + MarshalledProperties + ", " +
+                "TargetConsumerId=" + TargetConsumerId + ", " +
                 "RedeliveryCounter=" + RedeliveryCounter +
                 "]";
         }

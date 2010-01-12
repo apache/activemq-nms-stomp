@@ -30,24 +30,20 @@ namespace Apache.NMS.Stomp.Test
 #if !NETCF
         [Row("stomp:tcp://${activemqhost}:61613")]
         [Row("stomp:tcp://${activemqhost}:61613?connection.asyncsend=false")]
+        [Row("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
+        [Row("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
+        [Row("stomp:(tcp://${activemqhost}:61613)?connection.asyncSend=false", ExpectedException = typeof(NMSConnectionException))]
 #endif
         [Row("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:tcp://InvalidHost:61613?connection.asyncsend=false", ExpectedException = typeof(NMSConnectionException))]
-#if !NETCF
-        [Row("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
-        [Row("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
-#endif
         [Row("ftp://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("http://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("discovery://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]
         [Row("sms://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
         [Row("stomp:multicast://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]
-#if !NETCF
-        [Row("stomp:(tcp://${activemqhost}:61613)?connection.asyncSend=false", ExpectedException = typeof(NMSConnectionException))]
         [Row("(tcp://${activemqhost}:61613,tcp://${activemqhost}:61613)", ExpectedException = typeof(UriFormatException))]
         [Row("tcp://${activemqhost}:61613,tcp://${activemqhost}:61613", ExpectedException = typeof(UriFormatException))]
-#endif
         public void TestURI(string connectionURI)
         {
             NMSConnectionFactory factory = new NMSConnectionFactory(NMSTestSupport.ReplaceEnvVar(connectionURI));
@@ -59,7 +55,9 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
+#if !NETCF
         [Test]
+#endif
         public void TestURIForPrefetchHandling()
         {
             string uri1 = "stomp:tcp://${activemqhost}:61613" +

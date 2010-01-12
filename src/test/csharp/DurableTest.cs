@@ -31,18 +31,6 @@ namespace Apache.NMS.Stomp.Test
         protected static string SEND_CLIENT_ID = "TestDurableProducerClientId";
         protected static string DURABLE_TOPIC = "TestDurableConsumerTopic";
         protected static string DURABLE_SELECTOR = "2 > 1";
-        private int postfix;
-
-        [SetUp]
-        public override void SetUp()
-        {
-            this.postfix = new Random().Next();
-        }
-
-        [TearDown]
-        public override void TearDown()
-        {
-        }
 
         [RowTest]
         [Row(AcknowledgementMode.AutoAcknowledge)]

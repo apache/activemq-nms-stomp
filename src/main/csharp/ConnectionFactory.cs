@@ -45,6 +45,7 @@ namespace Apache.NMS.Stomp
         private bool asyncSend;
         private bool alwaysSyncSend;
         private bool sendAcksAsync=true;
+        private bool dispatchAsync=true;
         private AcknowledgementMode acknowledgementMode = AcknowledgementMode.AutoAcknowledge;
 
         private IRedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
@@ -224,6 +225,12 @@ namespace Apache.NMS.Stomp
             set { this.acknowledgementMode = NMSConvert.ToAcknowledgementMode(value); }
         }
 
+        public bool DispatchAsync
+        {
+            get { return this.dispatchAsync; }
+            set { this.dispatchAsync = value; }
+        }
+
         public AcknowledgementMode AcknowledgementMode
         {
             get { return acknowledgementMode; }
@@ -292,6 +299,7 @@ namespace Apache.NMS.Stomp
             connection.CopyMessageOnSend = this.CopyMessageOnSend;
             connection.AlwaysSyncSend = this.AlwaysSyncSend;
             connection.SendAcksAsync = this.SendAcksAsync;
+            connection.DispatchAsync = this.DispatchAsync;
             connection.AcknowledgementMode = this.acknowledgementMode;
             connection.RedeliveryPolicy = this.redeliveryPolicy.Clone() as IRedeliveryPolicy;
             connection.PrefetchPolicy = this.prefetchPolicy.Clone() as PrefetchPolicy;

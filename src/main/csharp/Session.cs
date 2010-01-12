@@ -56,12 +56,13 @@ namespace Apache.NMS.Stomp
         private TimeSpan requestTimeout = Apache.NMS.NMSConstants.defaultRequestTimeout;
         private AcknowledgementMode acknowledgementMode;
 
-        public Session(Connection connection, SessionInfo info, AcknowledgementMode acknowledgementMode)
+        public Session(Connection connection, SessionInfo info, AcknowledgementMode acknowledgementMode, bool dispatchAsync)
         {
             this.connection = connection;
             this.info = info;
             this.acknowledgementMode = acknowledgementMode;
             this.requestTimeout = connection.RequestTimeout;
+            this.dispatchAsync = dispatchAsync;
 
             if(acknowledgementMode == AcknowledgementMode.Transactional)
             {
@@ -74,7 +75,7 @@ namespace Apache.NMS.Stomp
 
             this.executor = new SessionExecutor(this, this.consumers);
         }
-
+        
         ~Session()
         {
             Dispose(false);

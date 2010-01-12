@@ -42,6 +42,8 @@ namespace Apache.NMS.Stomp
         private bool alwaysSyncSend = false;
         private bool copyMessageOnSend = true;
         private bool sendAcksAsync = false;
+        private bool dispatchAsync = true;
+        private string transformation = null;
         private IRedeliveryPolicy redeliveryPolicy;
         private PrefetchPolicy prefetchPolicy = new PrefetchPolicy();
 
@@ -170,6 +172,27 @@ namespace Apache.NMS.Stomp
         {
             get { return sendAcksAsync; }
             set { sendAcksAsync = value; }
+        }
+
+        /// <summary>
+        /// synchronously or asynchronously by the broker.  Set to false for a slow
+        /// consumer and true for a fast consumer.
+        /// </summary>
+        public bool DispatchAsync
+        {
+            get { return this.dispatchAsync; }
+            set { this.dispatchAsync = value; }
+        }
+
+        /// <summary>
+        /// Sets the default Transformation attribute applied to Consumers.  If a consumer
+        /// is to receive Map messages from the Broker then the user should set the "jms-map-xml"
+        /// transformation on the consumer so that all MapMessages are sent as XML.
+        /// </summary>
+        public string Transformation
+        {
+            get { return this.transformation; }
+            set { this.transformation = value; }
         }
 
         public IConnectionMetaData MetaData
@@ -311,7 +334,7 @@ namespace Apache.NMS.Stomp
         public ISession CreateSession(AcknowledgementMode sessionAcknowledgementMode)
         {
             SessionInfo info = CreateSessionInfo(sessionAcknowledgementMode);
-            Session session = new Session(this, info, sessionAcknowledgementMode);
+            Session session = new Session(this, info, sessionAcknowledgementMode, this.dispatchAsync);
 
             // Set properties on session using parameters prefixed with "session."
             URISupport.CompositeData c = URISupport.parseComposite(this.brokerUri);

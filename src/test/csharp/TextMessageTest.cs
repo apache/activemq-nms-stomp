@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+using System;
 using Apache.NMS.Util;
 using Apache.NMS.Test;
 using NUnit.Framework;
@@ -33,7 +34,7 @@ namespace Apache.NMS.Stomp.Test
         [Row(MsgDeliveryMode.NonPersistent)]
         public void SendReceiveTextMessage(MsgDeliveryMode deliveryMode)
         {
-            using(IConnection connection = CreateConnection(TEST_CLIENT_ID))
+            using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))

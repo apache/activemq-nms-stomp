@@ -111,6 +111,8 @@
     <Compile Include="src\main\csharp\Commands\ConnectionError.cs" />
     <Compile Include="src\main\csharp\Commands\RemoveSubscriptionInfo.cs" />
     <Compile Include="src\main\csharp\Protocol\StompFrame.cs" />
+    <Compile Include="src\main\csharp\Protocol\IPrimitiveMapMarshaler.cs" />
+    <Compile Include="src\main\csharp\Protocol\XmlPrimitiveMapMarshaler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile\NMSKey.snk" />

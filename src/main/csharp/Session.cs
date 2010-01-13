@@ -519,7 +519,8 @@ namespace Apache.NMS.Stomp
 
         public IMapMessage CreateMapMessage()
         {
-            throw new NotSupportedException("No Object Message in Stomp");
+            MapMessage answer = new MapMessage();
+            return ConfigureMessage(answer) as IMapMessage;
         }
 
         public IBytesMessage CreateBytesMessage()

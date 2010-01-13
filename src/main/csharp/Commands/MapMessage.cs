@@ -17,6 +17,7 @@
 
 using System;
 using System.IO;
+using Apache.NMS;
 using Apache.NMS.Util;
 using Apache.NMS.Stomp.Protocol;
 
@@ -84,22 +85,16 @@ namespace Apache.NMS.Stomp.Commands
 
         public override void BeforeMarshall(StompWireFormat wireFormat)
         {
+            base.BeforeMarshall(wireFormat);
+
             if(body == null)
             {
-                Content = null;
+                this.Content = null;
             }
             else
             {
-                MemoryStream buffer = new MemoryStream();
-                this.body.Marshal(buffer);
-                buffer.Close();
-
-                this.Content = buffer.ToArray();
+                this.Content = wireFormat.MapMarshaler.Marshal(body);
             }
-
-            Tracer.Debug("BeforeMarshalling, content is: " + Content);
-
-            base.BeforeMarshall(wireFormat);
         }
     }
 }

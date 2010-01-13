@@ -30,19 +30,20 @@ namespace Apache.NMS.Stomp.Protocol
     public class StompWireFormat : IWireFormat
     {
         private Encoding encoder = new UTF8Encoding();
+        private IPrimitiveMapMarshaler mapMarshaler = new XmlPrimitiveMapMarshaler();
         private ITransport transport;
 
         public StompWireFormat()
         {
         }
 
-        public ITransport Transport 
+        public ITransport Transport
         {
             get { return transport; }
             set { transport = value; }
         }
 
-        public int Version 
+        public int Version
         {
             get { return 1; }
         }
@@ -51,6 +52,12 @@ namespace Apache.NMS.Stomp.Protocol
         {
             get { return this.encoder; }
             set { this.encoder = value; }
+        }
+
+        public IPrimitiveMapMarshaler MapMarshaler
+        {
+            get { return this.mapMarshaler; }
+            set { this.mapMarshaler = value; }
         }
 
         public void Marshal(Object o, BinaryWriter dataOut)
@@ -330,6 +337,10 @@ namespace Apache.NMS.Stomp.Protocol
                 }
 
                 frame.SetProperty("transformation", "jms-byte");
+            }
+            else if(command is MapMessage)
+            {
+                frame.SetProperty("transformation", this.mapMarshaler.Name);
             }
 			
             // Marshal all properties to the Frame.

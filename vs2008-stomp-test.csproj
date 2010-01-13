@@ -100,5 +100,6 @@
     <Compile Include="src\test\csharp\Commands\TextMessageTest.cs" />
     <Compile Include="src\test\csharp\NMSConnectionFactoryTest.cs" />
     <Compile Include="src\test\csharp\Threads\DedicatedTaskRunnerTest.cs" />
+    <Compile Include="src\test\csharp\Commands\MapMessageTest.cs" />
   </ItemGroup>
 </Project>

@@ -101,5 +101,9 @@
     <Compile Include="src\test\csharp\NMSConnectionFactoryTest.cs" />
     <Compile Include="src\test\csharp\Threads\DedicatedTaskRunnerTest.cs" />
     <Compile Include="src\test\csharp\Commands\MapMessageTest.cs" />
+    <Compile Include="src\test\csharp\Protocol\XmlPrimitiveMapMarshalerTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\test\csharp\Protocol\" />
   </ItemGroup>
 </Project>

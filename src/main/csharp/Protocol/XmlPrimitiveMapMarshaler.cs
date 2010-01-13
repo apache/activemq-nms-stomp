@@ -18,6 +18,7 @@
 
 using System;
 using System.Text;
+using System.IO;
 using System.Xml;
 using System.Collections;
 using Apache.NMS.Util;
@@ -47,6 +48,11 @@ namespace Apache.NMS.Stomp.Protocol
 
         public byte[] Marshal(IPrimitiveMap map)
         {
+            if(map == null)
+            {
+                return null;
+            }
+
             StringBuilder builder = new StringBuilder();
 
             XmlWriterSettings settings = new XmlWriterSettings();
@@ -77,8 +83,6 @@ namespace Apache.NMS.Stomp.Protocol
             writer.WriteEndElement();
             writer.Close();
 
-            Console.WriteLine("XML Map = " + builder.ToString());
-
             return this.encoder.GetBytes(builder.ToString());
         }
 
@@ -93,6 +97,86 @@ namespace Apache.NMS.Stomp.Protocol
                 return result;
             }
 
+            String xmlString = this.encoder.GetString(mapContent);
+
+            XmlReaderSettings settings = new XmlReaderSettings();
+
+            settings.IgnoreComments = true;
+            settings.IgnoreWhitespace = true;
+            settings.IgnoreProcessingInstructions = true;
+
+            XmlReader reader = XmlReader.Create(new StringReader(xmlString), settings);
+
+            reader.MoveToContent();
+            reader.ReadStartElement("map");
+
+            while(reader.Name == "entry")
+            {
+                reader.ReadStartElement();
+                string key = reader.ReadElementContentAsString("string", "");
+
+                Object value = null;
+
+                switch(reader.Name)
+                {
+                case "char":
+                    value = Convert.ToChar(reader.ReadElementContentAsString());
+                    break;
+                case "double":
+                    value = Convert.ToDouble(reader.ReadElementContentAsString());
+                    break;
+                case "float":
+                    value = Convert.ToSingle(reader.ReadElementContentAsString());
+                    break;
+                case "long":
+                    value = Convert.ToInt64(reader.ReadElementContentAsString());
+                    break;
+                case "int":
+                    value = Convert.ToInt32(reader.ReadElementContentAsString());
+                    break;
+                case "short":
+                    value = Convert.ToInt16(reader.ReadElementContentAsString());
+                    break;
+                case "byte":
+                    value = Convert.ToByte(reader.ReadElementContentAsString());
+                    break;
+                case "boolean":
+                    value = Convert.ToBoolean(reader.ReadElementContentAsString());
+                    break;
+                case "byte-array":
+
+                    byte[] buffer = new byte[1024];
+                    MemoryStream array = new MemoryStream();
+
+                    int bytesRead = 0;
+
+                    do
+                    {
+                        bytesRead = reader.ReadElementContentAsBase64(buffer, 0, buffer.Length);
+                        array.Write(buffer, 0, bytesRead);
+                    }
+                    while(bytesRead != 0);
+
+                    array.Close();
+
+                    value = array.ToArray();
+
+                    // Jump out here since this one reads past the EndElement for us.
+                    continue;
+                default:
+                    Console.WriteLine("Key = " + reader.ReadElementContentAsString());
+                    break;
+                };
+
+                // Now store the value into our new PrimitiveMap.
+                result[key] = value;
+
+                reader.ReadEndElement();
+            }
+
+            reader.ReadEndElement();
+            reader.Close();
+
             return result;
         }
 
@@ -102,6 +186,10 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 Console.WriteLine("Null Map Value");
                 throw new NullReferenceException("PrimitiveMap values should not be Null");
+            }
+            else if(value is char)
+            {
+                writer.WriteElementString("char", value.ToString());
             }
             else if(value is bool)
             {

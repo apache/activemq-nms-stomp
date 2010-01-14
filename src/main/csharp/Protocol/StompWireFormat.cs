@@ -17,6 +17,7 @@
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Transport;
 using Apache.NMS;
+using Apache.NMS.Util;
 using System;
 using System.Collections;
 using System.IO;
@@ -192,10 +193,16 @@ namespace Apache.NMS.Stomp.Protocol
         protected virtual Command ReadMessage(StompFrame frame)
         {
             Message message = null;
+            string transformation = frame.RemoveProperty("transformation");
+
             if(frame.HasProperty("content-length"))
             {
                 message = new BytesMessage();
                 message.Content = frame.Content;
+            }
+            else if(transformation == "jms-map-xml")
+            {
+                message = new MapMessage(this.mapMarshaler.Unmarshal(frame.Content) as PrimitiveMap);
             }
             else
             {

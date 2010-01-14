@@ -26,7 +26,7 @@ using Apache.NMS.Util;
 namespace Apache.NMS.Stomp.Protocol
 {
     /// <summary>
-    /// Reads / Writes an IPrimitveMap as XML.
+    /// Reads / Writes an IPrimitveMap as XML compatible with XStream.
     /// </summary>
     public class XmlPrimitiveMapMarshaler : IPrimitiveMapMarshaler
     {
@@ -121,60 +121,51 @@ namespace Apache.NMS.Stomp.Protocol
                 {
                 case "char":
                     value = Convert.ToChar(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
                     break;
                 case "double":
                     value = Convert.ToDouble(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
                     break;
                 case "float":
                     value = Convert.ToSingle(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
                     break;
                 case "long":
                     value = Convert.ToInt64(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
                     break;
                 case "int":
                     value = Convert.ToInt32(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
                     break;
                 case "short":
                     value = Convert.ToInt16(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
                     break;
                 case "byte":
                     value = Convert.ToByte(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
                     break;
                 case "boolean":
                     value = Convert.ToBoolean(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
                     break;
                 case "byte-array":
-
-                    byte[] buffer = new byte[1024];
-                    MemoryStream array = new MemoryStream();
-
-                    int bytesRead = 0;
-
-                    do
-                    {
-                        bytesRead = reader.ReadElementContentAsBase64(buffer, 0, buffer.Length);
-                        array.Write(buffer, 0, bytesRead);
-                    }
-                    while(bytesRead != 0);
-
-                    array.Close();
-
-                    value = array.ToArray();
-
-                    // Jump out here since this one reads past the EndElement for us.
-                    continue;
+                    value = Convert.FromBase64String(reader.ReadElementContentAsString());
+                    reader.ReadEndElement();
+                    break;
                 default:
-                    Console.WriteLine("Key = " + reader.ReadElementContentAsString());
+                    value = reader.ReadElementContentAsString();
+                    reader.ReadEndElement();
                     break;
                 };
 
                 // Now store the value into our new PrimitiveMap.
+                Console.WriteLine("result[{0}] = {1}", key, value);
                 result[key] = value;
-
-                reader.ReadEndElement();
             }
 
-            reader.ReadEndElement();
             reader.Close();
 
             return result;

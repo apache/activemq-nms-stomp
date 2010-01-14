@@ -28,6 +28,16 @@ namespace Apache.NMS.Stomp.Commands
         private PrimitiveMap body;
         private PrimitiveMapInterceptor typeConverter;
 
+        public MapMessage() : base()
+        {
+        }
+
+        public MapMessage(PrimitiveMap body) : base()
+        {
+            this.body = body;
+            this.typeConverter = new PrimitiveMapInterceptor(this, this.body);
+        }
+
         public override byte GetDataStructureType()
         {
             return DataStructureTypes.MapMessageType;

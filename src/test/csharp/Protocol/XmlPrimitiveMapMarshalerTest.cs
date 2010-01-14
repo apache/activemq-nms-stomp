@@ -30,8 +30,12 @@ namespace Apache.NMS.Stomp.Test.Protocol
     [TestFixture]
     public class XmlPrimitiveMapMarshalerTest
     {
-        private static String xmlString =
+        private const String xmlString =
                 @"<map>
+                      <entry>
+                        <string>BYTES</string>
+                        <byte-array>CgoKFBQU</byte-array>
+                      </entry>
                       <entry>
                         <string>CHAR</string>
                         <char>a</char>
@@ -63,10 +67,6 @@ namespace Apache.NMS.Stomp.Test.Protocol
                       <entry>
                         <string>STRING</string>
                         <string>FOO</string>
-                      </entry>
-                      <entry>
-                        <string>BYTES</string>
-                        <byte-array>CgoKFBQU</byte-array>
                       </entry>
                       <entry>
                         <string>BOOL</string>
@@ -105,7 +105,24 @@ namespace Apache.NMS.Stomp.Test.Protocol
         public void TestUnmarshalPrimitiveMap()
         {
             XmlPrimitiveMapMarshaler marshaler = new XmlPrimitiveMapMarshaler();
-        }
 
+            byte[] rawBytes = Encoding.UTF8.GetBytes(xmlString);
+
+            IPrimitiveMap result = marshaler.Unmarshal(rawBytes);
+
+            Assert.IsNotNull(result);
+
+            Assert.IsTrue(result.Contains("BOOL"));
+            Assert.IsTrue(result.Contains("BYTES"));
+            Assert.IsTrue(result.Contains("STRING"));
+            Assert.IsTrue(result.Contains("LONG"));
+            Assert.IsTrue(result.Contains("FLOAT"));
+            Assert.IsTrue(result.Contains("INT"));
+            Assert.IsTrue(result.Contains("BYTE"));
+            Assert.IsTrue(result.Contains("SHORT"));
+            Assert.IsTrue(result.Contains("DOUBLE"));
+            Assert.IsTrue(result.Contains("CHAR"));
+
+        }
     }
 }

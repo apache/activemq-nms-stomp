@@ -424,7 +424,16 @@ namespace Apache.NMS.Stomp.Protocol
             }
 
             // ActiveMQ extensions to STOMP
-            frame.SetProperty("transformation", "jms-map-xml");
+
+            if(command.Transformation != null)
+            {
+                frame.SetProperty("transformation", command.Transformation);
+            }
+            else
+            {
+            //    frame.SetProperty("transformation", "jms-map-xml");
+            }
+
             frame.SetProperty("activemq.dispatchAsync", command.DispatchAsync);
 
             if(command.Exclusive)

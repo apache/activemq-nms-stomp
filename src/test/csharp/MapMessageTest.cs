@@ -56,7 +56,8 @@ namespace Apache.NMS.Stomp.Test
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))
                 {
-                    IDestination destination = SessionUtil.GetDestination(session, DESTINATION_NAME);
+                    string TOPIC = DESTINATION_NAME + "?consumer.transformation=jms-map-xml";
+                    IDestination destination = session.GetTopic(TOPIC);
                     using(IMessageConsumer consumer = session.CreateConsumer(destination))
                     using(IMessageProducer producer = session.CreateProducer(destination))
                     {

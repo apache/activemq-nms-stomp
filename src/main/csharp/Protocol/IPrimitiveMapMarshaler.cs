@@ -28,25 +28,13 @@ namespace Apache.NMS.Stomp.Protocol
     public interface IPrimitiveMapMarshaler
     {
         /// <summary>
-        /// Marshals an instance of an IPrimitiveMap to an String object.
+        /// Marshals a PrimitiveMap instance to an serialized byte array.
         /// </summary>
-        /// <param name="map">
-        /// A <see cref="IPrimitiveMap"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="System.Byte[]"/>
-        /// </returns>
         byte[] Marshal(IPrimitiveMap map);
 
         /// <summary>
         /// Un-marshals an IPrimitiveMap instance from a String object.
         /// </summary>
-        /// <param name="mapContent">
-        /// A <see cref="System.Byte[]"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="IPrimitiveMap"/>
-        /// </returns>
         IPrimitiveMap Unmarshal(byte[] mapContent);
 
         /// <summary>

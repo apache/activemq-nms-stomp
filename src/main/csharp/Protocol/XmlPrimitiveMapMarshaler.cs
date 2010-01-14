@@ -88,16 +88,14 @@ namespace Apache.NMS.Stomp.Protocol
 
         public IPrimitiveMap Unmarshal(byte[] mapContent)
         {
-            string content = this.encoder.GetString(mapContent);
+            string xmlString = this.encoder.GetString(mapContent, 0, mapContent.Length);
 
             PrimitiveMap result = new PrimitiveMap();
 
-            if(content == null || content == "")
+            if (xmlString == null || xmlString == "")
             {
                 return result;
             }
-
-            String xmlString = this.encoder.GetString(mapContent);
 
             XmlReaderSettings settings = new XmlReaderSettings();
 

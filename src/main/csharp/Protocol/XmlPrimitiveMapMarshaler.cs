@@ -144,7 +144,7 @@ namespace Apache.NMS.Stomp.Protocol
                     reader.ReadEndElement();
                     break;
                 case "byte":
-                    value = Convert.ToByte(reader.ReadElementContentAsString());
+                    value = (byte) Convert.ToInt16(reader.ReadElementContentAsString());
                     reader.ReadEndElement();
                     break;
                 case "boolean":
@@ -162,7 +162,6 @@ namespace Apache.NMS.Stomp.Protocol
                 };
 
                 // Now store the value into our new PrimitiveMap.
-                Console.WriteLine("result[{0}] = {1}", key, value);
                 result[key] = value;
             }
 
@@ -188,7 +187,7 @@ namespace Apache.NMS.Stomp.Protocol
             }
             else if(value is byte)
             {
-                writer.WriteElementString("byte", value.ToString());
+                writer.WriteElementString("byte", ((Byte) value).ToString());
             }
             else if(value is short)
             {

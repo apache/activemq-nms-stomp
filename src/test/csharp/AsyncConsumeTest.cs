@@ -65,7 +65,7 @@ namespace Apache.NMS.Stomp.Test
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))
                 {
-                    IDestination destination = SessionUtil.GetDestination(session, DESTINATION_NAME);
+                    IDestination destination = session.CreateTemporaryQueue();
                     using(IMessageConsumer consumer = session.CreateConsumer(destination))
                     using(IMessageProducer producer = session.CreateProducer(destination))
                     {
@@ -95,7 +95,7 @@ namespace Apache.NMS.Stomp.Test
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))
                 {
-                    IDestination destination = SessionUtil.GetDestination(session, DESTINATION_NAME);
+                    IDestination destination = session.CreateTemporaryQueue();
                     using(IMessageProducer producer = session.CreateProducer(destination))
                     {
                         producer.DeliveryMode = deliveryMode;
@@ -127,7 +127,7 @@ namespace Apache.NMS.Stomp.Test
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))
                 {
-                    IDestination destination = SessionUtil.GetDestination(session, DESTINATION_NAME);
+                    IDestination destination = session.CreateTemporaryQueue();
                     using(IMessageConsumer consumer = session.CreateConsumer(destination))
                     using(IMessageProducer producer = session.CreateProducer(destination))
                     {
@@ -158,7 +158,7 @@ namespace Apache.NMS.Stomp.Test
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))
                 {
-                    IDestination destination = SessionUtil.GetDestination(session, DESTINATION_NAME);
+                    IDestination destination = session.CreateTemporaryQueue();
                     using(IMessageConsumer consumer = session.CreateConsumer(destination))
                     {
                         consumer.Listener += new MessageListener(OnMessage);
@@ -195,7 +195,7 @@ namespace Apache.NMS.Stomp.Test
                 connection.Start();
                 using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))
                 {
-                    IDestination destination = SessionUtil.GetDestination(session, DESTINATION_NAME);
+                    IDestination destination = session.CreateTemporaryQueue();
                     ITemporaryQueue tempReplyDestination = session.CreateTemporaryQueue();
 
                     using(IMessageConsumer consumer = session.CreateConsumer(destination))

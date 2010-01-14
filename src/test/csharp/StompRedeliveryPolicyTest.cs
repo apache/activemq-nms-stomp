@@ -296,7 +296,9 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
+#if !NETCF
         [Test]
+#endif
         public void TestURIForRedeliverPolicyHandling()
         {
             string uri1 = "stomp:tcp://${activemqhost}:61613" +

@@ -38,6 +38,7 @@ namespace Apache.NMS.Stomp.Commands
         bool exclusive;
         bool retroactive;
         byte priority;
+        string transformation;
 
         ///
         /// <summery>
@@ -71,6 +72,7 @@ namespace Apache.NMS.Stomp.Commands
                 "Exclusive=" + Exclusive + ", " +
                 "Retroactive=" + Retroactive + ", " +
                 "Priority=" + Priority + ", " +
+                "Transformation" + Transformation + 
                 "]";
         }
 
@@ -144,6 +146,12 @@ namespace Apache.NMS.Stomp.Commands
         {
             get { return priority; }
             set { this.priority = value; }
+        }
+
+        public string Transformation
+        {
+            get { return this.transformation; }
+            set { this.transformation = value; }
         }
 
         ///

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 $pkgname = "Apache.NMS.Stomp"
-$pkgver = "1.3-SNAPSHOT"
+$pkgver = "1.2-RC1"
 $configurations = "release", "debug"
 $frameworks = "mono-2.0", "net-2.0", "net-3.5", "netcf-2.0"
 

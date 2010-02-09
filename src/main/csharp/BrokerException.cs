@@ -14,61 +14,95 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+using System;
 using System.Text;
-using Apache.NMS;
 using Apache.NMS.Stomp.Commands;
 
 namespace Apache.NMS.Stomp
 {
+	/// <summary>
+	/// Exception thrown when the broker returns an error
+	/// </summary>
+	[Serializable]
+	public class BrokerException : NMSException
+	{
+		private BrokerError brokerError = null;
 
-    /// <summary>
-    /// Exception thrown when the broker returns an error
-    /// </summary>
-    public class BrokerException : NMSException
-    {
-        private BrokerError brokerError;
+		public BrokerException()
+			: base("Broker failed with missing exception log")
+		{
+		}
 
-        /// <summary>
-        /// Generates a nice textual stack trace
-        /// </summary>
-        public static string StackTraceDump(StackTraceElement[] elements)
-        {
-            StringBuilder builder = new StringBuilder();
-            if (elements != null)
-            {
-                foreach (StackTraceElement e in elements)
-                {
-                    builder.Append("\n " + e.ClassName + "." + e.MethodName + "(" + e.FileName + ":" + e.LineNumber + ")");
-                }
-            }
-            return builder.ToString();
-        }
+		public BrokerException(BrokerError brokerError)
+			: this(brokerError, null)
+		{
+		}
 
-        public BrokerException() : base("Broker failed with missing exception log")
-        {
-        }
+		public BrokerException(BrokerError brokerError, Exception innerException)
+			: base(brokerError.ExceptionClass + " : " + brokerError.Message + "\n" + StackTraceDump(brokerError.StackTraceElements),
+					innerException)
+		{
+			this.brokerError = brokerError;
+		}
 
-        public BrokerException(BrokerError brokerError) : base(
-            brokerError.ExceptionClass + " : " + brokerError.Message + "\n" + StackTraceDump(brokerError.StackTraceElements))
-        {
-            this.brokerError = brokerError;
-        }
+		#region ISerializable interface implementation
+#if !NETCF
 
-        public BrokerError BrokerError
-        {
-            get {
-                return brokerError;
-            }
-        }
+		/// <summary>
+		/// Initializes a new instance of the BrokerException class with serialized data.
+		/// Throws System.ArgumentNullException if the info parameter is null.
+		/// Throws System.Runtime.Serialization.SerializationException if the class name is null or System.Exception.HResult is zero (0).
+		/// </summary>
+		/// <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+		/// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
+		protected BrokerException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+			: base(info, context)
+		{
+			brokerError = info.GetValue("BrokerException.brokerError", typeof(BrokerError)) as BrokerError;
+		}
 
-        public virtual string JavaStackTrace
-        {
-            get {
-                return brokerError.StackTrace;
-            }
-        }
+		/// <summary>
+		/// When overridden in a derived class, sets the SerializationInfo
+		/// with information about the exception.
+		/// </summary>
+		/// <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+		/// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
+		public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue("BrokerException.brokerError", brokerError);
+		}
 
-    }
+#endif
+		#endregion
+
+		/// <summary>
+		/// Generates a nice textual stack trace
+		/// </summary>
+		public static string StackTraceDump(StackTraceElement[] elements)
+		{
+			StringBuilder builder = new StringBuilder();
+			if(elements != null)
+			{
+				foreach(StackTraceElement e in elements)
+				{
+					builder.Append("\n " + e.ClassName + "." + e.MethodName + "(" + e.FileName + ":" + e.LineNumber + ")");
+				}
+			}
+			return builder.ToString();
+		}
+
+		public BrokerError BrokerError
+		{
+			get { return brokerError; }
+		}
+
+		public virtual string JavaStackTrace
+		{
+			get { return brokerError.StackTrace; }
+		}
+	}
 }
 
 

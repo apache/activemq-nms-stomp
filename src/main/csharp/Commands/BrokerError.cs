@@ -20,76 +20,79 @@ using System.IO;
 
 namespace Apache.NMS.Stomp.Commands
 {
-    public struct StackTraceElement
-    {
-        public string ClassName;
-        public string FileName;
-        public string MethodName;
-        public int LineNumber;
-    }
+	public struct StackTraceElement
+	{
+		public string ClassName;
+		public string FileName;
+		public string MethodName;
+		public int LineNumber;
+	}
 
-    /// <summary>
-    /// Represents an exception on the broker
-    /// </summary>
-    public class BrokerError : BaseCommand
-    {
-        private string message;
-        private string exceptionClass;
-        private StackTraceElement[] stackTraceElements = {};
-        private BrokerError cause;
+	/// <summary>
+	/// Represents an exception on the broker
+	/// </summary>
+	[Serializable]
+	public class BrokerError : BaseCommand
+	{
+		private string message;
+		private string exceptionClass;
+		private StackTraceElement[] stackTraceElements = { };
+		private BrokerError cause;
 
-        public override byte GetDataStructureType()
-        {
-            return DataStructureTypes.ErrorType;
-        }
-        
-        public string Message
-        {
-            get { return message; }
-            set { message = value; }
-        }
+		public override byte GetDataStructureType()
+		{
+			return DataStructureTypes.ErrorType;
+		}
 
-        public string ExceptionClass
-        {
-            get { return exceptionClass; }
-            set { exceptionClass = value; }
-        }
+		public string Message
+		{
+			get { return message; }
+			set { message = value; }
+		}
 
-        public StackTraceElement[] StackTraceElements
-        {
-            get { return stackTraceElements; }
-            set { stackTraceElements = value; }
-        }
+		public string ExceptionClass
+		{
+			get { return exceptionClass; }
+			set { exceptionClass = value; }
+		}
 
-        public BrokerError Cause
-        {
-            get { return cause; }
-            set { cause = value; }
-        }
+		public StackTraceElement[] StackTraceElements
+		{
+			get { return stackTraceElements; }
+			set { stackTraceElements = value; }
+		}
 
-        public String StackTrace
-        {
-            get {
-                StringWriter writer = new StringWriter();
-                PrintStackTrace(writer);
-                return writer.ToString();
-            }
-        }
+		public BrokerError Cause
+		{
+			get { return cause; }
+			set { cause = value; }
+		}
 
-        public void PrintStackTrace(TextWriter writer)
-        {
-            writer.WriteLine(exceptionClass + ": " + message);
-            for (int i = 0; i < stackTraceElements.Length; i++)
-            {
-                StackTraceElement element = stackTraceElements[i];
-                writer.WriteLine("    at " + element.ClassName + "." + element.MethodName + "(" + element.FileName + ":" + element.LineNumber + ")");
-            }
-            if (cause != null)
-            {
-                writer.WriteLine("Nested Exception:");
-                cause.PrintStackTrace(writer);
-            }
-        }
-    }
+		public String StackTrace
+		{
+			get
+			{
+				StringWriter writer = new StringWriter();
+				PrintStackTrace(writer);
+				return writer.ToString();
+			}
+		}
+
+		public void PrintStackTrace(TextWriter writer)
+		{
+			writer.WriteLine(exceptionClass + ": " + message);
+			for(int i = 0; i < stackTraceElements.Length; i++)
+			{
+				StackTraceElement element = stackTraceElements[i];
+				writer.WriteLine("    at " + element.ClassName + "." + element.MethodName + "(" + element.FileName + ":" + element.LineNumber + ")");
+			}
+
+			if(cause != null)
+			{
+				writer.WriteLine("Nested Exception:");
+				cause.PrintStackTrace(writer);
+			}
+		}
+	}
 }
 

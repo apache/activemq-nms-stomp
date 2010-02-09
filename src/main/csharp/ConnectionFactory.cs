@@ -111,10 +111,10 @@ namespace Apache.NMS.Stomp
 
                 connection = new Connection(uri, transport, this.ClientIdGenerator);
 
-                ConfigureConnection(connection);
+                connection.UserName = userName;
+                connection.Password = password;
 
-                connection.UserName = this.connectionUserName;
-                connection.Password = this.connectionPassword;
+                ConfigureConnection(connection);
 
                 if(this.clientId != null)
                 {

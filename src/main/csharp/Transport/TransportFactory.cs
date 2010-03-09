@@ -80,6 +80,9 @@ namespace Apache.NMS.Stomp.Transport
                 case "tcp":
                     factory = new TcpTransportFactory();
                     break;
+                case "ssl":
+                    factory = new SslTransportFactory();
+                    break;
                 default:
                     throw new NMSConnectionException(String.Format("The transport {0} is not supported.", scheme));
                 }

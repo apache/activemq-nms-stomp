@@ -29,8 +29,8 @@ namespace Apache.NMS.Stomp.Transport.Tcp
     /// </summary>
     public class TcpTransport : ITransport
     {
-        private readonly object myLock = new object();
-        private readonly Socket socket;
+        protected readonly object myLock = new object();
+        protected readonly Socket socket;
         private IWireFormat wireformat;
         private BinaryReader socketReader;
         private BinaryWriter socketWriter;
@@ -60,6 +60,11 @@ namespace Apache.NMS.Stomp.Transport.Tcp
             Dispose(false);
         }
 
+        protected virtual Stream CreateSocketStream()
+        {
+            return new NetworkStream(socket);
+        }
+
         /// <summary>
         /// Method Start
         /// </summary>
@@ -83,10 +88,11 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 
                     started = true;
 
-                    // As reported in AMQ-988 it appears that NetworkStream is not thread safe
-                    // so lets use an instance for each of the 2 streams
-                    socketWriter = new BinaryWriter(new NetworkStream(socket));
-                    socketReader = new BinaryReader(new NetworkStream(socket));
+                    // Initialize our Read and Writer instances.  Its not actually necessary
+                    // to have two distinct NetworkStream instances but for now the TcpTransport
+                    // will continue to do so for legacy reasons.
+                    socketWriter = new BinaryWriter(CreateSocketStream());
+                    socketReader = new BinaryReader(CreateSocketStream());
 
                     // now lets create the background read thread
                     readThread = new Thread(new ThreadStart(ReadLoop));

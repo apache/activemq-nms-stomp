@@ -41,6 +41,11 @@ namespace Apache.NMS.Stomp.Commands
             }
         }
 
+        public String QueueName
+        {
+            get { return PhysicalName; }
+        }
+
         public String GetQueueName()
         {
             return PhysicalName;

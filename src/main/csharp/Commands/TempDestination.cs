@@ -79,6 +79,10 @@ namespace Apache.NMS.Stomp.Commands
             return o;
         }
 
+        public void Delete()
+        {
+            throw new NotSupportedException("Stomp Cannot Delete Temporary Destinations");
+        }
     }
 }
 

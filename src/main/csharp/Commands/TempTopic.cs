@@ -24,24 +24,23 @@ namespace Apache.NMS.Stomp.Commands
     /// </summary>
     public class TempTopic : TempDestination, ITemporaryTopic
     {
-        public TempTopic()
-            : base()
+        public TempTopic() : base()
         {
         }
 
-        public TempTopic(String name)
-            : base(name)
+        public TempTopic(String name) : base(name)
         {
         }
 
         override public DestinationType DestinationType
         {
-            get
-            {
-                return DestinationType.TemporaryTopic;
-            }
+            get { return DestinationType.TemporaryTopic; }
         }
 
+        public String TopicName
+        {
+            get { return PhysicalName; }
+        }
 
         public String GetTopicName()
         {

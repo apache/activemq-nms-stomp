@@ -39,7 +39,6 @@ namespace Apache.NMS.Stomp.Commands
 
         public Message() : base()
         {
-            Timestamp = DateUtils.ToJavaTimeUtc(DateTime.UtcNow);
         }
 
         public override byte GetDataStructureType()

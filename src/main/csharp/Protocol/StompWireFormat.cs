@@ -306,6 +306,10 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 frame.SetProperty("expires", command.Expiration);
             }
+            if(command.Timestamp != 0)
+            {
+                frame.SetProperty("timestamp", command.Timestamp);
+            }
             if(command.Priority != 4)
             {                
                 frame.SetProperty("priority", command.Priority);

@@ -23,7 +23,9 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 {
 	public class SslTransportFactory : TcpTransportFactory
 	{
-        private string clientCertLocation;
+        private string serverName;
+        private string clientCertSubject;
+        private string clientCertFilename;
         private string clientCertPassword;
         private bool acceptInvalidBrokerCert = false;
         
@@ -31,10 +33,22 @@ namespace Apache.NMS.Stomp.Transport.Tcp
         {
         }
 
-        public string ClientCertLocation
+        public string ServerName
         {
-            get { return this.clientCertLocation; }
-            set { this.clientCertLocation = value; }
+            get { return this.serverName; }
+            set { this.serverName = value; }
+        }
+
+        public string ClientCertSubject
+        {
+            get { return this.clientCertSubject; }
+            set { this.clientCertSubject = value; }
+        }
+
+        public string ClientCertFilename
+        {
+            get { return this.clientCertFilename; }
+            set { this.clientCertFilename = value; }
         }
 
         public string ClientCertPassword
@@ -55,9 +69,11 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 #if !NETCF
             SslTransport transport = new SslTransport(location, socket, wireFormat);
             
-            transport.ClientCertLocation = ClientCertLocation;
-            transport.ClientCertPassword = ClientCertPassword;
-            transport.AcceptInvalidBrokerCert = AcceptInvalidBrokerCert;
+            transport.ClientCertSubject = this.clientCertSubject;
+            transport.ClientCertFilename = this.clientCertFilename;
+            transport.ClientCertPassword = this.clientCertPassword;
+            transport.ServerName = this.serverName;
+            transport.AcceptInvalidBrokerCert = this.acceptInvalidBrokerCert;
             
             return transport;
 #else

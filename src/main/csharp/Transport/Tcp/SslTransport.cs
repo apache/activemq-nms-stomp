@@ -29,7 +29,9 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 {
     public class SslTransport : TcpTransport
     {
-        private string clientCertLocation;
+        private string serverName;
+        private string clientCertSubject;
+        private string clientCertFilename;
         private string clientCertPassword;
         
         private bool acceptInvalidBrokerCert = false;
@@ -47,14 +49,31 @@ namespace Apache.NMS.Stomp.Transport.Tcp
         }
 
         /// <summary>
+        /// Indicates the name of the Server's Certificate.  By default the Host name
+        /// of the remote server is used, however if this doesn't match the name of the
+        /// Server's certificate then this option can be set to override the default.
+        /// </summary>
+        public string ServerName
+        {
+            get { return this.serverName; }
+            set { this.serverName = value; }
+        }
+
+        public string ClientCertSubject
+        {
+            get { return this.clientCertSubject; }
+            set { this.clientCertSubject = value; }
+        }
+
+        /// <summary>
         /// Indicates the location of the Client Certificate to use when the Broker
         /// is configured for Client Auth (not common).  The SslTransport will supply
         /// this certificate to the SslStream via the SelectLocalCertificate method.
         /// </summary>
-        public string ClientCertLocation
+        public string ClientCertFilename
         {
-            get { return this.clientCertLocation; }
-            set { this.clientCertLocation = value; }
+            get { return this.clientCertFilename; }
+            set { this.clientCertFilename = value; }
         }
 
         /// <summary>
@@ -83,24 +102,19 @@ namespace Apache.NMS.Stomp.Transport.Tcp
             {
                 return this.sslStream;
             }
-            
-            LocalCertificateSelectionCallback clientCertSelect = null;
-            
-            if(this.clientCertLocation != null )
-            {
-                clientCertSelect = new LocalCertificateSelectionCallback(SelectLocalCertificate);
-            }
 
             this.sslStream = new SslStream(
                 new NetworkStream(this.socket), 
                 false,
                 new RemoteCertificateValidationCallback(ValidateServerCertificate),
-                clientCertSelect );
+                new LocalCertificateSelectionCallback(SelectLocalCertificate) );
 
             try
             {
-                Tracer.Debug("Authorizing as Client for Server: " + this.RemoteAddress.Host);
-                sslStream.AuthenticateAsClient(this.RemoteAddress.Host);
+
+                string remoteCertName = this.serverName ?? this.RemoteAddress.Host;
+                Tracer.Debug("Authorizing as Client for Server: " + remoteCertName);
+                sslStream.AuthenticateAsClient(remoteCertName, LoadCertificates(), SslProtocols.Default, false);
                 Tracer.Debug("Server is Authenticated = " + sslStream.IsAuthenticated);
                 Tracer.Debug("Server is Encrypted = " + sslStream.IsEncrypted);                
             }
@@ -159,11 +173,50 @@ namespace Apache.NMS.Stomp.Transport.Tcp
                                                        X509Certificate remoteCertificate, 
                                                        string[] acceptableIssuers)
         {    
-            Tracer.Debug("Client is selecting a local certificate.");
-        
-            X509Certificate2 certificate = new X509Certificate2( clientCertLocation, clientCertPassword );
-                        
-            return certificate;
+            Tracer.DebugFormat("Client is selecting a local certificate from {0} possibilities.", localCertificates.Count);
+
+            if(localCertificates.Count == 1)
+            {
+                Tracer.Debug("Client has selected certificate with Subject = " + localCertificates[0].Subject);
+                return localCertificates[0];
+            }
+            else if(localCertificates.Count > 1 && this.clientCertSubject != null)
+            {
+                foreach(X509Certificate2 certificate in localCertificates)
+                {
+                    Tracer.Debug("Checking Client Certificate := " + certificate.ToString());
+                    if(String.Compare(certificate.Subject, this.clientCertSubject, true) == 0)
+                    {
+                        Tracer.Debug("Client has selected certificate with Subject = " + certificate.Subject);
+                        return certificate;
+                    }
+                }
+            }
+
+            Tracer.Debug("Client did not select a Certificate, returning null.");
+            return null;
+        }
+
+        private X509Certificate2Collection LoadCertificates()
+        {
+            X509Certificate2Collection collection = new X509Certificate2Collection();
+
+            if(!String.IsNullOrEmpty(this.clientCertFilename))
+            {
+                Tracer.Debug("Attempting to load Client Certificate from file := " + this.clientCertFilename);
+                X509Certificate2 certificate = new X509Certificate2(this.clientCertFilename, this.clientCertPassword);
+                Tracer.Debug("Loaded Client Certificate := " + certificate.ToString());
+
+                collection.Add(certificate);
+            }
+            else
+            {
+                X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+
+                collection = store.Certificates;
+            }
+
+            return collection;
         }
         
     }

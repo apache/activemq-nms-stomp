@@ -27,6 +27,8 @@ namespace Apache.NMS.Stomp.Transport.Tcp
         private string clientCertSubject;
         private string clientCertFilename;
         private string clientCertPassword;
+        private string keyStoreName;
+        private string keyStoreLocation;
         private bool acceptInvalidBrokerCert = false;
         
         public SslTransportFactory() : base()
@@ -62,7 +64,19 @@ namespace Apache.NMS.Stomp.Transport.Tcp
             get { return this.acceptInvalidBrokerCert; }
             set { this.acceptInvalidBrokerCert = value; }
         }
-        
+
+        public string KeyStoreName
+        {
+            get { return this.keyStoreName; }
+            set { this.keyStoreName = value; }
+        }
+
+        public string KeyStoreLocation
+        {
+            get { return this.keyStoreLocation; }
+            set { this.keyStoreLocation = value; }
+        }
+
 		protected override ITransport DoCreateTransport(Uri location, Socket socket, IWireFormat wireFormat )
 		{
             Tracer.Debug("Creating new instance of the SSL Transport.");
@@ -73,6 +87,8 @@ namespace Apache.NMS.Stomp.Transport.Tcp
             transport.ClientCertFilename = this.clientCertFilename;
             transport.ClientCertPassword = this.clientCertPassword;
             transport.ServerName = this.serverName;
+            transport.KeyStoreLocation = this.keyStoreLocation;
+            transport.KeyStoreName = this.keyStoreName;
             transport.AcceptInvalidBrokerCert = this.acceptInvalidBrokerCert;
             
             return transport;

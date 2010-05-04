@@ -53,12 +53,12 @@
     <DefineConstants>TRACE;NET,NET_2_0</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.NMS, Version=1.3.0.1865, Culture=neutral, PublicKeyToken=82756feee3957618, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Apache.NMS\net-2.0\Apache.NMS.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="Apache.NMS, Version=1.3.0.1893, Culture=neutral, PublicKeyToken=82756feee3957618">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>build\mono-2.0\debug\Apache.NMS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">

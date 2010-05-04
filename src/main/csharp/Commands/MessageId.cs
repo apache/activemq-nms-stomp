@@ -62,7 +62,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override string ToString()
         {
-            if(key == null)
+            if( key == null )
             {
                 key = producerId.ToString() + ":" + producerSequenceId;
             }

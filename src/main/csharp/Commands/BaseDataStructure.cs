@@ -16,6 +16,7 @@
  */
 
 using System;
+using System.Text;
 using Apache.NMS.Stomp.Protocol;
 
 namespace Apache.NMS.Stomp.Commands
@@ -82,5 +83,6 @@ namespace Apache.NMS.Stomp.Commands
             // if we had any.
             return this.MemberwiseClone();
         }
+
     }
 }

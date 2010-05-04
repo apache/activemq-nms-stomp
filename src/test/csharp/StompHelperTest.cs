@@ -31,10 +31,10 @@ namespace Apache.NMS.Stomp.Test
             id.SessionId = 2;
             id.Value = 3;
 
-            string text = StompHelper.ToStomp(id);
+            string text = id.ToString();
             Assert.AreEqual("cheese:2:3", text, "ConsumerId as stomp");
 
-            ConsumerId another = StompHelper.ToConsumerId("abc:5:6");
+            ConsumerId another = new ConsumerId("abc:5:6");
             Assert.AreEqual("abc", another.ConnectionId, "extracting consumerId.ConnectionId");
             Assert.AreEqual(5, another.SessionId, "extracting consumerId.SessionId");
             Assert.AreEqual(6, another.Value, "extracting consumerId.Value");
@@ -53,10 +53,10 @@ namespace Apache.NMS.Stomp.Test
             mid.BrokerSequenceId = 5;
             mid.ProducerSequenceId = 6;
 
-            string text = StompHelper.ToStomp(mid);
+            string text = mid.ToString();
             Assert.AreEqual("cheese:2:3:6", text, "MessageId as stomp");
 
-            MessageId mid2 = StompHelper.ToMessageId("abc:5:6:7:8");
+            MessageId mid2 = new MessageId("abc:5:6:7:8");
             Assert.AreEqual(8, mid2.ProducerSequenceId, "extracting mid2.ProducerSequenceId");
 
             ProducerId another = mid2.ProducerId;

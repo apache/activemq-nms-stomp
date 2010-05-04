@@ -24,6 +24,8 @@ namespace Apache.NMS.Stomp.Commands
     {
         private SessionId parentId;
 
+        private string key = null;
+
         string connectionId;
         long value;
         long sessionId;
@@ -41,13 +43,30 @@ namespace Apache.NMS.Stomp.Commands
 
         public ProducerId(string producerKey)
         {
-            // Parse off the producerId
-            int p = producerKey.LastIndexOf(":");
-            if(p >= 0)
+            // Store the original.
+            this.key = producerKey;
+
+            // Try and get back the AMQ version of the data.
+            int idx = producerKey.LastIndexOf(':');
+            if(idx >= 0)
             {
-                value = Int64.Parse(producerKey.Substring(p + 1));
-                producerKey = producerKey.Substring(0, p);
+                try
+                {
+                    this.Value = Int32.Parse(producerKey.Substring(idx + 1));
+                    producerKey = producerKey.Substring(0, idx);
+                    idx = producerKey.LastIndexOf(':');
+                    if(idx >= 0)
+                    {
+                        this.SessionId = Int32.Parse(producerKey.Substring(idx + 1));
+                        producerKey = producerKey.Substring(0, idx);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Tracer.Debug(ex.Message);
+                }
             }
+            this.ConnectionId = producerKey;
         }
 
         ///
@@ -69,7 +88,12 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override string ToString()
         {
-            return ConnectionId + ":" + SessionId + ":" + Value;
+            if( this.key == null )
+            {
+                this.key = ConnectionId + ":" + SessionId + ":" + Value;
+            }
+
+            return this.key;
         }
 
         public SessionId ParentId

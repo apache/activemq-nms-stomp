@@ -208,9 +208,7 @@ namespace Apache.NMS.Stomp.Commands
             {
                 if(null != MessageId)
                 {
-                    return MessageId.ProducerId.ConnectionId + ":" +
-                           MessageId.ProducerId.SessionId + ":" +
-                           MessageId.ProducerId.Value;
+                    return MessageId.ToString();
                 }
 
                 return String.Empty;

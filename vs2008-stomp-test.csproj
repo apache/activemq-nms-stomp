@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -31,6 +31,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>keyfile\NMSKey.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,14 +53,6 @@
     <DefineConstants>NET,NET_2_0</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.NMS, Version=1.3.0.1865, Culture=neutral, PublicKeyToken=82756feee3957618, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Apache.NMS\net-2.0\Apache.NMS.dll</HintPath>
-    </Reference>
-    <Reference Include="Apache.NMS.Test, Version=1.3.0.1865, Culture=neutral, PublicKeyToken=82756feee3957618, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Apache.NMS\net-2.0\Apache.NMS.Test.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\NUnit\net-2.0\nunit.framework.dll</HintPath>
@@ -70,6 +63,14 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="Apache.NMS, Version=1.3.0.1946, Culture=neutral, PublicKeyToken=82756feee3957618">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>build\mono-2.0\debug\Apache.NMS.dll</HintPath>
+    </Reference>
+    <Reference Include="Apache.NMS.Stomp, Version=1.3.0.1949, Culture=neutral, PublicKeyToken=82756feee3957618">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>build\mono-2.0\debug\Apache.NMS.Stomp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
@@ -133,5 +134,7 @@
     <Compile Include="src\test\csharp\Commands\MapMessageTest.cs" />
     <Compile Include="src\test\csharp\Protocol\XmlPrimitiveMapMarshalerTest.cs" />
     <Compile Include="src\test\csharp\MapMessageTest.cs" />
+    <Compile Include="src\test\csharp\Commands\ConsumerIdTest.cs" />
+    <Compile Include="src\test\csharp\Commands\ProducerIdTest.cs" />
   </ItemGroup>
 </Project>

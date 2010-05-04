@@ -216,12 +216,12 @@ namespace Apache.NMS.Stomp.Protocol
             message.Type = frame.RemoveProperty("type");
             message.Destination = StompHelper.ToDestination(frame.RemoveProperty("destination"));
             message.ReplyTo = StompHelper.ToDestination(frame.RemoveProperty("reply-to"));
-            message.TargetConsumerId = StompHelper.ToConsumerId(frame.RemoveProperty("subscription"));
+            message.TargetConsumerId = new ConsumerId(frame.RemoveProperty("subscription"));
             message.CorrelationId = frame.RemoveProperty("correlation-id");
 
             Tracer.Debug("RECV - Inbound MessageId = " + frame.GetProperty("message-id"));
           
-            message.MessageId = StompHelper.ToMessageId(frame.RemoveProperty("message-id"));
+            message.MessageId = new MessageId(frame.RemoveProperty("message-id"));
             message.Persistent = StompHelper.ToBool(frame.RemoveProperty("persistent"), false);
 
             // If it came from NMS.Stomp we added this header to ensure its reported on the
@@ -320,7 +320,7 @@ namespace Apache.NMS.Stomp.Protocol
             }
             if(command.TransactionId!=null)
             {
-                frame.SetProperty("transaction", StompHelper.ToStomp(command.TransactionId));
+                frame.SetProperty("transaction", command.TransactionId.ToString());
             }
 
             frame.SetProperty("persistent", command.Persistent.ToString().ToLower());
@@ -372,13 +372,13 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty("receipt", "ignore:" + command.CommandId);
             }   
 
-            frame.SetProperty("message-id", StompHelper.ToStomp(command.LastMessageId));
+            frame.SetProperty("message-id", command.LastMessageId.ToString());
 
             Tracer.Debug("ACK - Outbound MessageId = " + frame.GetProperty("message-id"));
             
             if(command.TransactionId != null)
             {
-                frame.SetProperty("transaction", StompHelper.ToStomp(command.TransactionId));
+                frame.SetProperty("transaction", command.TransactionId.ToString());
             }
 
             frame.ToStream(dataOut);
@@ -415,7 +415,7 @@ namespace Apache.NMS.Stomp.Protocol
             }
             
             frame.SetProperty("destination", StompHelper.ToStomp(command.Destination));
-            frame.SetProperty("id", StompHelper.ToStomp(command.ConsumerId));
+            frame.SetProperty("id", command.ConsumerId.ToString());
             frame.SetProperty("durable-subscriber-name", command.SubscriptionName);
             frame.SetProperty("selector", command.Selector);
             frame.SetProperty("ack", StompHelper.ToStomp(command.AckMode));
@@ -477,7 +477,7 @@ namespace Apache.NMS.Stomp.Protocol
                 {
                     frame.SetProperty("receipt", command.CommandId);
                 }                
-                frame.SetProperty("id", StompHelper.ToStomp(consumerId));
+                frame.SetProperty("id", consumerId.ToString() );
                 frame.ToStream(dataOut);
             }
         }
@@ -507,7 +507,7 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty("receipt", command.CommandId);
             }
             
-            frame.SetProperty("transaction", StompHelper.ToStomp(command.TransactionId));
+            frame.SetProperty("transaction", command.TransactionId.ToString());
             frame.ToStream(dataOut);
         }
 

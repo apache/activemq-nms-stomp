@@ -47,6 +47,45 @@ namespace Apache.NMS.Stomp.Test
         [RowTest]
         [Row(MsgDeliveryMode.Persistent)]
         [Row(MsgDeliveryMode.NonPersistent)]
+        public void SendReceiveMessageIdComparisonTest(MsgDeliveryMode deliveryMode)
+        {
+            using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
+            {
+                connection.Start();
+                using(ISession session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge))
+                {
+                    IDestination destination = SessionUtil.GetDestination(session, DESTINATION_NAME);
+                    using(IMessageConsumer consumer = session.CreateConsumer(destination))
+                    using(IMessageProducer producer = session.CreateProducer(destination))
+                    {
+                        producer.DeliveryMode = deliveryMode;
+                        producer.RequestTimeout = receiveTimeout;
+                        IMessage request1 = session.CreateMessage();
+                        IMessage request2 = session.CreateMessage();
+                        IMessage request3 = session.CreateMessage();
+
+                        producer.Send(request1);
+                        producer.Send(request2);
+                        producer.Send(request3);
+
+                        IMessage message1 = consumer.Receive(receiveTimeout);
+                        Assert.IsNotNull(message1, "No message returned!");
+                        IMessage message2 = consumer.Receive(receiveTimeout);
+                        Assert.IsNotNull(message2, "No message returned!");
+                        IMessage message3 = consumer.Receive(receiveTimeout);
+                        Assert.IsNotNull(message3, "No message returned!");
+
+                        Assert.AreNotEqual(message1.NMSMessageId, message2.NMSMessageId);
+                        Assert.AreNotEqual(message1.NMSMessageId, message3.NMSMessageId);
+                        Assert.AreNotEqual(message2.NMSMessageId, message3.NMSMessageId);
+                    }
+                }
+            }
+        }
+
+        [RowTest]
+        [Row(MsgDeliveryMode.Persistent)]
+        [Row(MsgDeliveryMode.NonPersistent)]
         public void SendReceiveMessageProperties(MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))

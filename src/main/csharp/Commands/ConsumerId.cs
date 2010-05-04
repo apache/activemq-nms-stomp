@@ -24,6 +24,8 @@ namespace Apache.NMS.Stomp.Commands
     {
         public const byte ID_CONSUMERID = 122;
 
+        private string key;
+
         private SessionId parentId = null;
 
         string connectionId;
@@ -32,6 +34,43 @@ namespace Apache.NMS.Stomp.Commands
 
         public ConsumerId()
         {
+        }
+
+        public ConsumerId( string consumerKey )
+        {
+            this.key = consumerKey;
+
+            // We give the Connection ID the key for now so there's at least some
+            // data stored into the Id.
+            this.ConnectionId = consumerKey;
+
+            int idx = consumerKey.LastIndexOf(':');
+            if( idx >= 0 )
+            {
+                try
+                {
+                    this.Value = Int32.Parse(consumerKey.Substring(idx + 1));
+                    consumerKey = consumerKey.Substring(0, idx);
+                    idx = consumerKey.LastIndexOf(':');
+                    if (idx >= 0)
+                    {
+                        try
+                        {
+                            this.SessionId = Int32.Parse(consumerKey.Substring(idx + 1));
+                            consumerKey = consumerKey.Substring(0, idx);
+                        }
+                        catch(Exception ex)
+                        {
+                            Tracer.Debug(ex.Message);
+                        }
+                    }
+                    this.ConnectionId = consumerKey;
+                }
+                catch(Exception ex)
+                {
+                    Tracer.Debug(ex.Message);
+                }
+            }
         }
 
         public ConsumerId( SessionId sessionId, long consumerId )
@@ -60,7 +99,12 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override string ToString()
         {
-            return ConnectionId + ":" + SessionId + ":" + Value;
+            if( key == null )
+            {
+                this.key = ConnectionId + ":" + SessionId + ":" + Value;
+            }
+
+            return key;
         }
 
         public SessionId ParentId
@@ -114,6 +158,11 @@ namespace Apache.NMS.Stomp.Commands
 
         public virtual bool Equals(ConsumerId that)
         {
+            if(this.key != null && that.key != null)
+            {
+                return this.key.Equals(that.key);
+            }
+
             if(!Equals(this.ConnectionId, that.ConnectionId))
             {
                 return false;

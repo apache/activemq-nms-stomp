@@ -190,11 +190,34 @@ namespace Apache.NMS.Stomp.Commands
                 timeToLive = value;
                 if(timeToLive.TotalMilliseconds > 0)
                 {
-                    Expiration = Timestamp + (long) timeToLive.TotalMilliseconds;
+                    long timeStamp = Timestamp;
+
+                    if(timeStamp == 0)
+                    {
+                        timeStamp = DateUtils.ToJavaTimeUtc(DateTime.UtcNow);
+                    }
+
+                    Expiration = timeStamp + (long) timeToLive.TotalMilliseconds;
                 }
                 else
                 {
                     Expiration = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The timestamp the broker added to the message
+        /// </summary>
+        public DateTime NMSTimestamp
+        {
+            get { return DateUtils.ToDateTime(Timestamp); }
+            set
+            {
+                Timestamp = DateUtils.ToJavaTimeUtc(value);
+                if(timeToLive.TotalMilliseconds > 0)
+                {
+                    Expiration = Timestamp + (long) timeToLive.TotalMilliseconds;
                 }
             }
         }
@@ -271,22 +294,6 @@ namespace Apache.NMS.Stomp.Commands
         {
             get { return ReplyTo; }
             set { ReplyTo = Destination.Transform(value); }
-        }
-
-        /// <summary>
-        /// The timestamp the broker added to the message
-        /// </summary>
-        public DateTime NMSTimestamp
-        {
-            get { return DateUtils.ToDateTime(Timestamp); }
-            set
-            {
-                Timestamp = DateUtils.ToJavaTimeUtc(value);
-                if(timeToLive.TotalMilliseconds > 0)
-                {
-                    Expiration = Timestamp + (long) timeToLive.TotalMilliseconds;
-                }
-            }
         }
 
         /// <summary>

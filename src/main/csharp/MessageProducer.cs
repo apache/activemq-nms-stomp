@@ -122,25 +122,20 @@ namespace Apache.NMS.Stomp
 
         public void Send(IMessage message)
         {
-            Send(info.Destination, message, this.msgDeliveryMode, this.msgPriority, this.msgTimeToLive, false);
+            Send(info.Destination, message, this.msgDeliveryMode, this.msgPriority, this.msgTimeToLive);
         }
 
         public void Send(IDestination destination, IMessage message)
         {
-            Send(destination, message, this.msgDeliveryMode, this.msgPriority, this.msgTimeToLive, false);
+            Send(destination, message, this.msgDeliveryMode, this.msgPriority, this.msgTimeToLive);
         }
 
         public void Send(IMessage message, MsgDeliveryMode deliveryMode, MsgPriority priority, TimeSpan timeToLive)
         {
-            Send(info.Destination, message, deliveryMode, priority, timeToLive, true);
+            Send(info.Destination, message, deliveryMode, priority, timeToLive);
         }
 
         public void Send(IDestination destination, IMessage message, MsgDeliveryMode deliveryMode, MsgPriority priority, TimeSpan timeToLive)
-        {
-            Send(destination, message, deliveryMode, priority, timeToLive, true);
-        }
-
-        protected void Send(IDestination destination, IMessage message, MsgDeliveryMode deliveryMode, MsgPriority priority, TimeSpan timeToLive, bool specifiedTimeToLive)
         {
             if(null == destination)
             {
@@ -188,7 +183,7 @@ namespace Apache.NMS.Stomp
                 stompMessage.NMSTimestamp = DateTime.UtcNow;
             }
 
-            if(specifiedTimeToLive)
+            if(timeToLive != TimeSpan.Zero)
             {
                 stompMessage.NMSTimeToLive = timeToLive;
             }

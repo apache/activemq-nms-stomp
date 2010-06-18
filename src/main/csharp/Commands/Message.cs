@@ -142,6 +142,7 @@ namespace Apache.NMS.Stomp.Commands
                 {
                     properties = PrimitiveMap.Unmarshal(MarshalledProperties);
                     propertyHelper = new MessagePropertyIntercepter(this, properties, this.ReadOnlyProperties);
+                    propertyHelper.AllowByteArrays = false;
                 }
 
                 return propertyHelper;

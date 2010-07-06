@@ -18,6 +18,7 @@
 using System;
 
 using Apache.NMS.Stomp.Transport.Tcp;
+using Apache.NMS.Stomp.Transport.Failover;
 
 namespace Apache.NMS.Stomp.Transport
 {
@@ -77,6 +78,9 @@ namespace Apache.NMS.Stomp.Transport
             {
                 switch(scheme.ToLower())
                 {
+                case "failover":
+                    factory = new FailoverTransportFactory();
+                    break;
                 case "tcp":
                     factory = new TcpTransportFactory();
                     break;

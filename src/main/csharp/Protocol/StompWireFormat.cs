@@ -93,6 +93,10 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 WriteRemoveInfo((RemoveInfo) o, dataOut);
             }
+            else if(o is KeepAliveInfo)
+            {
+                WriteKeepAliveInfo((KeepAliveInfo) o, dataOut);
+            }
             else if(o is Command)
             {
                 Command command = o as Command;
@@ -435,7 +439,7 @@ namespace Apache.NMS.Stomp.Protocol
             }
             else
             {
-            //    frame.SetProperty("transformation", "jms-map-xml");
+                frame.SetProperty("transformation", "jms-xml");
             }
 
             frame.SetProperty("activemq.dispatchAsync", command.DispatchAsync);
@@ -463,6 +467,11 @@ namespace Apache.NMS.Stomp.Protocol
             }
 
             frame.ToStream(dataOut);
+        }
+
+        protected virtual void WriteKeepAliveInfo(KeepAliveInfo command, BinaryWriter dataOut)
+        {
+            dataOut.Write((byte) '\n' );
         }
 
         protected virtual void WriteRemoveInfo(RemoveInfo command, BinaryWriter dataOut)

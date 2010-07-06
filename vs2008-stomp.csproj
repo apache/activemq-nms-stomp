@@ -55,7 +55,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="Apache.NMS, Version=1.3.0.1893, Culture=neutral, PublicKeyToken=82756feee3957618">
+    <Reference Include="Apache.NMS, Version=1.4.0.2007, Culture=neutral, PublicKeyToken=82756feee3957618">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>build\mono-2.0\debug\Apache.NMS.dll</HintPath>
     </Reference>
@@ -146,6 +146,20 @@
     <Compile Include="src\main\csharp\Protocol\XmlPrimitiveMapMarshaler.cs" />
     <Compile Include="src\main\csharp\Transport\Tcp\SslTransport.cs" />
     <Compile Include="src\main\csharp\Transport\Tcp\SslTransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\Failover\FailoverTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\Failover\FailoverTransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\InactivityMonitor.cs" />
+    <Compile Include="src\main\csharp\Commands\KeepAliveInfo.cs" />
+    <Compile Include="src\main\csharp\State\CommandVisitorAdapter.cs" />
+    <Compile Include="src\main\csharp\State\ConnectionState.cs" />
+    <Compile Include="src\main\csharp\State\ConnectionStateTracker.cs" />
+    <Compile Include="src\main\csharp\State\ConsumerState.cs" />
+    <Compile Include="src\main\csharp\State\ICommandVisitor.cs" />
+    <Compile Include="src\main\csharp\State\ThreadSimulator.cs" />
+    <Compile Include="src\main\csharp\State\Tracked.cs" />
+    <Compile Include="src\main\csharp\Transport\ICompositeTransport.cs" />
+    <Compile Include="src\main\csharp\State\SynchronizedObjects.cs" />
+    <Compile Include="src\main\csharp\IOException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile\NMSKey.snk" />
@@ -157,10 +171,13 @@
       <Properties>
         <Policies>
           <TextStylePolicy FileWidth="120" RemoveTrailingWhitespace="True" inheritsSet="VisualStudio" inheritsScope="text/plain" />
-          <StandardHeader Text="/*&#xA; * Licensed to the Apache Software Foundation (ASF) under one or more&#xA; * contributor license agreements.  See the NOTICE file distributed with&#xA; * this work for additional information regarding copyright ownership.&#xA; * The ASF licenses this file to You under the Apache License, Version 2.0&#xA; * (the &quot;License&quot;); you may not use this file except in compliance with&#xA; * the License.  You may obtain a copy of the License at&#xA; *&#xA; *     http://www.apache.org/licenses/LICENSE-2.0&#xA; *&#xA; * Unless required by applicable law or agreed to in writing, software&#xA; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&#xA; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA; * See the License for the specific language governing permissions and&#xA; * limitations under the License.&#xA; */&#xA;" inheritsSet="MITX11License" />
+          <StandardHeader Text="/*&#xA; * Licensed to the Apache Software Foundation (ASF) under one or more&#xA; * contributor license agreements.  See the NOTICE file distributed with&#xA; * this work for additional information regarding copyright ownership.&#xA; * The ASF licenses this file to You under the Apache License, Version 2.0&#xA; * (the &quot;License&quot;); you may not use this file except in compliance with&#xA; * the License.  You may obtain a copy of the License at&#xA; *&#xA; *     http://www.apache.org/licenses/LICENSE-2.0&#xA; *&#xA; * Unless required by applicable law or agreed to in writing, software&#xA; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&#xA; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA; * See the License for the specific language governing permissions and&#xA; * limitations under the License.&#xA; */&#xA;" inheritsSet="Apache2License" />
         </Policies>
       </Properties>
     </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="src\main\csharp\State\" />
+  </ItemGroup>
 </Project>

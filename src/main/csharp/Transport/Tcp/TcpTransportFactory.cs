@@ -39,6 +39,16 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 			set { useLogging = value; }
 		}
 
+        /// <summary>
+        /// Should the Inactivity Monitor be enabled on this Transport.
+        /// </summary>
+        private bool useInactivityMonitor = true;
+        public bool UseInactivityMonitor
+        {
+           get { return this.useInactivityMonitor; }
+           set { this.useInactivityMonitor = value; }
+        }
+
 		/// <summary>
 		/// Size in bytes of the receive buffer.
 		/// </summary>
@@ -128,6 +138,11 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 				transport = new LoggingTransport(transport);
 			}
 
+            if(UseInactivityMonitor)
+            {
+               transport = new InactivityMonitor(transport);
+            }
+            
 			transport.RequestTimeout = this.requestTimeout;
 
 			if(setTransport != null)

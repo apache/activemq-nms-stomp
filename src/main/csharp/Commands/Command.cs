@@ -16,6 +16,7 @@
  */
 
 using System;
+using Apache.NMS.Stomp.State;
 
 namespace Apache.NMS.Stomp.Commands
 {
@@ -81,6 +82,17 @@ namespace Apache.NMS.Stomp.Commands
             get;
         }
 
+        bool IsKeepAliveInfo
+        {
+            get;
+        }
+
+        bool IsShutdownInfo
+        {
+            get;
+        }
+
+        Response visit(ICommandVisitor visitor);
     }
 }
 

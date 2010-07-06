@@ -16,6 +16,7 @@
  */
 
 using System;
+using Apache.NMS.Stomp.State;
 
 namespace Apache.NMS.Stomp.Commands
 {
@@ -200,6 +201,14 @@ namespace Apache.NMS.Stomp.Commands
             }
         }
 
+        public virtual bool IsKeepAliveInfo
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public virtual bool ResponseRequired
         {
             get
@@ -210,6 +219,11 @@ namespace Apache.NMS.Stomp.Commands
             {
                 responseRequired = value;
             }
+        }
+
+        public virtual Response visit(ICommandVisitor visitor)
+        {
+            throw new ApplicationException("BaseCommand.Visit() not implemented");
         }
 
         public override Object Clone()

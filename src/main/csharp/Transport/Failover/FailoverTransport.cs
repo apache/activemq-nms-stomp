@@ -22,6 +22,7 @@ using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.State;
 using Apache.NMS.Stomp.Threads;
+using Apache.NMS.Stomp.Util;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport.Failover
@@ -78,9 +79,9 @@ namespace Apache.NMS.Stomp.Transport.Failover
         {
             Dispose(false);
         }
-        
+
         #region FailoverTask
-        
+
         private class FailoverTask : Task
         {
             private FailoverTransport parent;
@@ -160,7 +161,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
             get { return requestTimeout; }
             set { requestTimeout = value; }
         }
-        
+
         public int InitialReconnectDelay
         {
             get { return initialReconnectDelay; }
@@ -216,7 +217,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         }
 
         #endregion
-        
+
         public bool IsFaultTolerant
         {
             get { return true; }
@@ -236,7 +237,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         {
             get { return started; }
         }
-                   
+
         /// <summary>
         /// </summary>
         /// <param name="command"></param>
@@ -245,7 +246,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         {
             return (command != null && (command.IsShutdownInfo || command is RemoveInfo));
         }
-        
+
         public void OnException(ITransport sender, Exception error)
         {
             try
@@ -388,7 +389,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         {
             throw new ApplicationException("FailoverTransport does not implement Request(Command, TimeSpan)");
         }
-        
+
         public void OnCommand(ITransport sender, Command command)
         {
             if(command != null)
@@ -426,7 +427,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         public void Oneway(Command command)
         {
             Exception error = null;
-            
+
             lock(reconnectMutex)
             {
                 if(IsShutdownCommand(command) && ConnectedTransport == null)
@@ -446,7 +447,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
                         return;
                     }
                 }
-                
+
                 // Keep trying until the message is sent.
                 for(int i = 0; !disposed; i++)
                 {
@@ -454,7 +455,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
                     {
                         // Wait for transport to be connected.
                         ITransport transport = ConnectedTransport;
-                        DateTime start = DateTime.Now;                            
+                        DateTime start = DateTime.Now;
                         bool timedout = false;
                         while(transport == null && !disposed && connectionFailure == null)
                         {
@@ -467,17 +468,17 @@ namespace Apache.NMS.Stomp.Transport.Failover
                                 Tracer.DebugFormat("FailoverTransport.oneway - timed out after {0} mills", elapsed );
                                 break;
                             }
-                            
+
                             // Release so that the reconnect task can run
                             try
                             {
                                 // Wait for something
-                                Monitor.Wait(reconnectMutex, 1000);
+                                ThreadUtil.MonitorWait(reconnectMutex, 1000);
                             }
-                            catch(ThreadInterruptedException e)
+                            catch(Exception e)
                             {
                                 Tracer.DebugFormat("Interrupted: {0}", e.Message);
-                            }                            
+                            }
 
                             transport = ConnectedTransport;
                         }
@@ -626,7 +627,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         {
             Add(new Uri[] { uri });
         }
-        
+
         public void Reconnect()
         {
             lock(reconnectMutex)
@@ -644,7 +645,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
                     {
                         reconnectTask.Wakeup();
                     }
-                    catch(ThreadInterruptedException)
+                    catch(Exception)
                     {
                     }
                 }
@@ -707,7 +708,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
                 t.Oneway(command);
             }
         }
-        
+
         public Uri RemoteAddress
         {
             get
@@ -847,7 +848,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
                     {
                         Thread.Sleep(ReconnectDelay);
                     }
-                    catch(ThreadInterruptedException)
+                    catch(Exception)
                     {
                     }
                 }

@@ -19,6 +19,7 @@ using System;
 using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Threads;
+using Apache.NMS.Stomp.Util;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport
@@ -95,7 +96,7 @@ namespace Apache.NMS.Stomp.Transport
         {
             if(this.inWrite.Value || this.failed.Value)
             {
-                Tracer.Debug("Inactivity Monitor is in write or already failed.");				
+                Tracer.Debug("Inactivity Monitor is in write or already failed.");
                 return;
             }
 
@@ -210,12 +211,9 @@ namespace Apache.NMS.Stomp.Transport
             {
                 if(monitorStarted.CompareAndSet(true, false))
                 {
-                    AutoResetEvent shutdownEvent = new AutoResetEvent(false);
-
                     // Attempt to wait for the Timer to shutdown, but don't wait
                     // forever, if they don't shutdown after two seconds, just quit.
-                    this.connectionCheckTimer.Dispose(shutdownEvent);
-                    shutdownEvent.WaitOne(TimeSpan.FromMilliseconds(2000), false);
+                    ThreadUtil.DisposeTimer(connectionCheckTimer, 2000);
 
                     this.asyncTask.Shutdown();
                     this.asyncTask = null;

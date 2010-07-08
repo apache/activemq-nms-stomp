@@ -26,7 +26,17 @@ namespace Apache.NMS.Stomp.State
             return null;
         }
 
+        public virtual Response processAddSession(SessionInfo info)
+        {
+            return null;
+        }
+
         public virtual Response processAddConsumer(ConsumerInfo info)
+        {
+            return null;
+        }
+
+        public virtual Response processAddProducer(ProducerInfo info)
         {
             return null;
         }
@@ -36,7 +46,7 @@ namespace Apache.NMS.Stomp.State
             return null;
         }
 
-        public virtual Response processMessage(Message send)
+        public virtual Response processMessage(BaseMessage send)
         {
             return null;
         }
@@ -51,7 +61,17 @@ namespace Apache.NMS.Stomp.State
             return null;
         }
 
+        public virtual Response processRemoveSession(SessionId id)
+        {
+            return null;
+        }
+
         public virtual Response processRemoveConsumer(ConsumerId id)
+        {
+            return null;
+        }
+
+        public virtual Response processRemoveProducer(ProducerId id)
         {
             return null;
         }
@@ -77,6 +97,21 @@ namespace Apache.NMS.Stomp.State
         }
 
         public virtual Response processConnectionError(ConnectionError error)
+        {
+            return null;
+        }
+
+        public virtual Response processBeginTransaction(TransactionInfo info)
+        {
+            return null;
+        }
+
+        public virtual Response processCommitTransaction(TransactionInfo info)
+        {
+            return null;
+        }
+
+        public virtual Response processRollbackTransaction(TransactionInfo info)
         {
             return null;
         }

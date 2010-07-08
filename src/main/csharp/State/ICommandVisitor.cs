@@ -24,15 +24,23 @@ namespace Apache.NMS.Stomp.State
     {
         Response processAddConnection(ConnectionInfo info);
 
+        Response processAddSession(SessionInfo info);
+
         Response processAddConsumer(ConsumerInfo info);
+
+        Response processAddProducer(ProducerInfo info);
 
         Response processRemoveConnection(ConnectionId id);
 
+        Response processRemoveSession(SessionId id);
+
         Response processRemoveConsumer(ConsumerId id);
+
+        Response processRemoveProducer(ProducerId id);
 
         Response processRemoveSubscriptionInfo(RemoveSubscriptionInfo info);
 
-        Response processMessage(Message send);
+        Response processMessage(BaseMessage send);
 
         Response processMessageAck(MessageAck ack);
 
@@ -45,5 +53,12 @@ namespace Apache.NMS.Stomp.State
         Response processConnectionError(ConnectionError error);
 
         Response processResponse(Response response);
+
+        Response processBeginTransaction(TransactionInfo info);
+
+        Response processCommitTransaction(TransactionInfo info);
+
+        Response processRollbackTransaction(TransactionInfo info);
+
     }
 }

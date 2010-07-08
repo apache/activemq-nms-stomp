@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections;
+using Apache.NMS.Stomp.State;
 
 namespace Apache.NMS.Stomp.Commands
 {
@@ -89,6 +90,11 @@ namespace Apache.NMS.Stomp.Commands
             {
                 return true;
             }
+        }
+
+        public override Response visit(ICommandVisitor visitor)
+        {
+            return visitor.processAddConnection( this );
         }
 
     };

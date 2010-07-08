@@ -20,6 +20,7 @@ using System.Collections;
 using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Transport;
+using Apache.NMS.Stomp.Transport.Failover;
 using Apache.NMS.Stomp.Util;
 using Apache.NMS.Util;
 
@@ -61,6 +62,7 @@ namespace Apache.NMS.Stomp
 		private ConnectionMetaData metaData = null;
 		private bool disposed = false;
 		private IdGenerator clientIdGenerator;
+        private CountDownLatch transportInterruptionProcessingComplete;
 
 		public Connection(Uri connectionUri, ITransport transport, IdGenerator clientIdGenerator)
 		{
@@ -532,6 +534,9 @@ namespace Apache.NMS.Stomp
 		{
 			if(command is MessageDispatch)
 			{
+                // We wait if the Connection is still processing interruption
+                // code to reset the MessageConsumers.
+                WaitForTransportInterruptionProcessingToComplete();
 				DispatchMessage((MessageDispatch) command);
 			}
 			else if(command is ConnectionError)
@@ -605,6 +610,12 @@ namespace Apache.NMS.Stomp
 		protected void OnTransportInterrupted(ITransport sender)
 		{
 			Tracer.Debug("Transport has been Interrupted.");
+
+            this.transportInterruptionProcessingComplete = new CountDownLatch(dispatchers.Count);
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("transport interrupted, dispatchers: " + dispatchers.Count);
+            }
 
 			foreach(Session session in this.sessions)
 			{
@@ -682,5 +693,28 @@ namespace Apache.NMS.Stomp
 			answer.SessionId = sessionId;
 			return answer;
 		}
+
+        private void WaitForTransportInterruptionProcessingToComplete()
+        {
+            CountDownLatch cdl = this.transportInterruptionProcessingComplete;
+            if(cdl != null)
+            {
+                if(!closed && cdl.Remaining > 0)
+                {
+                    Tracer.Warn("dispatch paused, waiting for outstanding dispatch interruption " +
+                                "processing (" + cdl.Remaining + ") to complete..");
+                    cdl.await(TimeSpan.FromSeconds(10));
+                }
+            }
+        }
+
+        internal void TransportInterruptionProcessingComplete()
+        {
+            CountDownLatch cdl = this.transportInterruptionProcessingComplete;
+            if(cdl != null)
+            {
+                cdl.countDown();
+            }
+        }
 	}
 }

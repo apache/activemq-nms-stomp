@@ -62,6 +62,15 @@ namespace Apache.NMS.Stomp
             synchronizations.Remove(synchronization);
         }
 
+        public void ResetTransactionInProgress()
+        {
+            if(InTransaction)
+            {
+                this.transactionId = null;
+                this.synchronizations.Clear();
+            }
+        }
+
         public void Begin()
         {
             if(!InTransaction)

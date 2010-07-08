@@ -18,6 +18,8 @@
 using System;
 using System.Collections;
 
+using Apache.NMS.Stomp.State;
+
 namespace Apache.NMS.Stomp.Commands
 {
     public class MessageDispatch : BaseCommand
@@ -131,6 +133,11 @@ namespace Apache.NMS.Stomp.Commands
             {
                 return true;
             }
+        }
+
+        public override Response visit(ICommandVisitor visitor)
+        {
+            return visitor.processMessageDispatch( this );
         }
 
     };

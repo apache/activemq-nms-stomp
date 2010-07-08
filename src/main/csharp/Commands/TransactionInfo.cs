@@ -18,6 +18,8 @@
 using System;
 using System.Collections;
 
+using Apache.NMS.Stomp.State;
+
 namespace Apache.NMS.Stomp.Commands
 {
     public class TransactionInfo : BaseCommand
@@ -87,6 +89,20 @@ namespace Apache.NMS.Stomp.Commands
             }
         }
 
+        public override Response visit(ICommandVisitor visitor)
+        {
+            switch(type)
+            {
+                case TransactionInfo.BEGIN:
+                    return visitor.processBeginTransaction(this);
+                case TransactionInfo.COMMIT:
+                    return visitor.processCommitTransaction(this);
+                case TransactionInfo.ROLLBACK:
+                    return visitor.processRollbackTransaction(this);
+                default:
+                    throw new IOException("Transaction info type unknown: " + type);
+            }
+        }
     };
 }
 

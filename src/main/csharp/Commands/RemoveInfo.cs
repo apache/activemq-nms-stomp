@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections;
+using Apache.NMS.Stomp.State;
 
 namespace Apache.NMS.Stomp.Commands
 {
@@ -61,6 +62,29 @@ namespace Apache.NMS.Stomp.Commands
             }
         }
 
+        ///
+        /// <summery>
+        ///  Allows a Visitor to visit this command and return a response to the
+        ///  command based on the command type being visited.  The command will call
+        ///  the proper processXXX method in the visitor.
+        /// </summery>
+        ///
+        public override Response visit(ICommandVisitor visitor)
+        {
+            switch(objectId.GetDataStructureType())
+            {
+                case DataStructureTypes.ConnectionIdType:
+                    return visitor.processRemoveConnection((ConnectionId) objectId);
+                case DataStructureTypes.SessionIdType:
+                    return visitor.processRemoveSession((SessionId) objectId);
+                case DataStructureTypes.ConsumerIdType:
+                    return visitor.processRemoveConsumer((ConsumerId) objectId);
+                case DataStructureTypes.ProducerIdType:
+                    return visitor.processRemoveProducer((ProducerId) objectId);
+                default:
+                    throw new IOException("Unknown remove command type: " + objectId.GetDataStructureType());
+            }
+        }
     };
 }
 

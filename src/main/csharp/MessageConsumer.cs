@@ -53,6 +53,7 @@ namespace Apache.NMS.Stomp
         private int dispatchedCount = 0;
         private volatile bool synchronizationRegistered = false;
         private bool clearDispatchList = false;
+        private bool inProgressClearRequiredFlag;
 
         private event MessageListener listener;
 
@@ -314,16 +315,38 @@ namespace Apache.NMS.Stomp
             this.unconsumedMessages.Stop();
         }
 
-        public void ClearMessagesInProgress()
+        internal void InProgressClearRequired()
         {
-            // we are called from inside the transport reconnection logic
-            // which involves us clearing all the connections' consumers
-            // dispatch lists and clearing them
-            // so rather than trying to grab a mutex (which could be already
-            // owned by the message listener calling the send) we will just set
-            // a flag so that the list can be cleared as soon as the
-            // dispatch thread is ready to flush the dispatch list
-            this.clearDispatchList = true;
+            inProgressClearRequiredFlag = true;
+            // deal with delivered messages async to avoid lock contention with in progress acks
+            clearDispatchList = true;
+        }
+
+        internal void ClearMessagesInProgress()
+        {
+            if(inProgressClearRequiredFlag)
+            {
+                // Called from a thread in the ThreadPool, so we wait until we can
+                // get a lock on the unconsumed list then we clear it.
+                lock(this.unconsumedMessages)
+                {
+                    if(inProgressClearRequiredFlag)
+                    {
+                        if(Tracer.IsDebugEnabled)
+                        {
+                            Tracer.Debug(this.ConsumerId + " clearing dispatched list (" +
+                                         this.unconsumedMessages.Count + ") on transport interrupt");
+                        }
+
+                        this.unconsumedMessages.Clear();
+                        this.synchronizationRegistered = false;
+
+                        // allow dispatch on this connection to resume
+                        this.session.Connection.TransportInterruptionProcessingComplete();
+                        this.inProgressClearRequiredFlag = false;
+                    }
+                }
+            }
         }
 
         public void DeliverAcks()
@@ -743,8 +766,6 @@ namespace Apache.NMS.Stomp
                     int currentRedeliveryCount = lastMd.Message.RedeliveryCounter;
 
                     redeliveryDelay = this.redeliveryPolicy.RedeliveryDelay(currentRedeliveryCount);
-
-//                    MessageId firstMsgId = this.dispatchedMessages.Last.Value.Message.MessageId;
 
                     foreach(MessageDispatch dispatch in this.dispatchedMessages)
                     {

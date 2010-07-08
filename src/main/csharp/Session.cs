@@ -75,7 +75,7 @@ namespace Apache.NMS.Stomp
 
             this.executor = new SessionExecutor(this, this.consumers);
         }
-        
+
         ~Session()
         {
             Dispose(false);
@@ -757,13 +757,31 @@ namespace Apache.NMS.Stomp
                 this.executor.ClearMessagesInProgress();
             }
 
+            if(Transacted)
+            {
+                this.transactionContext.ResetTransactionInProgress();
+            }
+
             lock(this.consumers.SyncRoot)
             {
                 foreach(MessageConsumer consumer in this.consumers)
                 {
-                    consumer.ClearMessagesInProgress();
+                    consumer.InProgressClearRequired();
+                    ThreadPool.QueueUserWorkItem(ClearMessages, consumer);
                 }
             }
+        }
+
+        private void ClearMessages(object value)
+        {
+            MessageConsumer consumer = value as MessageConsumer;
+
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("Performing Async Clear of In Progress Messages for Consumer: " + consumer.ConsumerId);
+            }
+
+            consumer.ClearMessagesInProgress();
         }
 
         internal void Acknowledge()

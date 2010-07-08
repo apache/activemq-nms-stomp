@@ -22,27 +22,6 @@ namespace Apache.NMS.Stomp.Util
 {
     public class ThreadUtil
     {
-       public static bool MonitorWait(Mutex mutex, int timeout)
-       {
-#if NETCF
-            int waitTime = 0;
-            bool acquiredLock = false;
-
-            // Release so that the reconnect task can run
-            Monitor.Exit(mutex);
-            // Wait for something
-            while(!(acquiredLock = Monitor.TryEnter(mutex)) && waitTime < timeout)
-            {
-                Thread.Sleep(1);
-                waitTime++;
-            }
-
-            return acquiredLock;
-#else
-           return Monitor.Wait(mutex, timeout);
-#endif
-       }
-
        public static void DisposeTimer(Timer timer, int timeout)
        {
 #if NETCF

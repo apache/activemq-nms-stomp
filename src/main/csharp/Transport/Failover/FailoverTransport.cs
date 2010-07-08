@@ -470,8 +470,13 @@ namespace Apache.NMS.Stomp.Transport.Failover
                             // Release so that the reconnect task can run
                             try
                             {
-                                // Wait for something
-                                ThreadUtil.MonitorWait(reconnectMutex, 1000);
+                                // This is a bit of a hack, what should be happening is that when
+                                // there's a reconnect the reconnectTask should signal the Monitor
+                                // or some other event object to indicate that we can wakeup right
+                                // away here, instead of performing the full wait.
+                                Monitor.Exit(reconnectMutex);
+                                Thread.Sleep(100);
+                                Monitor.Enter(reconnectMutex);
                             }
                             catch(Exception e)
                             {

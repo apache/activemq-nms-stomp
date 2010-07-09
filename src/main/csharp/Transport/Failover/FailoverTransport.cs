@@ -66,7 +66,6 @@ namespace Apache.NMS.Stomp.Transport.Failover
         private int reconnectDelay = 10;
         private Exception connectionFailure;
         private bool firstConnection = true;
-        private TimeSpan requestTimeout = NMSConstants.defaultRequestTimeout;
         private volatile Exception failure;
         private readonly object mutex = new object();
 
@@ -154,12 +153,6 @@ namespace Apache.NMS.Stomp.Transport.Failover
         {
             get { return this.timeout; }
             set { this.timeout = value; }
-        }
-
-        public TimeSpan RequestTimeout
-        {
-            get { return requestTimeout; }
-            set { requestTimeout = value; }
         }
 
         public int InitialReconnectDelay

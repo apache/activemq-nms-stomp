@@ -96,16 +96,6 @@ namespace Apache.NMS.Stomp.Transport
         /// A <see cref="System.Object"/>
         /// </returns>
         Object Narrow(Type type);            
-        
-        /// <value>
-        /// The time that the Transport waits before considering a request to have
-        /// failed and throwing an exception.
-        /// </value>
-        TimeSpan RequestTimeout
-        {
-            get;
-            set;
-        }
 
 		CommandHandler Command
 		{

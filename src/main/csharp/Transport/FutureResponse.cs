@@ -28,7 +28,7 @@ namespace Apache.NMS.Stomp.Transport
 	/// </summary>
 	public class FutureResponse
 	{
-		private static TimeSpan maxWait = TimeSpan.FromMilliseconds(Timeout.Infinite);
+		private TimeSpan maxWait = TimeSpan.FromMilliseconds(Timeout.Infinite);
 		public TimeSpan ResponseTimeout
 		{
 			get { return maxWait; }
@@ -48,29 +48,24 @@ namespace Apache.NMS.Stomp.Transport
 			// Blocks the caller until a value has been set
 			get
 			{
-				bool waitForResponse = false;
-
 				lock(latch)
 				{
-					if(null == response)
+					if(null != response)
 					{
-						waitForResponse = true;
+						return response;
 					}
 				}
 
-				if(waitForResponse)
+				try
 				{
-					try
+					if(!latch.await(maxWait))
 					{
-						if(!latch.await(maxWait))
-						{
-							// TODO: Throw timeout exception?
-						}
+						// TODO: Throw timeout exception?
 					}
-					catch (Exception e)
-					{
-						Tracer.Error("Caught while waiting on monitor: " + e);
-					}
+				}
+				catch (Exception e)
+				{
+					Tracer.Error("Caught while waiting on monitor: " + e);
 				}
 
 				lock(latch)

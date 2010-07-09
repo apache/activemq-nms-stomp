@@ -48,7 +48,7 @@ namespace Apache.NMS.Stomp
 		private PrefetchPolicy prefetchPolicy = new PrefetchPolicy();
 
 		private bool userSpecifiedClientID;
-		private TimeSpan requestTimeout;
+		private TimeSpan requestTimeout = NMSConstants.defaultRequestTimeout;
 		private readonly IList sessions = ArrayList.Synchronized(new ArrayList());
 		private readonly IDictionary dispatchers = Hashtable.Synchronized(new Hashtable());
 		private readonly object myLock = new object();
@@ -67,7 +67,6 @@ namespace Apache.NMS.Stomp
 		public Connection(Uri connectionUri, ITransport transport, IdGenerator clientIdGenerator)
 		{
 			this.brokerUri = connectionUri;
-			this.requestTimeout = transport.RequestTimeout;
 			this.clientIdGenerator = clientIdGenerator;
 
 			this.transport = transport;

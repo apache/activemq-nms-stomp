@@ -39,7 +39,6 @@ namespace Apache.NMS.Stomp.Transport.Tcp
         private bool disposed = false;
         private Atomic<bool> closed = new Atomic<bool>(false);
         private volatile bool seenShutdown;
-        private TimeSpan maxWait = TimeSpan.FromMilliseconds(Timeout.Infinite);
         private Uri connectedUri;
 
         private CommandHandler commandHandler;
@@ -139,15 +138,6 @@ namespace Apache.NMS.Stomp.Transport.Tcp
             throw new NotImplementedException("Use a ResponseCorrelator if you want to issue AsyncRequest calls");
         }
 
-        /// <summary>
-        /// Property RequestTimeout
-        /// </summary>
-        public TimeSpan RequestTimeout
-        {
-            get { return this.maxWait; }
-            set { this.maxWait = value; }
-        }
-
         public bool TcpNoDelayEnabled
         {
 #if !NETCF
@@ -234,18 +224,7 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 #endif
 )
                         {
-                            TimeSpan waitTime;
-
-                            if(maxWait < MAX_THREAD_WAIT)
-                            {
-                                waitTime = maxWait;
-                            }
-                            else
-                            {
-                                waitTime = MAX_THREAD_WAIT;
-                            }
-
-                            if(!readThread.Join((int) waitTime.TotalMilliseconds))
+                            if(!readThread.Join((int) MAX_THREAD_WAIT.TotalMilliseconds))
                             {
                                 readThread.Abort();
                             }

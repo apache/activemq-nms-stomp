@@ -16,6 +16,7 @@
  */
 
 using System;
+using System.Collections.Specialized;
 using Apache.NMS.Stomp.Util;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Transport;
@@ -77,7 +78,7 @@ namespace Apache.NMS.Stomp
         }
 
         public ConnectionFactory(string brokerUri, string clientID)
-            : this(new Uri(brokerUri), clientID)
+            : this(URISupport.CreateCompatibleUri(brokerUri), clientID)
         {
         }
 
@@ -103,14 +104,11 @@ namespace Apache.NMS.Stomp
 
             try
             {
-                // Strip off the activemq prefix, if it exists.
-                Uri uri = new Uri(URISupport.stripPrefix(brokerUri.OriginalString, "stomp:"));
+                Tracer.InfoFormat("Connecting to: {0}", brokerUri.ToString());
 
-                Tracer.InfoFormat("Connecting to: {0}", uri.ToString());
+                ITransport transport = TransportFactory.CreateTransport(brokerUri);
 
-                ITransport transport = TransportFactory.CreateTransport(uri);
-
-                connection = new Connection(uri, transport, this.ClientIdGenerator);
+                connection = new Connection(brokerUri, transport, this.ClientIdGenerator);
 
                 connection.UserName = userName;
                 connection.Password = password;
@@ -162,17 +160,30 @@ namespace Apache.NMS.Stomp
             get { return brokerUri; }
             set
             {
-                brokerUri = value;
+                brokerUri = new Uri(URISupport.StripPrefix(value.OriginalString, "stomp:"));
 
-                Uri uri = new Uri(URISupport.stripPrefix(brokerUri.OriginalString, "stomp:"));
+                if(brokerUri.Query != null)
+                {
+                    StringDictionary properties = URISupport.ParseQuery(brokerUri.Query);
+                
+                    StringDictionary connection = URISupport.ExtractProperties(properties, "connection.");
+                    StringDictionary nms = URISupport.ExtractProperties(properties, "nms.");
+                    
+                    if(connection != null)
+                    {
+                        URISupport.SetProperties(this, connection, "connection.");
+                    }
+                    
+                    if(nms != null)
+                    {
+                        URISupport.SetProperties(this.PrefetchPolicy, nms, "nms.PrefetchPolicy.");
+                        URISupport.SetProperties(this.RedeliveryPolicy, nms, "nms.RedeliveryPolicy.");
+                    }
 
-                URISupport.CompositeData c = URISupport.parseComposite(uri);
-                URISupport.SetProperties(this, c.Parameters, "connection.");
-                URISupport.SetProperties(this.PrefetchPolicy, c.Parameters, "nms.PrefetchPolicy.");
-                URISupport.SetProperties(this.RedeliveryPolicy, c.Parameters, "nms.RedeliveryPolicy.");
+                    brokerUri = URISupport.CreateRemainingUri(brokerUri, properties);
+                }
             }
         }
-
         public string UserName
         {
             get { return connectionUserName; }

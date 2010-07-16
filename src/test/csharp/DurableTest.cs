@@ -18,7 +18,6 @@
 using System;
 using System.Threading;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 using Apache.NMS.Util;
 using Apache.NMS.Test;
 
@@ -32,12 +31,11 @@ namespace Apache.NMS.Stomp.Test
         protected static string DURABLE_TOPIC = "TestDurableConsumerTopic";
         protected static string DURABLE_SELECTOR = "2 > 1";
 
-        [RowTest]
-        [Row(AcknowledgementMode.AutoAcknowledge)]
-        [Row(AcknowledgementMode.ClientAcknowledge)]
-        [Row(AcknowledgementMode.DupsOkAcknowledge)]
-        [Row(AcknowledgementMode.Transactional)]
-        public void TestSendWhileClosed(AcknowledgementMode ackMode)
+        [Test]
+        public void TestSendWhileClosed(
+			[Values(AcknowledgementMode.AutoAcknowledge, AcknowledgementMode.ClientAcknowledge,
+				AcknowledgementMode.DupsOkAcknowledge, AcknowledgementMode.Transactional)]
+			AcknowledgementMode ackMode)
         {
             string CLIENT_ID_AND_SUBSCIPTION = TEST_CLIENT_ID + ":" + new Random().Next();
 
@@ -99,12 +97,11 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(AcknowledgementMode.AutoAcknowledge)]
-        [Row(AcknowledgementMode.ClientAcknowledge)]
-        [Row(AcknowledgementMode.DupsOkAcknowledge)]
-        [Row(AcknowledgementMode.Transactional)]
-        public void TestDurableConsumerSelectorChange(AcknowledgementMode ackMode)
+        [Test]
+        public void TestDurableConsumerSelectorChange(
+			[Values(AcknowledgementMode.AutoAcknowledge, AcknowledgementMode.ClientAcknowledge,
+				AcknowledgementMode.DupsOkAcknowledge, AcknowledgementMode.Transactional)]
+			AcknowledgementMode ackMode)
         {
             string CLIENT_ID_AND_SUBSCIPTION = TEST_CLIENT_ID + ":" + new Random().Next();
 
@@ -188,12 +185,11 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(AcknowledgementMode.AutoAcknowledge)]
-        [Row(AcknowledgementMode.ClientAcknowledge)]
-        [Row(AcknowledgementMode.DupsOkAcknowledge)]
-        [Row(AcknowledgementMode.Transactional)]
-        public void TestDurableConsumer(AcknowledgementMode ackMode)
+        [Test]
+        public void TestDurableConsumer(
+			[Values(AcknowledgementMode.AutoAcknowledge, AcknowledgementMode.ClientAcknowledge,
+				AcknowledgementMode.DupsOkAcknowledge, AcknowledgementMode.Transactional)]
+			AcknowledgementMode ackMode)
         {
             string CLIENT_ID_AND_SUBSCIPTION = TEST_CLIENT_ID + ":" + new Random().Next();
 

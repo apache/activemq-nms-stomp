@@ -21,7 +21,6 @@ using System.Collections;
 using Apache.NMS.Util;
 using Apache.NMS.Test;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 
 namespace Apache.NMS.Stomp.Test
 {
@@ -32,10 +31,10 @@ namespace Apache.NMS.Stomp.Test
         protected static string TEST_CLIENT_ID = "TransactionTestClientId";
         protected static string TEST_CLIENT_ID2 = "TransactionTestClientId2";
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestSendRollback(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestSendRollback(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
@@ -75,10 +74,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestSendSessionClose(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestSendSessionClose(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             ITextMessage firstMsgSend;
             ITextMessage secondMsgSend;
@@ -163,10 +162,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestReceiveRollback(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestReceiveRollback(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
@@ -206,10 +205,10 @@ namespace Apache.NMS.Stomp.Test
         }
 
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestReceiveTwoThenRollback(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestReceiveTwoThenRollback(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
@@ -250,12 +249,12 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(AcknowledgementMode.AutoAcknowledge, MsgDeliveryMode.Persistent)]
-        [Row(AcknowledgementMode.AutoAcknowledge, MsgDeliveryMode.NonPersistent)]
-        [Row(AcknowledgementMode.ClientAcknowledge, MsgDeliveryMode.Persistent)]
-        [Row(AcknowledgementMode.ClientAcknowledge, MsgDeliveryMode.NonPersistent)]
-        public void TestSendCommitNonTransaction(AcknowledgementMode ackMode, MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestSendCommitNonTransaction(
+			[Values(AcknowledgementMode.AutoAcknowledge, AcknowledgementMode.ClientAcknowledge)]
+			AcknowledgementMode ackMode,
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
@@ -283,13 +282,13 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(AcknowledgementMode.AutoAcknowledge, MsgDeliveryMode.Persistent)]
-        [Row(AcknowledgementMode.AutoAcknowledge, MsgDeliveryMode.NonPersistent)]
-        [Row(AcknowledgementMode.ClientAcknowledge, MsgDeliveryMode.Persistent)]
-        [Row(AcknowledgementMode.ClientAcknowledge, MsgDeliveryMode.NonPersistent)]
-        public void TestReceiveCommitNonTransaction(AcknowledgementMode ackMode, MsgDeliveryMode deliveryMode)
-        {
+        [Test]
+        public void TestReceiveCommitNonTransaction(
+			[Values(AcknowledgementMode.AutoAcknowledge, AcknowledgementMode.ClientAcknowledge)]
+			AcknowledgementMode ackMode,
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
+		{
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
                 connection.Start();
@@ -326,12 +325,12 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(AcknowledgementMode.AutoAcknowledge, MsgDeliveryMode.Persistent)]
-        [Row(AcknowledgementMode.AutoAcknowledge, MsgDeliveryMode.NonPersistent)]
-        [Row(AcknowledgementMode.ClientAcknowledge, MsgDeliveryMode.Persistent)]
-        [Row(AcknowledgementMode.ClientAcknowledge, MsgDeliveryMode.NonPersistent)]
-        public void TestReceiveRollbackNonTransaction(AcknowledgementMode ackMode, MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestReceiveRollbackNonTransaction(
+			[Values(AcknowledgementMode.AutoAcknowledge, AcknowledgementMode.ClientAcknowledge)]
+			AcknowledgementMode ackMode,
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
@@ -384,10 +383,10 @@ namespace Apache.NMS.Stomp.Test
             Assert.AreEqual(expectedTextMsg.Text, actualTextMsg.Text, message);
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestRedispatchOfRolledbackTx(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestRedispatchOfRolledbackTx(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
@@ -421,10 +420,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestRedispatchOfUncommittedTx(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestRedispatchOfUncommittedTx(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {

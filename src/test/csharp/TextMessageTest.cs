@@ -19,7 +19,6 @@ using System;
 using Apache.NMS.Util;
 using Apache.NMS.Test;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 
 namespace Apache.NMS.Stomp.Test
 {
@@ -29,10 +28,10 @@ namespace Apache.NMS.Stomp.Test
         protected static string DESTINATION_NAME = "TextMessageDestination";
         protected static string TEST_CLIENT_ID = "TextMessageClientId";
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void SendReceiveTextMessage(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void SendReceiveTextMessage(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {

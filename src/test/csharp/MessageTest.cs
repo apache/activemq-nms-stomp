@@ -17,7 +17,6 @@
 
 using System;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 using Apache.NMS.Util;
 using Apache.NMS.Test;
 
@@ -44,10 +43,10 @@ namespace Apache.NMS.Stomp.Test
         protected float		m = 2.1F;
         protected double	n = 2.3;
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void SendReceiveMessageIdComparisonTest(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void SendReceiveMessageIdComparisonTest(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
@@ -83,10 +82,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void SendReceiveMessageProperties(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void SendReceiveMessageProperties(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {

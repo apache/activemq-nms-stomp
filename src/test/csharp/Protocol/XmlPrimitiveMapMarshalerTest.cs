@@ -23,7 +23,6 @@ using Apache.NMS.Util;
 using Apache.NMS.Test;
 using Apache.NMS.Stomp.Protocol;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 
 namespace Apache.NMS.Stomp.Test.Protocol
 {

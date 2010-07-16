@@ -19,31 +19,30 @@ using System;
 using System.Net.Sockets;
 using Apache.NMS.Test;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 
 namespace Apache.NMS.Stomp.Test
 {
     [TestFixture]
     public class NMSConnectionFactoryTest
     {
-        [RowTest]
+        [Test]
 #if !NETCF
-        [Row("stomp:tcp://${activemqhost}:61613")]
-        [Row("stomp:tcp://${activemqhost}:61613?connection.asyncsend=false")]
-        [Row("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
-        [Row("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
-        [Row("stomp:(tcp://${activemqhost}:61613)?connection.asyncSend=false", ExpectedException = typeof(NMSConnectionException))]
+        [TestCase("stomp:tcp://${activemqhost}:61613")]
+		[TestCase("stomp:tcp://${activemqhost}:61613?connection.asyncsend=false")]
+		[TestCase("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("stomp:(tcp://${activemqhost}:61613)?connection.asyncSend=false", ExpectedException = typeof(NMSConnectionException))]
 #endif
-        [Row("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
-        [Row("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
-        [Row("stomp:tcp://InvalidHost:61613?connection.asyncsend=false", ExpectedException = typeof(NMSConnectionException))]
-        [Row("ftp://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
-        [Row("http://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
-        [Row("discovery://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]
-        [Row("sms://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
-        [Row("stomp:multicast://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]
-        [Row("(tcp://${activemqhost}:61613,tcp://${activemqhost}:61613)", ExpectedException = typeof(UriFormatException))]
-        [Row("tcp://${activemqhost}:61613,tcp://${activemqhost}:61613", ExpectedException = typeof(UriFormatException))]
+		[TestCase("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("stomp:tcp://InvalidHost:61613", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("stomp:tcp://InvalidHost:61613?connection.asyncsend=false", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("ftp://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("http://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("discovery://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("sms://${activemqhost}:61613", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("stomp:multicast://${activemqhost}:6155", ExpectedException = typeof(NMSConnectionException))]
+		[TestCase("(tcp://${activemqhost}:61613,tcp://${activemqhost}:61613)", ExpectedException = typeof(UriFormatException))]
+		[TestCase("tcp://${activemqhost}:61613,tcp://${activemqhost}:61613", ExpectedException = typeof(UriFormatException))]
         public void TestURI(string connectionURI)
         {
             NMSConnectionFactory factory = new NMSConnectionFactory(NMSTestSupport.ReplaceEnvVar(connectionURI));
@@ -55,10 +54,9 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-#if !NETCF
         [Test]
-#endif
-        public void TestURIForPrefetchHandling()
+		[Platform(Exclude = "NetCF")]
+		public void TestURIForPrefetchHandling()
         {
             string uri1 = "stomp:tcp://${activemqhost}:61613" +
                           "?nms.PrefetchPolicy.queuePrefetch=1" +

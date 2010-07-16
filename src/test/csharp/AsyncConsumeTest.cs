@@ -21,7 +21,6 @@ using Apache.NMS;
 using Apache.NMS.Util;
 using Apache.NMS.Test;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 
 namespace Apache.NMS.Stomp.Test
 {
@@ -55,10 +54,10 @@ namespace Apache.NMS.Stomp.Test
             base.TearDown();
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestAsynchronousConsume(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestAsynchronousConsume(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + this.postfix))
             {
@@ -85,10 +84,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestCreateConsumerAfterSend(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestCreateConsumerAfterSend(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + this.postfix))
             {
@@ -117,10 +116,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestCreateConsumerBeforeSendAddListenerAfterSend(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestCreateConsumerBeforeSendAddListenerAfterSend(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + this.postfix))
             {
@@ -148,10 +147,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestAsynchronousTextMessageConsume(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestAsynchronousTextMessageConsume(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + this.postfix))
             {
@@ -185,10 +184,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void TestTemporaryQueueAsynchronousConsume(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void TestTemporaryQueueAsynchronousConsume(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + this.postfix))
             {

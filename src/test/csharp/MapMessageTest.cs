@@ -21,7 +21,6 @@ using Apache.NMS;
 using Apache.NMS.Test;
 using Apache.NMS.Util;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 
 namespace Apache.NMS.Stomp.Test
 {
@@ -46,10 +45,10 @@ namespace Apache.NMS.Stomp.Test
         protected float m = 2.1F;
         protected double n = 2.3;
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void SendReceiveMapMessage(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void SendReceiveMapMessage(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {
@@ -123,10 +122,10 @@ namespace Apache.NMS.Stomp.Test
             }
         }
 
-//        [RowTest]
-//        [Row(MsgDeliveryMode.Persistent)]
-//        [Row(MsgDeliveryMode.NonPersistent)]
-        public void SendReceiveNestedMapMessage(MsgDeliveryMode deliveryMode)
+//        [Test]
+        public void SendReceiveNestedMapMessage(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {

@@ -19,7 +19,6 @@ using System;
 using Apache.NMS.Test;
 using Apache.NMS.Util;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 
 namespace Apache.NMS.Stomp.Test
 {
@@ -37,10 +36,10 @@ namespace Apache.NMS.Stomp.Test
         protected String groupID = "BarGroup";
         protected int groupSeq = 1;
 
-        [RowTest]
-        [Row(MsgDeliveryMode.Persistent)]
-        [Row(MsgDeliveryMode.NonPersistent)]
-        public void SendReceiveNMSProperties(MsgDeliveryMode deliveryMode)
+        [Test]
+        public void SendReceiveNMSProperties(
+			[Values(MsgDeliveryMode.Persistent, MsgDeliveryMode.NonPersistent)]
+			MsgDeliveryMode deliveryMode)
         {
             using(IConnection connection = CreateConnection(TEST_CLIENT_ID + ":" + new Random().Next()))
             {

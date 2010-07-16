@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using Apache.NMS.Test;
 using Apache.NMS.Stomp;
 using NUnit.Framework;
-using NUnit.Framework.Extensions;
 
 namespace Apache.NMS.Stomp.Test
 {

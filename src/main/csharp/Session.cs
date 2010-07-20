@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Util;
@@ -668,7 +669,8 @@ namespace Apache.NMS.Stomp
             Destination amqDestination = destination as Destination;
             if(amqDestination != null && amqDestination.Options != null)
             {
-                URISupport.SetProperties(answer, amqDestination.Options, "consumer.");
+                StringDictionary options = URISupport.GetProperties(amqDestination.Options, "consumer.");
+                URISupport.SetProperties(answer, options);
             }
 
             return answer;
@@ -689,7 +691,8 @@ namespace Apache.NMS.Stomp
             Destination amqDestination = destination as Destination;
             if(amqDestination != null && amqDestination.Options != null)
             {
-                URISupport.SetProperties(answer, amqDestination.Options, "producer.");
+                StringDictionary options = URISupport.GetProperties(amqDestination.Options, "producer.");
+                URISupport.SetProperties(answer, options);
             }
 
             return answer;

@@ -214,6 +214,7 @@ namespace Apache.NMS.Stomp.Test
         protected void RunTestDurableConsumer(string clientId, AcknowledgementMode ackMode)
         {
             SendDurableMessage();
+            SendDurableMessage();
 
             using(IConnection connection = CreateConnection(clientId))
             {
@@ -226,7 +227,6 @@ namespace Apache.NMS.Stomp.Test
                         IMessage msg = consumer.Receive(receiveTimeout);
                         Assert.IsNotNull(msg, "Did not receive first durable message.");
                         msg.Acknowledge();
-                        SendDurableMessage();
 
                         msg = consumer.Receive(receiveTimeout);
                         Assert.IsNotNull(msg, "Did not receive second durable message.");

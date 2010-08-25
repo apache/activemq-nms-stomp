@@ -55,7 +55,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="Apache.NMS, Version=1.4.0.2021, Culture=neutral, PublicKeyToken=82756feee3957618">
+    <Reference Include="Apache.NMS, Version=1.4.0.2049, Culture=neutral, PublicKeyToken=82756feee3957618">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Apache.NMS\mono-2.0\Apache.NMS.dll</HintPath>
     </Reference>
@@ -161,6 +161,7 @@
     <Compile Include="src\main\csharp\State\SynchronizedObjects.cs" />
     <Compile Include="src\main\csharp\IOException.cs" />
     <Compile Include="src\main\csharp\Util\ThreadUtil.cs" />
+    <Compile Include="src\main\csharp\Util\StompMessageTransformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="keyfile\NMSKey.snk" />

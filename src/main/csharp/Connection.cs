@@ -64,6 +64,7 @@ namespace Apache.NMS.Stomp
         private bool disposed = false;
         private IdGenerator clientIdGenerator;
         private CountDownLatch transportInterruptionProcessingComplete;
+        private MessageTransformation messageTransformation;
 
         public Connection(Uri connectionUri, ITransport transport, IdGenerator clientIdGenerator)
         {
@@ -81,6 +82,8 @@ namespace Apache.NMS.Stomp
 
             this.info = new ConnectionInfo();
             this.info.ConnectionId = id;
+
+            this.messageTransformation = new StompMessageTransformation(this);
         }
 
         ~Connection()
@@ -270,6 +273,11 @@ namespace Apache.NMS.Stomp
         {
             get { return this.prefetchPolicy; }
             set { this.prefetchPolicy = value; }
+        }
+
+        internal MessageTransformation MessageTransformation
+        {
+            get { return this.messageTransformation; }
         }
 
         #endregion

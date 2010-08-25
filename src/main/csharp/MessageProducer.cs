@@ -42,11 +42,14 @@ namespace Apache.NMS.Stomp
         private bool disableMessageTimestamp = false;
         protected bool disposed = false;
 
+        private MessageTransformation messageTransformation;
+
         public MessageProducer(Session session, ProducerInfo info)
         {
             this.session = session;
             this.info = info;
             this.RequestTimeout = session.RequestTimeout;
+            this.messageTransformation = session.Connection.MessageTransformation;
         }
 
         ~MessageProducer()
@@ -165,7 +168,7 @@ namespace Apache.NMS.Stomp
                 throw new NotSupportedException("This producer can only send messages to: " + this.info.Destination.PhysicalName);
             }
 
-            Message stompMessage = (Message) message;
+            Message stompMessage = this.messageTransformation.TransformMessage<Message>(message);
 
             stompMessage.ProducerId = info.ProducerId;
             stompMessage.FromDestination = dest;

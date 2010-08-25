@@ -176,6 +176,7 @@ namespace Apache.NMS.Stomp.Commands
         public IDestination NMSDestination
         {
             get { return Destination; }
+            set { this.Destination = value as Destination; }
         }
 
         private TimeSpan timeToLive = TimeSpan.FromMilliseconds(0);
@@ -286,6 +287,24 @@ namespace Apache.NMS.Stomp.Commands
         public bool NMSRedelivered
         {
             get { return (RedeliveryCounter > 0); }
+
+            set
+            {
+                if(value == true)
+                {
+                    if(this.RedeliveryCounter <= 0)
+                    {
+                        this.RedeliveryCounter = 1;
+                    }
+                }
+                else
+                {
+                    if(this.RedeliveryCounter > 0)
+                    {
+                        this.RedeliveryCounter = 0;
+                    }
+                }
+            }
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,27 +55,15 @@
     <NoWarn>3016</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.NMS.Test, Version=1.4.0.2021, Culture=neutral, PublicKeyToken=82756feee3957618, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Apache.NMS\net-2.0\Apache.NMS.Test.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\NUnit\net-2.0\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="Apache.NMS, Version=1.4.0.2013, Culture=neutral, PublicKeyToken=82756feee3957618">
+    <Reference Include="Apache.NMS.Test, Version=1.4.0.2025, Culture=neutral, PublicKeyToken=82756feee3957618">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>build\mono-2.0\debug\Apache.NMS.dll</HintPath>
+      <HintPath>lib\Apache.NMS\mono-2.0\Apache.NMS.Test.dll</HintPath>
     </Reference>
-    <Reference Include="Apache.NMS.Stomp, Version=1.4.0.2015, Culture=neutral, PublicKeyToken=82756feee3957618">
+    <Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>build\mono-2.0\debug\Apache.NMS.Stomp.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework.extensions, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\NUnit\mono-2.0\nunit.framework.extensions.dll</HintPath>
+      <HintPath>lib\NUnit\mono-2.0\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

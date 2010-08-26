@@ -55,9 +55,7 @@ namespace Apache.NMS.Stomp
 
         protected override IStreamMessage DoCreateStreamMessage()
         {
-            StreamMessage message = new StreamMessage();
-            message.Connection = this.connection;
-            return message;
+            throw new NotSupportedException("Stomp Cannot process Stream Messages");
         }
 
         protected override IMapMessage DoCreateMapMessage()

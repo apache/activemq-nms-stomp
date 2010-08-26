@@ -23,67 +23,72 @@ using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport
 {
-	/// <summary>
-	/// Handles asynchronous responses
-	/// </summary>
-	public class FutureResponse
-	{
-		private TimeSpan maxWait = TimeSpan.FromMilliseconds(Timeout.Infinite);
-		public TimeSpan ResponseTimeout
-		{
-			get { return maxWait; }
-			set { maxWait = value; }
-		}
+    /// <summary>
+    /// Handles asynchronous responses
+    /// </summary>
+    public class FutureResponse
+    {
+        private TimeSpan maxWait = TimeSpan.FromMilliseconds(Timeout.Infinite);
+        public TimeSpan ResponseTimeout
+        {
+            get { return maxWait; }
+            set { maxWait = value; }
+        }
 
-		private readonly CountDownLatch latch = new CountDownLatch(1);
-		private Response response;
+        private readonly CountDownLatch latch = new CountDownLatch(1);
+        private Response response;
 
-		public WaitHandle AsyncWaitHandle
-		{
-			get { return latch.AsyncWaitHandle; }
-		}
+        public WaitHandle AsyncWaitHandle
+        {
+            get { return latch.AsyncWaitHandle; }
+        }
 
-		public Response Response
-		{
-			// Blocks the caller until a value has been set
-			get
-			{
-				lock(latch)
-				{
-					if(null != response)
-					{
-						return response;
-					}
-				}
+        public Response Response
+        {
+            // Blocks the caller until a value has been set
+            get
+            {
+                lock(latch)
+                {
+                    if(null != response)
+                    {
+                        return response;
+                    }
+                }
 
-				try
-				{
-					if(!latch.await(maxWait))
-					{
-						// TODO: Throw timeout exception?
-					}
-				}
-				catch (Exception e)
-				{
-					Tracer.Error("Caught while waiting on monitor: " + e);
-				}
+                try
+                {
+                    if(!latch.await(maxWait) && response == null)
+                    {
+                        throw new RequestTimedOutException();
+                    }
+                }
+                catch(RequestTimedOutException e)
+                {
+                    Tracer.Error("Caught Timeout Exception while waiting on monitor: " + e);
+                    throw;
+                }
+                catch(Exception e)
+                {
+                    Tracer.Error("Caught Exception while waiting on monitor: " + e);
+                }
 
-				lock(latch)
-				{
-					return response;
-				}
-			}
+                lock(latch)
+                {
+                    return response;
+                }
+            }
 
-			set
-			{
-				lock(latch)
-				{
-					response = value;
-				}
+            set
+            {
+                lock(latch)
+                {
+                    response = value;
+                }
 
-				latch.countDown();
-			}
-		}
-	}
+                latch.countDown();
+            }
+        }
+    }
 }
 

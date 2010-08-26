@@ -217,6 +217,10 @@ namespace Apache.NMS.Stomp.Protocol
             // sent with response required set to true
             frame.RemoveProperty("receipt");
 
+            // Clear any attached content length headers as they aren't needed anymore and can
+            // clutter the Message Properties.
+            frame.RemoveProperty("content-length");
+
             message.Type = frame.RemoveProperty("type");
             message.Destination = StompHelper.ToDestination(frame.RemoveProperty("destination"));
             message.ReplyTo = StompHelper.ToDestination(frame.RemoveProperty("reply-to"));

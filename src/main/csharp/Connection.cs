@@ -280,6 +280,20 @@ namespace Apache.NMS.Stomp
             get { return this.messageTransformation; }
         }
 
+        private ConsumerTransformerDelegate consumerTransformer;
+        public ConsumerTransformerDelegate ConsumerTransformer
+        {
+            get { return this.consumerTransformer; }
+            set { this.consumerTransformer = value; }
+        }
+
+        private ProducerTransformerDelegate producerTransformer;
+        public ProducerTransformerDelegate ProducerTransformer
+        {
+            get { return this.producerTransformer; }
+            set { this.producerTransformer = value; }
+        }
+
         #endregion
 
         /// <summary>
@@ -350,6 +364,9 @@ namespace Apache.NMS.Stomp
             options = URISupport.GetProperties(options, "session.");
             URISupport.SetProperties(session, options);
 
+            session.ConsumerTransformer = this.ConsumerTransformer;
+            session.ProducerTransformer = this.ProducerTransformer;
+            
             if(IsStarted)
             {
                 session.Start();

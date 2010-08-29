@@ -36,6 +36,7 @@ namespace Apache.NMS.Stomp
     /// </summary>
     public class MessageConsumer : IMessageConsumer, IDispatcher
     {
+        private readonly MessageTransformation messageTransformation;
         private readonly MessageDispatchChannel unconsumedMessages = new MessageDispatchChannel();
         private readonly LinkedList<MessageDispatch> dispatchedMessages = new LinkedList<MessageDispatch>();
         private readonly ConsumerInfo info;
@@ -65,6 +66,7 @@ namespace Apache.NMS.Stomp
             this.session = session;
             this.info = info;
             this.redeliveryPolicy = this.session.Connection.RedeliveryPolicy;
+            this.messageTransformation = this.session.Connection.MessageTransformation;
         }
 
         ~MessageConsumer()
@@ -88,6 +90,13 @@ namespace Apache.NMS.Stomp
         {
             get { return this.redeliveryPolicy; }
             set { this.redeliveryPolicy = value; }
+        }
+
+        private ConsumerTransformerDelegate consumerTransformer;
+        public ConsumerTransformerDelegate ConsumerTransformer
+        {
+            get { return this.consumerTransformer; }
+            set { this.consumerTransformer = value; }
         }
 
         #endregion
@@ -837,6 +846,15 @@ namespace Apache.NMS.Stomp
         private Message CreateStompMessage(MessageDispatch dispatch)
         {
             Message message = dispatch.Message.Clone() as Message;
+
+            if(this.ConsumerTransformer != null)
+            {
+                IMessage transformed = this.consumerTransformer(this.session, this, message);
+                if(transformed != null)
+                {
+                    message = this.messageTransformation.TransformMessage<Message>(transformed);
+                }
+            }
 
             message.Connection = this.session.Connection;
 

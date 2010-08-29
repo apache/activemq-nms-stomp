@@ -309,6 +309,20 @@ namespace Apache.NMS.Stomp
             }
         }
 
+        private ConsumerTransformerDelegate consumerTransformer;
+        public ConsumerTransformerDelegate ConsumerTransformer
+        {
+            get { return this.consumerTransformer; }
+            set { this.consumerTransformer = value; }
+        }
+
+        private ProducerTransformerDelegate producerTransformer;
+        public ProducerTransformerDelegate ProducerTransformer
+        {
+            get { return this.producerTransformer; }
+            set { this.producerTransformer = value; }
+        }
+
         #endregion
 
         protected virtual void ConfigureConnection(Connection connection)
@@ -322,6 +336,8 @@ namespace Apache.NMS.Stomp
             connection.RequestTimeout = this.requestTimeout;
             connection.RedeliveryPolicy = this.redeliveryPolicy.Clone() as IRedeliveryPolicy;
             connection.PrefetchPolicy = this.prefetchPolicy.Clone() as PrefetchPolicy;
+            connection.ConsumerTransformer = this.consumerTransformer;
+            connection.ProducerTransformer = this.producerTransformer;
         }
 
         protected static void ExceptionHandler(Exception ex)

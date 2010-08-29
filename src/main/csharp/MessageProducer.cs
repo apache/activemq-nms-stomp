@@ -168,6 +168,15 @@ namespace Apache.NMS.Stomp
                 throw new NotSupportedException("This producer can only send messages to: " + this.info.Destination.PhysicalName);
             }
 
+            if(this.producerTransformer != null)
+            {
+                IMessage transformed = this.producerTransformer(this.session, this, message);
+                if(transformed != null)
+                {
+                    message = transformed;
+                }
+            }
+
             Message stompMessage = this.messageTransformation.TransformMessage<Message>(message);
 
             stompMessage.ProducerId = info.ProducerId;
@@ -242,6 +251,15 @@ namespace Apache.NMS.Stomp
             set { this.disableMessageTimestamp = value; }
         }
 
+        private ProducerTransformerDelegate producerTransformer;
+        public ProducerTransformerDelegate ProducerTransformer
+        {
+            get { return this.producerTransformer; }
+            set { this.producerTransformer = value; }
+        }
+
+        #region Message Creation Factory Methods.
+
         public IMessage CreateMessage()
         {
             return session.CreateMessage();
@@ -281,6 +299,8 @@ namespace Apache.NMS.Stomp
         {
             return session.CreateStreamMessage();
         }
+
+        #endregion
 
     }
 }

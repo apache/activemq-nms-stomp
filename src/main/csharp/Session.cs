@@ -207,6 +207,20 @@ namespace Apache.NMS.Stomp
             get { return Interlocked.Increment(ref this.nextDeliveryId); }
         }
 
+        private ConsumerTransformerDelegate consumerTransformer;
+        public ConsumerTransformerDelegate ConsumerTransformer
+        {
+            get { return this.consumerTransformer; }
+            set { this.consumerTransformer = value; }
+        }
+
+        private ProducerTransformerDelegate producerTransformer;
+        public ProducerTransformerDelegate ProducerTransformer
+        {
+            get { return this.producerTransformer; }
+            set { this.producerTransformer = value; }
+        }
+
         #endregion
 
         #region ISession Members
@@ -343,6 +357,7 @@ namespace Apache.NMS.Stomp
             try
             {
                 producer = new MessageProducer(this, command);
+                producer.ProducerTransformer = this.ProducerTransformer;
                 producers[producerId] = producer;
             }
             catch(Exception)
@@ -386,14 +401,16 @@ namespace Apache.NMS.Stomp
             try
             {
                 consumer = new MessageConsumer(this, command);
-                // lets register the consumer first in case we start dispatching messages immediately
+                consumer.ConsumerTransformer = this.ConsumerTransformer;
                 consumers[consumerId] = consumer;
-                this.Connection.SyncRequest(command);
 
                 if(this.Started)
                 {
                     consumer.Start();
                 }
+
+                // lets register the consumer first in case we start dispatching messages immediately
+                this.Connection.SyncRequest(command);
 
                 return consumer;
             }
@@ -428,7 +445,7 @@ namespace Apache.NMS.Stomp
             try
             {
                 consumer = new MessageConsumer(this, command);
-                // lets register the consumer first in case we start dispatching messages immediately
+                consumer.ConsumerTransformer = this.ConsumerTransformer;
                 consumers[consumerId] = consumer;
 
                 if(this.Started)

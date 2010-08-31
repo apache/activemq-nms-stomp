@@ -54,7 +54,7 @@ namespace Apache.NMS.Stomp
         private bool disposed = false;
         private bool closed = false;
         private bool closing = false;
-        private TimeSpan requestTimeout = Apache.NMS.NMSConstants.defaultRequestTimeout;
+        private TimeSpan requestTimeout;
         private AcknowledgementMode acknowledgementMode;
 
         public Session(Connection connection, SessionInfo info, AcknowledgementMode acknowledgementMode, bool dispatchAsync)

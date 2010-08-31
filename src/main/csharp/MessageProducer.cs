@@ -35,7 +35,7 @@ namespace Apache.NMS.Stomp
         private int producerSequenceId = 0;
 
         private MsgDeliveryMode msgDeliveryMode = NMSConstants.defaultDeliveryMode;
-        private TimeSpan requestTimeout = NMSConstants.defaultRequestTimeout;
+        private TimeSpan requestTimeout;
         private TimeSpan msgTimeToLive = NMSConstants.defaultTimeToLive;
         private MsgPriority msgPriority = NMSConstants.defaultPriority;
         private bool disableMessageID = false;

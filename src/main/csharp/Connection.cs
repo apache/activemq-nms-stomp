@@ -49,7 +49,7 @@ namespace Apache.NMS.Stomp
         private PrefetchPolicy prefetchPolicy = new PrefetchPolicy();
 
         private bool userSpecifiedClientID;
-        private TimeSpan requestTimeout = NMSConstants.defaultRequestTimeout;
+        private TimeSpan requestTimeout;
         private readonly IList sessions = ArrayList.Synchronized(new ArrayList());
         private readonly IDictionary dispatchers = Hashtable.Synchronized(new Hashtable());
         private readonly object myLock = new object();
@@ -366,7 +366,7 @@ namespace Apache.NMS.Stomp
 
             session.ConsumerTransformer = this.ConsumerTransformer;
             session.ProducerTransformer = this.ProducerTransformer;
-            
+
             if(IsStarted)
             {
                 session.Start();

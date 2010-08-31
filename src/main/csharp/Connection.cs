@@ -62,9 +62,9 @@ namespace Apache.NMS.Stomp
         private readonly Atomic<bool> started = new Atomic<bool>(false);
         private ConnectionMetaData metaData = null;
         private bool disposed = false;
-        private IdGenerator clientIdGenerator;
+        private readonly IdGenerator clientIdGenerator;
         private CountDownLatch transportInterruptionProcessingComplete;
-        private MessageTransformation messageTransformation;
+        private readonly MessageTransformation messageTransformation;
 
         public Connection(Uri connectionUri, ITransport transport, IdGenerator clientIdGenerator)
         {

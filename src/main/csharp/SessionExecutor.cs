@@ -25,11 +25,11 @@ namespace Apache.NMS.Stomp
 {
     public class SessionExecutor : Threads.Task
     {
-        private MessageDispatchChannel messageQueue = new MessageDispatchChannel();
+        private readonly MessageDispatchChannel messageQueue = new MessageDispatchChannel();
         private TaskRunner taskRunner = null;
 
-        private Session session = null;
-        private IDictionary consumers = null;
+        private readonly Session session = null;
+        private readonly IDictionary consumers = null;
 
         public SessionExecutor(Session session, IDictionary consumers)
         {

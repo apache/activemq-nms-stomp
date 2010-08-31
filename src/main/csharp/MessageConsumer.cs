@@ -44,8 +44,8 @@ namespace Apache.NMS.Stomp
 
         private MessageAck pendingAck = null;
 
-        private Atomic<bool> started = new Atomic<bool>();
-        private Atomic<bool> deliveringAcks = new Atomic<bool>();
+        private readonly Atomic<bool> started = new Atomic<bool>();
+        private readonly Atomic<bool> deliveringAcks = new Atomic<bool>();
 
         protected bool disposed = false;
         private int deliveredCounter = 0;

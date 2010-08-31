@@ -30,7 +30,7 @@ namespace Apache.NMS.Stomp
     {
         private Session session;
         private bool closed = false;
-        private object closedLock = new object();
+        private readonly object closedLock = new object();
         private readonly ProducerInfo info;
         private int producerSequenceId = 0;
 
@@ -42,7 +42,7 @@ namespace Apache.NMS.Stomp
         private bool disableMessageTimestamp = false;
         protected bool disposed = false;
 
-        private MessageTransformation messageTransformation;
+        private readonly MessageTransformation messageTransformation;
 
         public MessageProducer(Session session, ProducerInfo info)
         {

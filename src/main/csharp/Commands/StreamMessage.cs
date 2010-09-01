@@ -17,19 +17,16 @@
 
 using System;
 using System.IO;
-using System.Collections;
 
-using Apache.NMS;
 using Apache.NMS.Util;
-using Apache.NMS.Stomp;
 
 namespace Apache.NMS.Stomp.Commands
 {
     public class StreamMessage : Message, IStreamMessage
     {
-        private EndianBinaryReader dataIn = null;
-        private EndianBinaryWriter dataOut = null;
-        private MemoryStream byteBuffer = null;
+        private EndianBinaryReader dataIn;
+        private EndianBinaryWriter dataOut;
+        private MemoryStream byteBuffer;
         private int bytesRemaining = -1;
 
         public override byte GetDataStructureType()

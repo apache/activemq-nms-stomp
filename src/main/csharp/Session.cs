@@ -55,7 +55,7 @@ namespace Apache.NMS.Stomp
         private bool closed = false;
         private bool closing = false;
         private TimeSpan requestTimeout;
-        private AcknowledgementMode acknowledgementMode;
+        private readonly AcknowledgementMode acknowledgementMode;
 
         public Session(Connection connection, SessionInfo info, AcknowledgementMode acknowledgementMode, bool dispatchAsync)
         {

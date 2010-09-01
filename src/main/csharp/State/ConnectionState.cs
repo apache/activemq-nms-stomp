@@ -25,9 +25,9 @@ namespace Apache.NMS.Stomp.State
 	{
 
 		ConnectionInfo info;
-		private AtomicDictionary<ConsumerId, ConsumerState> consumers =
+		private readonly AtomicDictionary<ConsumerId, ConsumerState> consumers =
             new AtomicDictionary<ConsumerId, ConsumerState>();
-		private Atomic<bool> _shutdown = new Atomic<bool>(false);
+		private readonly Atomic<bool> _shutdown = new Atomic<bool>(false);
 
 		public ConnectionState(ConnectionInfo info)
 		{

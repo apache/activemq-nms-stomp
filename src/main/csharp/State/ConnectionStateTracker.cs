@@ -29,8 +29,7 @@ namespace Apache.NMS.Stomp.State
 	/// </summary>
 	public class ConnectionStateTracker : CommandVisitorAdapter
 	{
-
-		private static Tracked TRACKED_RESPONSE_MARKER = new Tracked(null);
+		private static readonly Tracked TRACKED_RESPONSE_MARKER = new Tracked(null);
 
 		protected Dictionary<ConnectionId, ConnectionState> connectionStates =
             new Dictionary<ConnectionId, ConnectionState>();

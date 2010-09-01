@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-using Apache.NMS;
 using Apache.NMS.Util;
 using System;
-using System.Collections;
 using System.IO;
 
 namespace Apache.NMS.Stomp.Commands
 {
     public class BytesMessage : Message, IBytesMessage
     {
-        private EndianBinaryReader dataIn = null;
-        private EndianBinaryWriter dataOut = null;
-        private MemoryStream outputBuffer = null;
-        private int length = 0;
+        private EndianBinaryReader dataIn;
+        private EndianBinaryWriter dataOut;
+        private MemoryStream outputBuffer;
+        private int length;
 
         public override byte GetDataStructureType()
         {

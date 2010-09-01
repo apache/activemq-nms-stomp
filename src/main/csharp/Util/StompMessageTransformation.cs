@@ -23,7 +23,7 @@ namespace Apache.NMS.Stomp
 {
     public class StompMessageTransformation : MessageTransformation
     {
-        private Connection connection;
+        private readonly Connection connection;
 
         public StompMessageTransformation(Connection connection) : base()
         {

@@ -37,10 +37,6 @@ namespace Apache.NMS.Stomp.Commands
             return (Message) message;
         }
 
-        public Message() : base()
-        {
-        }
-
         public override byte GetDataStructureType()
         {
             return DataStructureTypes.MessageType;
@@ -50,14 +46,7 @@ namespace Apache.NMS.Stomp.Commands
         {
             MessageId id = this.MessageId;
 
-            if(id != null)
-            {
-                return id.GetHashCode();
-            }
-            else
-            {
-                return base.GetHashCode();
-            }
+            return id != null ? id.GetHashCode() : base.GetHashCode();
         }
 
         public override bool Equals(object that)
@@ -83,10 +72,8 @@ namespace Apache.NMS.Stomp.Commands
             {
                 throw new NMSException("No Acknowledger has been associated with this message: " + this);
             }
-            else
-            {
-                Acknowledger(this);
-            }
+
+            Acknowledger(this);
         }
 
         public virtual void ClearBody()

@@ -28,12 +28,12 @@ namespace Apache.NMS.Stomp.Threads
         private readonly Mutex mutex = new Mutex();
         private readonly AutoResetEvent waiter = new AutoResetEvent(false);
         private readonly ManualResetEvent isShutdown = new ManualResetEvent(true);
-        private Thread theThread = null;
-        private Task task = null;
+        private readonly Thread theThread;
+        private readonly Task task;
 
-        private bool terminated = false;
-        private bool pending = false;
-        private bool shutdown = false;
+        private bool terminated;
+        private bool pending;
+        private bool shutdown;
 
         public DedicatedTaskRunner(Task task)
         {

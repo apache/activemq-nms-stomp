@@ -20,8 +20,6 @@ using System.Threading;
 using System.Collections;
 
 using Apache.NMS.Stomp.Commands;
-using Apache.NMS.Stomp.Transport;
-using Apache.NMS;
 
 namespace Apache.NMS.Stomp.Transport
 {

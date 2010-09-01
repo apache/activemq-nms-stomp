@@ -16,7 +16,6 @@
  */
 
 using System;
-using System.Collections;
 
 namespace Apache.NMS.Stomp.Commands
 {
@@ -26,7 +25,7 @@ namespace Apache.NMS.Stomp.Commands
 
         private string key;
 
-        private SessionId parentId = null;
+        private SessionId parentId;
 
         string connectionId;
         long sessionId;

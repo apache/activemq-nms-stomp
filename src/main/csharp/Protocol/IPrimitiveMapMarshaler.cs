@@ -16,9 +16,6 @@
 //  */
 // 
 
-using System;
-using Apache.NMS.Util;
-
 namespace Apache.NMS.Stomp.Protocol
 {
     /// <summary>

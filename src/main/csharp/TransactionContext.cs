@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Apache.NMS.Stomp;
+
 using Apache.NMS.Stomp.Commands;
 using System.Collections;
 
@@ -31,8 +31,8 @@ namespace Apache.NMS.Stomp
     public class TransactionContext
     {
         private TransactionId transactionId;
-        private Session session;
-        private ArrayList synchronizations = ArrayList.Synchronized(new ArrayList());
+        private readonly Session session;
+        private readonly ArrayList synchronizations = ArrayList.Synchronized(new ArrayList());
 
         public TransactionContext(Session session)
         {

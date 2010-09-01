@@ -15,12 +15,8 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections;
-
 namespace Apache.NMS.Stomp.Commands
 {
-
     public class Response : BaseCommand
     {
         int correlationId;

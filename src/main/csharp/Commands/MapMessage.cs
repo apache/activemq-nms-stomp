@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-using System;
-using System.IO;
-using Apache.NMS;
 using Apache.NMS.Util;
 using Apache.NMS.Stomp.Protocol;
 
@@ -28,11 +25,11 @@ namespace Apache.NMS.Stomp.Commands
         private PrimitiveMap body;
         private PrimitiveMapInterceptor typeConverter;
 
-        public MapMessage() : base()
+        public MapMessage()
         {
         }
 
-        public MapMessage(PrimitiveMap body) : base()
+        public MapMessage(PrimitiveMap body)
         {
             this.body = body;
             this.typeConverter = new PrimitiveMapInterceptor(this, this.body);
@@ -82,14 +79,7 @@ namespace Apache.NMS.Stomp.Commands
             set
             {
                 this.body = value as PrimitiveMap;
-                if(value != null)
-                {
-                    this.typeConverter = new PrimitiveMapInterceptor(this, value);
-                }
-                else
-                {
-                    this.typeConverter = null;
-                }
+                this.typeConverter = value != null ? new PrimitiveMapInterceptor(this, value) : null;
             }
         }
 
@@ -97,14 +87,7 @@ namespace Apache.NMS.Stomp.Commands
         {
             base.BeforeMarshall(wireFormat);
 
-            if(body == null)
-            {
-                this.Content = null;
-            }
-            else
-            {
-                this.Content = wireFormat.MapMarshaler.Marshal(body);
-            }
+            this.Content = body == null ? null : wireFormat.MapMarshaler.Marshal(body);
         }
     }
 }

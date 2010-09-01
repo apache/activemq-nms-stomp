@@ -18,9 +18,7 @@
 using System;
 using System.Collections.Specialized;
 using Apache.NMS.Stomp.Util;
-using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Transport;
-using Apache.NMS;
 using Apache.NMS.Util;
 using Apache.NMS.Policies;
 

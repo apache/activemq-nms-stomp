@@ -24,7 +24,7 @@ namespace Apache.NMS.Stomp.State
 
 	public class ConsumerState
 	{
-		ConsumerInfo info;
+	    readonly ConsumerInfo info;
 
 		public ConsumerState(ConsumerInfo info)
 		{

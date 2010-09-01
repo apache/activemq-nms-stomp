@@ -31,14 +31,14 @@ namespace Apache.NMS.Stomp.Transport
     /// </summary>
     public class InactivityMonitor : TransportFilter
     {
-        private Atomic<bool> monitorStarted = new Atomic<bool>(false);
+        private readonly Atomic<bool> monitorStarted = new Atomic<bool>(false);
 
-        private Atomic<bool> commandSent = new Atomic<bool>(false);
-        private Atomic<bool> commandReceived = new Atomic<bool>(false);
+        private readonly Atomic<bool> commandSent = new Atomic<bool>(false);
+        private readonly Atomic<bool> commandReceived = new Atomic<bool>(false);
 
-        private Atomic<bool> failed = new Atomic<bool>(false);
-        private Atomic<bool> inRead = new Atomic<bool>(false);
-        private Atomic<bool> inWrite = new Atomic<bool>(false);
+        private readonly Atomic<bool> failed = new Atomic<bool>(false);
+        private readonly Atomic<bool> inRead = new Atomic<bool>(false);
+        private readonly Atomic<bool> inWrite = new Atomic<bool>(false);
 
         private DedicatedTaskRunner asyncTask;
         private AsyncWriteTask asyncWriteTask;
@@ -227,7 +227,7 @@ namespace Apache.NMS.Stomp.Transport
         // Task that fires when the TaskRunner is signaled by the WriteCheck Timer Task.
         class AsyncWriteTask : Task
         {
-            private InactivityMonitor parent;
+            private readonly InactivityMonitor parent;
 
             public AsyncWriteTask(InactivityMonitor parent)
             {

@@ -16,7 +16,6 @@
  */
 
 using System;
-using System.Net;
 using System.Net.Sockets;
 
 namespace Apache.NMS.Stomp.Transport.Tcp
@@ -31,10 +30,6 @@ namespace Apache.NMS.Stomp.Transport.Tcp
         private string keyStoreLocation;
         private bool acceptInvalidBrokerCert = false;
         
-        public SslTransportFactory() : base()
-        {
-        }
-
         public string ServerName
         {
             get { return this.serverName; }

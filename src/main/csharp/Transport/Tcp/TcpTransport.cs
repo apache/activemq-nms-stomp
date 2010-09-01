@@ -37,9 +37,9 @@ namespace Apache.NMS.Stomp.Transport.Tcp
         private Thread readThread;
         private bool started;
         private bool disposed = false;
-        private Atomic<bool> closed = new Atomic<bool>(false);
+        private readonly Atomic<bool> closed = new Atomic<bool>(false);
         private volatile bool seenShutdown;
-        private Uri connectedUri;
+        private readonly Uri connectedUri;
 
         private CommandHandler commandHandler;
         private ExceptionHandler exceptionHandler;

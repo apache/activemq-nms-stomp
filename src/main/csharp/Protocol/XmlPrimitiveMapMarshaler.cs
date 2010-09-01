@@ -30,13 +30,13 @@ namespace Apache.NMS.Stomp.Protocol
     /// </summary>
     public class XmlPrimitiveMapMarshaler : IPrimitiveMapMarshaler
     {
-        private Encoding encoder = new UTF8Encoding();
+        private readonly Encoding encoder = new UTF8Encoding();
 
-        public XmlPrimitiveMapMarshaler() : base()
+        public XmlPrimitiveMapMarshaler()
         {
         }
 
-        public XmlPrimitiveMapMarshaler(Encoding encoder) : base()
+        public XmlPrimitiveMapMarshaler(Encoding encoder)
         {
             this.encoder = encoder;
         }

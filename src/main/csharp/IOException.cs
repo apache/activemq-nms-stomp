@@ -17,10 +17,6 @@
 
 using System;
 
-using Apache.NMS.Stomp.Commands;
-using System.Text;
-using Apache.NMS;
-
 namespace Apache.NMS.Stomp
 {
 

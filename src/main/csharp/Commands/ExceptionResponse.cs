@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections;
-
 namespace Apache.NMS.Stomp.Commands
 {
     public class ExceptionResponse : Response

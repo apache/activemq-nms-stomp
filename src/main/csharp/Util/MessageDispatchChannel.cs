@@ -17,11 +17,8 @@
 
 using System;
 using System.Threading;
-using System.Collections;
 using System.Collections.Generic;
 using Apache.NMS.Stomp.Commands;
-using Apache.NMS;
-using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Util
 {
@@ -31,7 +28,7 @@ namespace Apache.NMS.Stomp.Util
         private readonly ManualResetEvent waiter = new ManualResetEvent(false);
         private bool closed;
         private bool running;
-        private LinkedList<MessageDispatch> channel = new LinkedList<MessageDispatch>();
+        private readonly LinkedList<MessageDispatch> channel = new LinkedList<MessageDispatch>();
 
         #region Properties
 

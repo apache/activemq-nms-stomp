@@ -15,10 +15,6 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections;
-
-using Apache.NMS;
 using Apache.NMS.Stomp.State;
 
 namespace Apache.NMS.Stomp.Commands

@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 using System;
-using Apache.NMS;
-using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp
 {
@@ -84,7 +82,7 @@ namespace Apache.NMS.Stomp
             this.durableTopicPrefetch = value;
         }
 
-        private int RestrictToMaximum(int value)
+        private static int RestrictToMaximum(int value)
         {
             return System.Math.Min(value, MAX_PREFETCH_SIZE);
         }

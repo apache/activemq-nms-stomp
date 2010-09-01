@@ -22,7 +22,6 @@ using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.State;
 using Apache.NMS.Stomp.Threads;
-using Apache.NMS.Stomp.Util;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport.Failover
@@ -34,24 +33,24 @@ namespace Apache.NMS.Stomp.Transport.Failover
     public class FailoverTransport : ICompositeTransport, IComparable
     {
         private static int idCounter = 0;
-        private int id;
+        private readonly int id;
 
         private bool disposed;
         private bool connected;
-        private List<Uri> uris = new List<Uri>();
+        private readonly List<Uri> uris = new List<Uri>();
         private CommandHandler commandHandler;
         private ExceptionHandler exceptionHandler;
         private InterruptedHandler interruptedHandler;
         private ResumedHandler resumedHandler;
 
-        private Mutex reconnectMutex = new Mutex();
-        private Mutex sleepMutex = new Mutex();
-        private ConnectionStateTracker stateTracker = new ConnectionStateTracker();
-        private Dictionary<int, Command> requestMap = new Dictionary<int, Command>();
+        private readonly Mutex reconnectMutex = new Mutex();
+        private readonly Mutex sleepMutex = new Mutex();
+        private readonly ConnectionStateTracker stateTracker = new ConnectionStateTracker();
+        private readonly Dictionary<int, Command> requestMap = new Dictionary<int, Command>();
 
         private Uri connectedTransportURI;
         private Uri failedConnectTransportURI;
-        private AtomicReference<ITransport> connectedTransport = new AtomicReference<ITransport>(null);
+        private readonly AtomicReference<ITransport> connectedTransport = new AtomicReference<ITransport>(null);
         private TaskRunner reconnectTask = null;
         private bool started;
 
@@ -83,7 +82,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
 
         private class FailoverTask : Task
         {
-            private FailoverTransport parent;
+            private readonly FailoverTransport parent;
 
             public FailoverTask(FailoverTransport p)
             {
@@ -235,7 +234,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         /// </summary>
         /// <param name="command"></param>
         /// <returns>Returns true if the command is one sent when a connection is being closed.</returns>
-        private bool IsShutdownCommand(Command command)
+        private static bool IsShutdownCommand(Command command)
         {
             return (command != null && (command.IsShutdownInfo || command is RemoveInfo));
         }

@@ -21,7 +21,6 @@ using System.Collections.Specialized;
 using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Transport;
-using Apache.NMS.Stomp.Transport.Failover;
 using Apache.NMS.Stomp.Util;
 using Apache.NMS.Util;
 

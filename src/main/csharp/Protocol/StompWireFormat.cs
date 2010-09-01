@@ -16,10 +16,8 @@
  */
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Transport;
-using Apache.NMS;
 using Apache.NMS.Util;
 using System;
-using System.Collections;
 using System.IO;
 using System.Text;
 

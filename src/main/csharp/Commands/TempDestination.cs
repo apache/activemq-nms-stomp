@@ -49,12 +49,12 @@ namespace Apache.NMS.Stomp.Commands
 
         public const byte ID_ActiveMQTempDestination = 0;
 
-        public TempDestination()
+        protected TempDestination()
             : base()
         {
         }
 
-        public TempDestination(String name)
+        protected TempDestination(String name)
             : base(name)
         {
         }

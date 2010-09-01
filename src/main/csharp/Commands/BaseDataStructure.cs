@@ -16,7 +16,6 @@
  */
 
 using System;
-using System.Text;
 using Apache.NMS.Stomp.Protocol;
 
 namespace Apache.NMS.Stomp.Commands
@@ -69,10 +68,8 @@ namespace Apache.NMS.Stomp.Commands
             {
                 return value.GetHashCode();
             }
-            else
-            {
-                return -1;
-            }
+
+            return -1;
         }
 
         public virtual Object Clone()

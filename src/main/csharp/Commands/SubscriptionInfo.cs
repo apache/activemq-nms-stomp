@@ -15,11 +15,6 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections;
-
-using Apache.NMS.Stomp.State;
-
 namespace Apache.NMS.Stomp.Commands
 {
     public class SubscriptionInfo : BaseDataStructure

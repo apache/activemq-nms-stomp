@@ -27,7 +27,7 @@ namespace Apache.NMS.Stomp
 	[Serializable]
 	public class BrokerException : NMSException
 	{
-		private BrokerError brokerError = null;
+		private readonly BrokerError brokerError;
 
 		public BrokerException()
 			: base("Broker failed with missing exception log")

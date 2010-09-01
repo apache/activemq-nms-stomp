@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 using Apache.NMS.Stomp.Commands;
-using Apache.NMS.Stomp.Transport;
 using System;
 
 namespace Apache.NMS.Stomp.Transport

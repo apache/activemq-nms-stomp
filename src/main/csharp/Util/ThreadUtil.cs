@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-using System;
 using System.Threading;
 
 namespace Apache.NMS.Stomp.Util

@@ -26,13 +26,9 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 {
 	public class TcpTransportFactory : ITransportFactory
 	{
-		public TcpTransportFactory()
-		{
-		}
-
 		#region Properties
 
-		private bool useLogging = false;
+		private bool useLogging;
 		public bool UseLogging
 		{
 			get { return useLogging; }
@@ -73,7 +69,7 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 		/// The time-out value, in milliseconds. The default value is 0, which indicates
 		/// an infinite time-out period. Specifying -1 also indicates an infinite time-out period.
 		/// </summary>
-		private int receiveTimeout = 0;
+		private int receiveTimeout;
 		public int ReceiveTimeout
 		{
 			get { return receiveTimeout; }
@@ -85,7 +81,7 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 		/// the value will be changed to 500. The default value is 0, which indicates an infinite
 		/// time-out period. Specifying -1 also indicates an infinite time-out period.
 		/// </summary>
-		private int sendTimeout = 0;
+		private int sendTimeout;
 		public int SendTimeout
 		{
 			get { return sendTimeout; }

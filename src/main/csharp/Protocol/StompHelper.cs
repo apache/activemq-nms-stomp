@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Text;
+
 using Apache.NMS.Stomp.Commands;
-using Apache.NMS;
 
 namespace Apache.NMS.Stomp.Protocol
 {

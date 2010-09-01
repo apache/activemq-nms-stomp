@@ -18,7 +18,6 @@
 using Apache.NMS.Stomp.Commands;
 using System;
 using System.Threading;
-using Apache.NMS;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport

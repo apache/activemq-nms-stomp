@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections;
-
 namespace Apache.NMS.Stomp.Commands
 {
     public class ConnectionId : BaseDataStructure
@@ -91,12 +88,7 @@ namespace Apache.NMS.Stomp.Commands
 
         public virtual bool Equals(ConnectionId that)
         {
-            if(!Equals(this.Value, that.Value))
-            {
-                return false;
-            }
-
-            return true;
+            return Equals(this.Value, that.Value);
         }
     };
 }

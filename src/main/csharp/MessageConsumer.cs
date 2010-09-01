@@ -16,11 +16,9 @@
  */
 using System;
 using System.Threading;
-using System.Collections;
 using System.Collections.Generic;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Util;
-using Apache.NMS;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp

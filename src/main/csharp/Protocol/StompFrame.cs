@@ -21,8 +21,6 @@ using System.Collections;
 using System.IO;
 using System.Text;
 
-using Apache.NMS;
-
 namespace Apache.NMS.Stomp.Protocol
 {
     public class StompFrame
@@ -38,7 +36,7 @@ namespace Apache.NMS.Stomp.Protocol
         private IDictionary properties = new Hashtable();
         private byte[] content;
 
-        private Encoding encoding = new UTF8Encoding();
+        private readonly Encoding encoding = new UTF8Encoding();
         
         public StompFrame()
         {

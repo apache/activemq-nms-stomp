@@ -14,14 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Reflection;
-using Apache.NMS.Stomp.Commands;
-using Apache.NMS.Stomp.Transport;
-using Apache.NMS;
+
 using System;
-using System.Collections;
 using System.IO;
 using System.Text;
+
+using Apache.NMS.Stomp.Commands;
 
 namespace Apache.NMS.Stomp.Protocol
 {
@@ -37,11 +35,11 @@ namespace Apache.NMS.Stomp.Protocol
         /// Used to mark the End of the Frame.
         public const byte FRAME_TERMINUS = (byte) 0;
 
-        private StringBuilder builder = new StringBuilder();
-        private BinaryWriter ds;
+        private readonly StringBuilder builder = new StringBuilder();
+        private readonly BinaryWriter ds;
         private byte[] content;
         private int contentLength = -1;
-        private Encoding encoding;
+        private readonly Encoding encoding;
 
         public StompFrameStream(BinaryWriter ds, Encoding encoding)
         {

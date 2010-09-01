@@ -185,21 +185,20 @@ namespace Apache.NMS.Stomp.Commands
             {
                 return null;
             }
-            else if(type == STOMP_TOPIC)
+            else switch (type)
             {
-                result = new Topic(pyhsicalName);
-            }
-            else if(type == STOMP_TEMPORARY_TOPIC)
-            {
-                result = new TempTopic(pyhsicalName);
-            }
-            else if(type == STOMP_QUEUE)
-            {
-                result = new Queue(pyhsicalName);
-            }
-            else
-            {
-                result = new TempQueue(pyhsicalName);
+                case STOMP_TOPIC:
+                    result = new Topic(pyhsicalName);
+                    break;
+                case STOMP_TEMPORARY_TOPIC:
+                    result = new TempTopic(pyhsicalName);
+                    break;
+                case STOMP_QUEUE:
+                    result = new Queue(pyhsicalName);
+                    break;
+                default:
+                    result = new TempQueue(pyhsicalName);
+                    break;
             }
             return result;
         }

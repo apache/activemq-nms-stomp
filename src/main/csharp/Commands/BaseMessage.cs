@@ -16,7 +16,6 @@
  */
 
 using System;
-using System.Collections;
 
 using Apache.NMS.Util;
 using Apache.NMS.Stomp.State;

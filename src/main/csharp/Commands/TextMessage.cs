@@ -16,17 +16,14 @@
  */
 
 using System;
-using System.IO;
 
-using Apache.NMS;
-using Apache.NMS.Util;
 using Apache.NMS.Stomp.Protocol;
 
 namespace Apache.NMS.Stomp.Commands
 {
     public class TextMessage : Message, ITextMessage
     {
-        private String text = null;
+        private String text;
 
         public TextMessage()
         {

@@ -479,12 +479,12 @@ namespace Apache.NMS.Stomp
 
         public IQueueBrowser CreateBrowser(IQueue queue)
         {
-            throw new NotSupportedException("Not Yet Implemented");
+            throw new NotSupportedException("Not supported with Stomp Protocol");
         }
 
         public IQueueBrowser CreateBrowser(IQueue queue, string selector)
         {
-            throw new NotSupportedException("Not Yet Implemented");
+            throw new NotSupportedException("Not supported with Stomp Protocol");
         }
 
         public IQueue GetQueue(string name)
@@ -514,7 +514,7 @@ namespace Apache.NMS.Stomp
         /// </summary>
         public void DeleteDestination(IDestination destination)
         {
-            // Not Possible with Stomp
+            throw new NotSupportedException("Stomp Cannot delete Destinations");
         }
 
         public IMessage CreateMessage()

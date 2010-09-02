@@ -172,7 +172,6 @@ namespace Apache.NMS.Stomp.Protocol
         {
             if(value == null)
             {
-                Console.WriteLine("Null Map Value");
                 throw new NullReferenceException("PrimitiveMap values should not be Null");
             }
             else if(value is char)
@@ -217,13 +216,13 @@ namespace Apache.NMS.Stomp.Protocol
             }
             else if(value is IDictionary)
             {
-                Console.WriteLine("Can't Marshal a Dictionary");
+                Tracer.Debug("Can't Marshal a Dictionary");
 
                 throw new NotSupportedException("Can't marshal nested Maps in Stomp");
             }
             else if(value is IList)
             {
-                Console.WriteLine("Can't Marshal a List");
+                Tracer.Debug("Can't Marshal a List");
 
                 throw new NotSupportedException("Can't marshal nested Maps in Stomp");
             }

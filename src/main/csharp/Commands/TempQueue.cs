@@ -23,32 +23,22 @@ namespace Apache.NMS.Stomp.Commands
     /// </summary>
     public class TempQueue : TempDestination, ITemporaryQueue
     {
-        public TempQueue()
-            : base()
+        public TempQueue() : base()
         {
         }
 
-        public TempQueue(String name)
-            : base(name)
+        public TempQueue(String name) : base(name)
         {
         }
 
         override public DestinationType DestinationType
         {
-            get
-            {
-                return DestinationType.TemporaryQueue;
-            }
+            get { return DestinationType.TemporaryQueue; }
         }
 
         public String QueueName
         {
             get { return PhysicalName; }
-        }
-
-        public String GetQueueName()
-        {
-            return PhysicalName;
         }
 
         public override byte GetDataStructureType()

@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+using System;
+
 using Apache.NMS.Stomp.Commands;
 
 namespace Apache.NMS.Stomp.Protocol
@@ -24,79 +26,6 @@ namespace Apache.NMS.Stomp.Protocol
     /// </summary>
     public class StompHelper
     {
-        public static Destination ToDestination(string text)
-        {
-            if(text == null)
-            {
-                return null;
-            }
-
-            int type = Destination.STOMP_QUEUE;
-            string lowertext = text.ToLower();
-            if(lowertext.StartsWith("/queue/"))
-            {
-                text = text.Substring("/queue/".Length);
-            }
-            else if(lowertext.StartsWith("/topic/"))
-            {
-                text = text.Substring("/topic/".Length);
-                type = Destination.STOMP_TOPIC;
-            }
-            else if(lowertext.StartsWith("/temp-topic/"))
-            {
-                text = text.Substring("/temp-topic/".Length);
-                type = Destination.STOMP_TEMPORARY_TOPIC;
-            }
-            else if(lowertext.StartsWith("/temp-queue/"))
-            {
-                text = text.Substring("/temp-queue/".Length);
-                type = Destination.STOMP_TEMPORARY_QUEUE;
-            }
-            else if(lowertext.StartsWith("/remote-temp-topic/"))
-            {
-                type = Destination.STOMP_TEMPORARY_TOPIC;
-            }
-            else if(lowertext.StartsWith("/remote-temp-queue/"))
-            {
-                type = Destination.STOMP_TEMPORARY_QUEUE;
-            }
-
-            return Destination.CreateDestination(type, text);
-        }
-
-        public static string ToStomp(Destination destination)
-        {
-            if(destination == null)
-            {
-                return null;
-            }
-
-            switch (destination.DestinationType)
-            {
-                case DestinationType.Topic:
-                    return "/topic/" + destination.PhysicalName;
-
-                case DestinationType.TemporaryTopic:
-                    if (destination.PhysicalName.ToLower().StartsWith("/remote-temp-topic/"))
-                    {
-                        return destination.PhysicalName;
-                    }
-
-                    return "/temp-topic/" + destination.PhysicalName;
-
-                case DestinationType.TemporaryQueue:
-                    if (destination.PhysicalName.ToLower().StartsWith("/remote-temp-queue/"))
-                    {
-                        return destination.PhysicalName;
-                    }
-
-                    return "/temp-queue/" + destination.PhysicalName;
-
-                default:
-                    return "/queue/" + destination.PhysicalName;
-            }
-        }
-
         public static string ToStomp(AcknowledgementMode ackMode)
         {
             if(ackMode == AcknowledgementMode.IndividualAcknowledge)

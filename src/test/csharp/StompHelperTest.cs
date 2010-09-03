@@ -67,24 +67,24 @@ namespace Apache.NMS.Stomp.Test
 
         // TODO destination stuff
 
-        [Test]
-        public void DestinationMarshallingWorks()
-        {
-            Assert.AreEqual("/queue/FOO.BAR", StompHelper.ToStomp(new Queue("FOO.BAR")), "queue");
-            Assert.AreEqual("/topic/FOO.BAR", StompHelper.ToStomp(new Topic("FOO.BAR")), "topic");
-            Assert.AreEqual("/temp-queue/FOO.BAR", StompHelper.ToStomp(new TempQueue("FOO.BAR")),
-                            "temporary queue");
-            Assert.AreEqual("/temp-topic/FOO.BAR", StompHelper.ToStomp(new TempTopic("FOO.BAR")),
-                            "temporary topic");
-
-            Assert.AreEqual(new Queue("FOO.BAR"), StompHelper.ToDestination("/queue/FOO.BAR"),
-                            "queue from Stomp");
-            Assert.AreEqual(new Topic("FOO.BAR"), StompHelper.ToDestination("/topic/FOO.BAR"),
-                            "topic from Stomp");
-            Assert.AreEqual(new TempQueue("FOO.BAR"),
-                            StompHelper.ToDestination("/temp-queue/FOO.BAR"), "temporary queue from Stomp");
-            Assert.AreEqual(new TempTopic("FOO.BAR"),
-                            StompHelper.ToDestination("/temp-topic/FOO.BAR"), "temporary topic from Stomp");
-        }
+//        [Test]
+//        public void DestinationMarshallingWorks()
+//        {
+//            Assert.AreEqual("/queue/FOO.BAR", StompHelper.ToStomp(new Queue("FOO.BAR")), "queue");
+//            Assert.AreEqual("/topic/FOO.BAR", StompHelper.ToStomp(new Topic("FOO.BAR")), "topic");
+//            Assert.AreEqual("/temp-queue/FOO.BAR", StompHelper.ToStomp(new TempQueue("FOO.BAR")),
+//                            "temporary queue");
+//            Assert.AreEqual("/temp-topic/FOO.BAR", StompHelper.ToStomp(new TempTopic("FOO.BAR")),
+//                            "temporary topic");
+//
+//            Assert.AreEqual(new Queue("FOO.BAR"), StompHelper.ToDestination("/queue/FOO.BAR"),
+//                            "queue from Stomp");
+//            Assert.AreEqual(new Topic("FOO.BAR"), StompHelper.ToDestination("/topic/FOO.BAR"),
+//                            "topic from Stomp");
+//            Assert.AreEqual(new TempQueue("FOO.BAR"),
+//                            StompHelper.ToDestination("/temp-queue/FOO.BAR"), "temporary queue from Stomp");
+//            Assert.AreEqual(new TempTopic("FOO.BAR"),
+//                            StompHelper.ToDestination("/temp-topic/FOO.BAR"), "temporary topic from Stomp");
+//        }
     }
 }

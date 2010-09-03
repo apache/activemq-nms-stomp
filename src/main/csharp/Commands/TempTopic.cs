@@ -42,11 +42,6 @@ namespace Apache.NMS.Stomp.Commands
             get { return PhysicalName; }
         }
 
-        public String GetTopicName()
-        {
-            return PhysicalName;
-        }
-
         public override byte GetDataStructureType()
         {
             return DataStructureTypes.TempTopicType;

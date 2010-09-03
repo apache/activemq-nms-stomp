@@ -21,7 +21,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public abstract class TempDestination : Destination
     {
-
         /// <summary>
         /// Method GetDestinationType
         /// </summary>

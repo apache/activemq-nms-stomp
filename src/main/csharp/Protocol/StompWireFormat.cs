@@ -220,8 +220,8 @@ namespace Apache.NMS.Stomp.Protocol
             frame.RemoveProperty("content-length");
 
             message.Type = frame.RemoveProperty("type");
-            message.Destination = StompHelper.ToDestination(frame.RemoveProperty("destination"));
-            message.ReplyTo = StompHelper.ToDestination(frame.RemoveProperty("reply-to"));
+            message.Destination = Destination.ConvertToDestination(frame.RemoveProperty("destination"));
+            message.ReplyTo = Destination.ConvertToDestination(frame.RemoveProperty("reply-to"));
             message.TargetConsumerId = new ConsumerId(frame.RemoveProperty("subscription"));
             message.CorrelationId = frame.RemoveProperty("correlation-id");
 
@@ -298,11 +298,11 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty("receipt", command.CommandId);
             }
             
-            frame.SetProperty("destination", StompHelper.ToStomp(command.Destination));
+            frame.SetProperty("destination", Destination.ConvertToStompString(command.Destination));
             
             if(command.ReplyTo != null)
             {
-                frame.SetProperty("reply-to", StompHelper.ToStomp(command.ReplyTo));
+                frame.SetProperty("reply-to", Destination.ConvertToStompString(command.ReplyTo));
             }
             if(command.CorrelationId != null )
             {
@@ -420,7 +420,7 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty("receipt", command.CommandId);
             }
             
-            frame.SetProperty("destination", StompHelper.ToStomp(command.Destination));
+            frame.SetProperty("destination", Destination.ConvertToStompString(command.Destination));
             frame.SetProperty("id", command.ConsumerId.ToString());
             frame.SetProperty("durable-subscriber-name", command.SubscriptionName);
             frame.SetProperty("selector", command.Selector);

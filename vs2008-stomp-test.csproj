@@ -61,7 +61,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\NUnit\mono-2.0\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Apache.NMS.Test, Version=1.4.0.2064, Culture=neutral, PublicKeyToken=82756feee3957618">
+    <Reference Include="Apache.NMS.Test, Version=1.4.0.2071, Culture=neutral, PublicKeyToken=82756feee3957618">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Apache.NMS\mono-2.0\Apache.NMS.Test.dll</HintPath>
     </Reference>
@@ -99,21 +99,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <Compile Include="src\test\csharp\StompHelperTest.cs" />
-    <Compile Include="src\test\csharp\AsyncConsumeTest.cs" />
-    <Compile Include="src\test\csharp\BadConsumeTest.cs" />
-    <Compile Include="src\test\csharp\BytesMessageTest.cs" />
-    <Compile Include="src\test\csharp\ConnectionTest.cs" />
-    <Compile Include="src\test\csharp\MessageTest.cs" />
-    <Compile Include="src\test\csharp\ProducerTest.cs" />
-    <Compile Include="src\test\csharp\TextMessageTest.cs" />
-    <Compile Include="src\test\csharp\ConsumerTest.cs" />
-    <Compile Include="src\test\csharp\DurableTest.cs" />
-    <Compile Include="src\test\csharp\NMSPropertyTest.cs" />
-    <Compile Include="src\test\csharp\TempDestinationTest.cs" />
-    <Compile Include="src\test\csharp\TransactionTest.cs" />
     <Compile Include="src\test\csharp\StompRedeliveryPolicyTest.cs" />
-    <Compile Include="src\test\csharp\IndividualAckTest.cs" />
-    <Compile Include="src\test\csharp\ExclusiveConsumerTest.cs" />
     <Compile Include="src\test\csharp\Util\MessageDispatchChannelTest.cs" />
     <Compile Include="src\test\csharp\MessageListenerRedeliveryTest.cs" />
     <Compile Include="src\test\csharp\StompTopicTransactionTest.cs" />
@@ -127,9 +113,7 @@
     <Compile Include="src\test\csharp\Threads\DedicatedTaskRunnerTest.cs" />
     <Compile Include="src\test\csharp\Commands\MapMessageTest.cs" />
     <Compile Include="src\test\csharp\Protocol\XmlPrimitiveMapMarshalerTest.cs" />
-    <Compile Include="src\test\csharp\MapMessageTest.cs" />
     <Compile Include="src\test\csharp\Commands\ConsumerIdTest.cs" />
     <Compile Include="src\test\csharp\Commands\ProducerIdTest.cs" />
-    <Compile Include="src\test\csharp\MessageTransformerTest.cs" />
   </ItemGroup>
 </Project>

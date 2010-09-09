@@ -28,6 +28,8 @@ namespace Apache.NMS.Stomp.Test
         [Test]
 #if !NETCF
         [TestCase("stomp:tcp://${activemqhost}:61613")]
+        [TestCase("stomp:failover:(tcp://${activemqhost}:61616?keepAlive=false&wireFormat.maxInactivityDuration=1000)")]
+        [TestCase("stomp:failover:(tcp://${activemqhost}:61616?keepAlive=false&wireFormat.maxInactivityDuration=1000)?connection.asyncSend=false")]
 		[TestCase("stomp:tcp://${activemqhost}:61613?connection.asyncsend=false")]
 		[TestCase("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]
 		[TestCase("stomp:tcp://${activemqhost}:61613?connection.InvalidParameter=true", ExpectedException = typeof(NMSConnectionException))]

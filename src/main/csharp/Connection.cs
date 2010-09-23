@@ -359,9 +359,15 @@ namespace Apache.NMS.Stomp
             Session session = new Session(this, info, sessionAcknowledgementMode, this.dispatchAsync);
 
             // Set properties on session using parameters prefixed with "session."
-            StringDictionary options = URISupport.ParseQuery(this.brokerUri.Query);
-            options = URISupport.GetProperties(options, "session.");
-            URISupport.SetProperties(session, options);
+            if(!String.IsNullOrEmpty(brokerUri.Query) && !brokerUri.OriginalString.EndsWith(")"))
+            {
+                // Since the Uri class will return the end of a Query string found in a Composite
+                // URI we must ensure that we trim that off before we proceed.
+                string query = brokerUri.Query.Substring(brokerUri.Query.LastIndexOf(")") + 1);
+                StringDictionary options = URISupport.ParseQuery(query);
+                options = URISupport.GetProperties(options, "session.");
+                URISupport.SetProperties(session, options);
+            }
 
             session.ConsumerTransformer = this.ConsumerTransformer;
             session.ProducerTransformer = this.ProducerTransformer;

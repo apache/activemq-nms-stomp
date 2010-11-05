@@ -126,15 +126,14 @@ namespace Apache.NMS.Stomp
                     {
                         consumer = this.consumers[dispatch.ConsumerId] as MessageConsumer;
                     }
-
-                    // If the consumer is not available, just ignore the message.
-                    // Otherwise, dispatch the message to the consumer.
-                    if(consumer != null)
-                    {
-                        consumer.Dispatch(dispatch);
-                    }
                 }
 
+                // If the consumer is not available, just ignore the message.
+                // Otherwise, dispatch the message to the consumer.
+                if(consumer != null)
+                {
+                    consumer.Dispatch(dispatch);
+                }
             }
             catch(Exception ex)
             {

@@ -50,7 +50,8 @@ namespace Apache.NMS.Stomp.Commands
         public const byte RemoveSubscriptionInfoType = 26;
         public const byte ErrorResponseType = 27;
         public const byte KeepAliveInfoType = 28;
-        
+        public const byte WireFormatInfoType = 29;
+
         public const byte DestinationType = 48;
         public const byte TempDestinationType = 49;
         public const byte TopicType = 50;
@@ -131,6 +132,9 @@ namespace Apache.NMS.Stomp.Commands
                 break;
             case KeepAliveInfoType:
                 packetTypeStr = "KeepAliveInfoType";
+                break;
+            case WireFormatInfoType:
+                packetTypeStr = "WireFormatInfoType";
                 break;
             case DestinationType:
                 packetTypeStr = "DestinationType";

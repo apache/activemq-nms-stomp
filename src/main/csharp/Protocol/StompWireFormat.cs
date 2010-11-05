@@ -31,6 +31,7 @@ namespace Apache.NMS.Stomp.Protocol
         private Encoding encoder = new UTF8Encoding();
         private IPrimitiveMapMarshaler mapMarshaler = new XmlPrimitiveMapMarshaler();
         private ITransport transport;
+        private WireFormatInfo remoteWireFormatInfo;
 
         public StompWireFormat()
         {
@@ -125,7 +126,7 @@ namespace Apache.NMS.Stomp.Protocol
         {
             string command = frame.Command;
             
-            if(command == "RECEIPT" || command == "CONNECTED")
+            if(command == "RECEIPT")
             {
                 string text = frame.RemoveProperty("receipt-id");
                 if(text != null)
@@ -141,19 +142,11 @@ namespace Apache.NMS.Stomp.Protocol
                     answer.CorrelationId = Int32.Parse(text);
                     return answer;
                 }
-                else if(command == "CONNECTED")
-                {
-                    text = frame.RemoveProperty("response-id");
-
-                    Tracer.Debug("StompWireFormat - Received CONNECTED command: ResponseId = " + text);
-                    
-                    if(text != null)
-                    {
-                        Response answer = new Response();
-                        answer.CorrelationId = Int32.Parse(text);
-                        return answer;
-                    }
-                }
+            }
+            else if(command == "CONNECTED")
+            {
+                Tracer.Debug("StompWireFormat - Received CONNECTED command");
+                return ReadConnected(frame);
             }
             else if(command == "ERROR")
             {
@@ -190,6 +183,50 @@ namespace Apache.NMS.Stomp.Protocol
             Tracer.Error("Unknown command: " + frame.Command + " headers: " + frame.Properties);
             
             return null;
+        }
+
+        protected virtual Command ReadConnected(StompFrame frame)
+        {
+            string responseId = frame.RemoveProperty("response-id");
+
+            this.remoteWireFormatInfo = new WireFormatInfo();
+
+            if(frame.HasProperty("version"))
+            {
+                remoteWireFormatInfo.Version = Int32.Parse(frame.RemoveProperty("version"));
+
+                if(frame.HasProperty("session"))
+                {
+                    remoteWireFormatInfo.Session = frame.RemoveProperty("session");
+                }
+
+                if(frame.HasProperty("heart-beat"))
+                {
+                    string[] hearBeats = frame.RemoveProperty("heart-beat").Split(",".ToCharArray());
+                    if(hearBeats.Length != 2)
+                    {
+                        throw new IOException("Malformed heartbeat property in Connected Frame.");
+                    }
+
+                    remoteWireFormatInfo.WriteCheckInterval = Int32.Parse(hearBeats[0].Trim());
+                    remoteWireFormatInfo.ReadCheckInterval = Int32.Parse(hearBeats[1].Trim());
+                }
+            }
+            else
+            {
+                remoteWireFormatInfo.ReadCheckInterval = 0;
+                remoteWireFormatInfo.WriteCheckInterval = 0;
+                remoteWireFormatInfo.Version = 1.0f;
+            }
+
+            if(responseId != null)
+            {
+                Response answer = new Response();
+                answer.CorrelationId = Int32.Parse(responseId);
+                SendCommand(answer);
+            }
+
+            return remoteWireFormatInfo;
         }
 
         protected virtual Command ReadMessage(StompFrame frame)
@@ -400,6 +437,13 @@ namespace Apache.NMS.Stomp.Protocol
             frame.SetProperty("login", command.UserName);
             frame.SetProperty("passcode", command.Password);
             frame.SetProperty("request-id", command.CommandId);
+            frame.SetProperty("host", command.Host);
+            frame.SetProperty("accept-version", "1.0,1.1");
+
+            if(command.MaxInactivityDuration != 0)
+            {
+                frame.SetProperty("heart-beat", command.WriteCheckInterval + "," + command.ReadCheckInterval);
+            }
 
             frame.ToStream(dataOut);
         }

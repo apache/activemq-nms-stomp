@@ -563,14 +563,17 @@ namespace Apache.NMS.Stomp
         /// <param name="command">A  Command</param>
         protected void OnCommand(ITransport commandTransport, Command command)
         {
-            if(command is MessageDispatch)
+            if(command.IsMessageDispatch)
             {
                 // We wait if the Connection is still processing interruption
                 // code to reset the MessageConsumers.
                 WaitForTransportInterruptionProcessingToComplete();
                 DispatchMessage((MessageDispatch) command);
             }
-            else if(command is ConnectionError)
+            else if(command.IsWireFormatInfo)
+            {
+            }
+            else if(command.IsErrorCommand)
             {
                 if(!closing && !closed)
                 {

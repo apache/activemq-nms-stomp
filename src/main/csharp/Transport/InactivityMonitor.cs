@@ -19,7 +19,6 @@ using System;
 using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Threads;
-using Apache.NMS.Stomp.Util;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport
@@ -40,26 +39,40 @@ namespace Apache.NMS.Stomp.Transport
         private readonly Atomic<bool> inRead = new Atomic<bool>(false);
         private readonly Atomic<bool> inWrite = new Atomic<bool>(false);
 
-        private DedicatedTaskRunner asyncTask;
+        private CompositeTaskRunner asyncTasks;
+        private AsyncSignalReadErrorkTask asyncErrorTask;
         private AsyncWriteTask asyncWriteTask;
 
         private readonly Mutex monitor = new Mutex();
 
         private Timer connectionCheckTimer;
 
-        private long maxInactivityDuration = 10000;
-        public long MaxInactivityDuration
+        private DateTime lastReadCheckTime;
+
+        private long readCheckTime;
+        public long ReadCheckTime
         {
-            get { return this.maxInactivityDuration; }
-            set { this.maxInactivityDuration = value; }
+            get { return this.readCheckTime; }
+            set { this.readCheckTime = value; }
         }
 
-        private long maxInactivityDurationInitialDelay = 10000;
-        public long MaxInactivityDurationInitialDelay
+        private long writeCheckTime;
+        public long WriteCheckTime
         {
-            get { return this.maxInactivityDurationInitialDelay; }
-            set { this.maxInactivityDurationInitialDelay = value; }
+            get { return this.writeCheckTime; }
+            set { this.writeCheckTime = value; }
         }
+
+        private long initialDelayTime;
+        public long InitialDelayTime
+        {
+            get { return this.initialDelayTime; }
+            set { this.initialDelayTime = value; }
+        }
+
+        // Local and remote Wire Format Information
+        private ConnectionInfo localWireFormatInfo;
+        private WireFormatInfo remoteWireFormatInfo;
 
         /// <summary>
         /// Constructor or the Inactivity Monitor
@@ -87,23 +100,34 @@ namespace Apache.NMS.Stomp.Transport
 
             base.Dispose(disposing);
         }
+        
+        public void CheckConnection(object state)
+        {
+            // First see if we have written or can write.
+            WriteCheck();
+            
+            // Now check is we've read anything, if not then we send
+            // a new KeepAlive with response required.
+            ReadCheck();
+        }
 
         #region WriteCheck Related
         /// <summary>
         /// Check the write to the broker
         /// </summary>
-        public void WriteCheck(object unused)
+        public void WriteCheck()
         {
             if(this.inWrite.Value || this.failed.Value)
             {
-                Tracer.Debug("Inactivity Monitor is in write or already failed.");
+                Tracer.Debug("Inactivity Monitor is in write or already failed.");              
                 return;
             }
 
             if(!commandSent.Value)
             {
                 Tracer.Debug("No Message sent since last write check. Sending a KeepAliveInfo");
-                this.asyncTask.Wakeup();
+                this.asyncWriteTask.IsPending = true;
+                this.asyncTasks.Wakeup();
             }
             else
             {
@@ -111,6 +135,50 @@ namespace Apache.NMS.Stomp.Transport
             }
 
             commandSent.Value = false;
+        }
+        #endregion
+
+        #region ReadCheck Related
+        public void ReadCheck()
+        {
+            DateTime now = DateTime.Now;
+            TimeSpan elapsed = now - this.lastReadCheckTime;
+
+            if(!AllowReadCheck(elapsed))
+            {
+                Tracer.Debug("Inactivity Monitor: A read check is not currently allowed.");             
+                return;
+            }
+
+            this.lastReadCheckTime = now;
+
+            if(this.inRead.Value || this.failed.Value)
+            {
+                Tracer.Debug("A receive is in progress or already failed.");
+                return;
+            }
+
+            if(!commandReceived.Value)
+            {
+                Tracer.Debug("No message received since last read check! Sending an InactivityException!");
+                this.asyncErrorTask.IsPending = true;
+                this.asyncTasks.Wakeup();
+            }
+            else
+            {
+                commandReceived.Value = false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if we should allow the read check(if less than 90% of the read
+        /// check time elapsed then we dont do the readcheck
+        /// </summary>
+        /// <param name="elapsed"></param>
+        /// <returns></returns>
+        public bool AllowReadCheck(TimeSpan elapsed)
+        {
+            return (elapsed.TotalMilliseconds > (readCheckTime * 9 / 10));
         }
         #endregion
 
@@ -126,15 +194,21 @@ namespace Apache.NMS.Stomp.Transport
             inRead.Value = true;
             try
             {
-                try
+                if(command is WireFormatInfo)
                 {
-                    StartMonitorThreads();
+                    lock(monitor)
+                    {
+                        remoteWireFormatInfo = command as WireFormatInfo;
+                        try
+                        {
+                            StartMonitorThreads();
+                        }
+                        catch(IOException ex)
+                        {
+                            OnException(this, ex);
+                        }
+                    }
                 }
-                catch(IOException ex)
-                {
-                    OnException(this, ex);
-                }
-
                 base.OnCommand(sender, command);
             }
             finally
@@ -146,9 +220,9 @@ namespace Apache.NMS.Stomp.Transport
         public override void Oneway(Command command)
         {
             // Disable inactivity monitoring while processing a command.
-            // synchronize this method - its not synchronized
-            // further down the transport stack and gets called by more
-            // than one thread  by this class
+            //synchronize this method - its not synchronized
+            //further down the transport stack and gets called by more
+            //than one thread  by this class
             lock(inWrite)
             {
                 inWrite.Value = true;
@@ -158,7 +232,14 @@ namespace Apache.NMS.Stomp.Transport
                     {
                         throw new IOException("Channel was inactive for too long: " + next.RemoteAddress.ToString());
                     }
-
+                    if(command.IsConnectionInfo)
+                    {
+                        lock(monitor)
+                        {
+                            localWireFormatInfo = command as ConnectionInfo;
+                            StartMonitorThreads();
+                        }
+                    }
                     next.Oneway(command);
                 }
                 finally
@@ -183,25 +264,77 @@ namespace Apache.NMS.Stomp.Transport
         {
             lock(monitor)
             {
-                if(monitorStarted.Value || maxInactivityDuration == 0)
+                if(monitorStarted.Value)
                 {
                     return;
                 }
 
-                Tracer.DebugFormat("Inactivity: Write Check time interval: {0}", maxInactivityDuration );
-				Tracer.DebugFormat("Inactivity: Initial Delay time interval: {0}", maxInactivityDurationInitialDelay );
+                if(localWireFormatInfo == null)
+                {
+                    return;
+                }
 
-                this.asyncWriteTask = new AsyncWriteTask(this);
-                this.asyncTask = new DedicatedTaskRunner(this.asyncWriteTask);
+                if(remoteWireFormatInfo == null)
+                {
+                    return;
+                }
 
-                monitorStarted.Value = true;
+                if(localWireFormatInfo.MaxInactivityDuration != 0 &&
+                   remoteWireFormatInfo.WriteCheckInterval != 0)
+                {
+                    readCheckTime =
+                        Math.Max(
+                            localWireFormatInfo.ReadCheckInterval,
+                            remoteWireFormatInfo.WriteCheckInterval);
 
-                this.connectionCheckTimer = new Timer(
-                    new TimerCallback(WriteCheck),
-                    null,
-                    maxInactivityDurationInitialDelay,
-                    maxInactivityDuration
-                    );
+                    this.asyncErrorTask = new AsyncSignalReadErrorkTask(this, next.RemoteAddress);
+                }
+
+                if(localWireFormatInfo.MaxInactivityDuration != 0)
+                {
+                    if(remoteWireFormatInfo.Version > 1.0)
+                    {
+                        writeCheckTime =
+                            Math.Max(localWireFormatInfo.WriteCheckInterval,
+                                     remoteWireFormatInfo.ReadCheckInterval);
+                    }
+                    else
+                    {
+                        writeCheckTime = localWireFormatInfo.MaxInactivityDuration;
+                    }
+
+                    this.asyncWriteTask = new AsyncWriteTask(this);
+                }
+
+                initialDelayTime = localWireFormatInfo.MaxInactivityDurationInitialDelay;
+                
+                Tracer.DebugFormat("Inactivity: Read Check time interval: {0}", readCheckTime );
+                Tracer.DebugFormat("Inactivity: Initial Delay time interval: {0}", initialDelayTime );
+                Tracer.DebugFormat("Inactivity: Write Check time interval: {0}", writeCheckTime );
+
+                this.asyncTasks = new CompositeTaskRunner();
+
+                if(this.asyncErrorTask != null)
+                {
+                    this.asyncTasks.AddTask(this.asyncErrorTask);
+                }
+
+                if(this.asyncWriteTask != null)
+                {
+                    this.asyncTasks.AddTask(this.asyncWriteTask);
+                }
+
+                if(this.asyncErrorTask != null || this.asyncWriteTask != null)
+                {
+                    monitorStarted.Value = true;
+
+                    this.connectionCheckTimer = new Timer(
+                        new TimerCallback(CheckConnection),
+                        null,
+                        initialDelayTime,
+                        writeCheckTime
+                        );
+                }
             }
         }
 
@@ -211,37 +344,78 @@ namespace Apache.NMS.Stomp.Transport
             {
                 if(monitorStarted.CompareAndSet(true, false))
                 {
+                    AutoResetEvent shutdownEvent = new AutoResetEvent(false);
+
                     // Attempt to wait for the Timer to shutdown, but don't wait
                     // forever, if they don't shutdown after two seconds, just quit.
-                    ThreadUtil.DisposeTimer(connectionCheckTimer, 2000);
+                    this.connectionCheckTimer.Dispose(shutdownEvent);
+                    shutdownEvent.WaitOne(TimeSpan.FromMilliseconds(2000), false);
 
-                    this.asyncTask.Shutdown();
-                    this.asyncTask = null;
+                    this.asyncTasks.Shutdown();
+                    this.asyncTasks = null;
                     this.asyncWriteTask = null;
+                    this.asyncErrorTask = null;
                 }
             }
         }
 
         #region Async Tasks
-
-        // Task that fires when the TaskRunner is signaled by the WriteCheck Timer Task.
-        class AsyncWriteTask : Task
+        // Task that fires when the TaskRunner is signaled by the ReadCheck Timer Task.
+        class AsyncSignalReadErrorkTask : CompositeTask
         {
             private readonly InactivityMonitor parent;
+            private readonly Uri remote;
+            private readonly Atomic<bool> pending = new Atomic<bool>(false);
+
+            public AsyncSignalReadErrorkTask(InactivityMonitor parent, Uri remote)
+            {
+                this.parent = parent;
+                this.remote = remote;
+            }
+
+            public bool IsPending
+            {
+                get { return this.pending.Value; }
+                set { this.pending.Value = value; }
+            }
+
+            public bool Iterate()
+            {
+                if(this.pending.CompareAndSet(true, false) && this.parent.monitorStarted.Value)
+                {
+                    IOException ex = new IOException("Channel was inactive for too long: " + remote);
+                    this.parent.OnException(parent, ex);
+                }
+
+                return this.pending.Value;
+            }
+        }
+
+        // Task that fires when the TaskRunner is signaled by the WriteCheck Timer Task.
+        class AsyncWriteTask : CompositeTask
+        {
+            private readonly InactivityMonitor parent;
+            private readonly Atomic<bool> pending = new Atomic<bool>(false);
 
             public AsyncWriteTask(InactivityMonitor parent)
             {
                 this.parent = parent;
             }
 
+            public bool IsPending
+            {
+                get { return this.pending.Value; }
+                set { this.pending.Value = value; }
+            }
+
             public bool Iterate()
             {
-				Tracer.Debug("AsyncWriteTask perparing for another Write Check");
-                if(this.parent.monitorStarted.Value)
+                Tracer.Debug("AsyncWriteTask perparing for another Write Check");
+                if(this.pending.CompareAndSet(true, false) && this.parent.monitorStarted.Value)
                 {
                     try
                     {
-						Tracer.Debug("AsyncWriteTask Write Check required sending KeepAlive.");
+                        Tracer.Debug("AsyncWriteTask Write Check required sending KeepAlive.");
                         KeepAliveInfo info = new KeepAliveInfo();
                         this.parent.Oneway(info);
                     }
@@ -251,7 +425,7 @@ namespace Apache.NMS.Stomp.Transport
                     }
                 }
 
-                return false;
+                return this.pending.Value;
             }
         }
         #endregion

@@ -48,39 +48,18 @@ namespace Apache.NMS.Stomp.Transport
         /// wait for the response, instead a FutureResponse object is returned that the
         /// caller can use to wait on the Broker's response.
         /// </summary>
-        /// <param name="command">
-        /// A <see cref="Command"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="FutureResponse"/>
-        /// </returns>
 		FutureResponse AsyncRequest(Command command);
 
         /// <summary>
         /// Sends a Command to the Broker and waits for a Response to that Command before
         /// returning, this version waits indefinitely for a response.
         /// </summary>
-        /// <param name="command">
-        /// A <see cref="Command"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="Response"/>
-        /// </returns>
 		Response Request(Command command);
 
         /// <summary>
         /// Sends a Command to the Broker and waits for the given TimeSpan to expire for a
         /// response before returning.  
         /// </summary>
-        /// <param name="command">
-        /// A <see cref="Command"/>
-        /// </param>
-        /// <param name="timeout">
-        /// A <see cref="TimeSpan"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="Response"/>
-        /// </returns>
 		Response Request(Command command, TimeSpan timeout);
 
         /// <summary>
@@ -89,12 +68,6 @@ namespace Apache.NMS.Stomp.Transport
         /// object in the Transport chain and set or get properties on that specific
         /// instance.  If the requested type isn't in the chain than Null is returned.
         /// </summary>
-        /// <param name="type">
-        /// A <see cref="Type"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="System.Object"/>
-        /// </returns>
         Object Narrow(Type type);            
 
 		CommandHandler Command

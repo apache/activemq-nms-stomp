@@ -22,31 +22,34 @@ namespace Apache.NMS.Stomp.Commands
     public class ConnectionInfo : BaseCommand
     {
         ConnectionId connectionId;
+        string host;
         string clientId;
         string password;
         string userName;
 
-        ///
+        long maxInactivityDuration = 30000;
+        long maxInactivityDurationInitialDelay = 10000;
+
         /// <summery>
-        ///  Get the unique identifier that this object and its own
-        ///  Marshaler share.
+        /// Get the unique identifier that this object and its own
+        /// Marshaler share.
         /// </summery>
-        ///
         public override byte GetDataStructureType()
         {
             return DataStructureTypes.ConnectionInfoType;
         }
 
-        ///
         /// <summery>
-        ///  Returns a string containing the information for this DataStructure
-        ///  such as its type and value of its elements.
+        /// Returns a string containing the information for this DataStructure
+        /// such as its type and value of its elements.
         /// </summery>
-        ///
         public override string ToString()
         {
             return GetType().Name + "[" +
                 "ConnectionId=" + ConnectionId + ", " +
+                "Host=" + Host + ", " +
+                "MaxInactivityDuration=" + MaxInactivityDuration + ", " +
+                "MaxInactivityDurationInitialDelay=" + MaxInactivityDurationInitialDelay + ", " +
                 "ClientId=" + ClientId + ", " +
                 "Password=" + Password + ", " +
                 "UserName=" + UserName +
@@ -57,6 +60,12 @@ namespace Apache.NMS.Stomp.Commands
         {
             get { return connectionId; }
             set { this.connectionId = value; }
+        }
+
+        public string Host
+        {
+            get { return host; }
+            set { this.host = value; }
         }
 
         public string ClientId
@@ -77,11 +86,31 @@ namespace Apache.NMS.Stomp.Commands
             set { this.userName = value; }
         }
 
-        ///
+        public long MaxInactivityDuration
+        {
+            get { return this.maxInactivityDuration; }
+            set { this.maxInactivityDuration = value; }
+        }
+
+        public long MaxInactivityDurationInitialDelay
+        {
+            get { return this.maxInactivityDurationInitialDelay; }
+            set { this.maxInactivityDurationInitialDelay = value; }
+        }
+
+        public long ReadCheckInterval
+        {
+            get { return this.MaxInactivityDuration; }
+        }
+
+        public long WriteCheckInterval
+        {
+            get { return maxInactivityDuration > 3 ? maxInactivityDuration / 3 : maxInactivityDuration; }
+        }
+
         /// <summery>
-        ///  Return an answer of true to the isConnectionInfo() query.
+        /// Return an answer of true to the isConnectionInfo() query.
         /// </summery>
-        ///
         public override bool IsConnectionInfo
         {
             get

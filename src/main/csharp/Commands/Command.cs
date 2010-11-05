@@ -92,6 +92,11 @@ namespace Apache.NMS.Stomp.Commands
             get;
         }
 
+        bool IsWireFormatInfo
+        {
+            get;
+        }
+
         Response visit(ICommandVisitor visitor);
     }
 }

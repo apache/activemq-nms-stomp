@@ -209,6 +209,14 @@ namespace Apache.NMS.Stomp.Commands
             }
         }
 
+        public virtual bool IsWireFormatInfo
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public virtual bool ResponseRequired
         {
             get

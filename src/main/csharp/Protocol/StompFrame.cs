@@ -166,8 +166,14 @@ namespace Apache.NMS.Stomp.Protocol
                 {
                     string key = line.Substring(0, idx);
                     string value = line.Substring(idx + 1);
-                    
-                    this.properties[key] = value;
+
+                    // Stomp v1.1+ allows multiple copies of a property, the first
+                    // one is considered to be the newest, we could figure out how
+                    // to store them all but for now we just throw the rest out.
+                    if(!this.properties.Contains(value))
+                    {
+                        this.properties[key] = value;
+                    }
                 }
                 else
                 {

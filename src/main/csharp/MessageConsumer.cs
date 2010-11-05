@@ -501,12 +501,6 @@ namespace Apache.NMS.Stomp
         /// message if it is available if timeout > 0 then it blocks up to timeout
         /// amount of time.  Expired messages will consumed by this method.
         /// </summary>
-        /// <param name="timeout">
-        /// A <see cref="System.TimeSpan"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="MessageDispatch"/>
-        /// </returns>
         private MessageDispatch Dequeue(TimeSpan timeout)
         {
             DateTime deadline = DateTime.Now;

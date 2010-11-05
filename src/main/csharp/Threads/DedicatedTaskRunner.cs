@@ -155,8 +155,6 @@ namespace Apache.NMS.Stomp.Threads
             {
                 // Make sure we notify any waiting threads that thread
                 // has terminated.
-                //lock(this.mutex)
-                //{
                 Monitor.Enter(this.mutex);
                 this.terminated = true;
                 Monitor.Exit(this.mutex);

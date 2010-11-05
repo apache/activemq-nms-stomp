@@ -80,9 +80,6 @@ namespace Apache.NMS.Stomp.Util
         /// <summary>
         /// Generate a Unique Id
         /// </summary>
-        /// <returns>
-        /// A <see cref="String"/>
-        /// </returns>
         public String GenerateId()
         {
             lock(UNIQUE_STUB)
@@ -94,9 +91,6 @@ namespace Apache.NMS.Stomp.Util
         /// <summary>
         /// Generate a unique ID - that is friendly for a URL or file system
         /// </summary>
-        /// <returns>
-        /// A <see cref="String"/>
-        /// </returns>
         public String GenerateSanitizedId()
         {
             String result = GenerateId();
@@ -109,12 +103,6 @@ namespace Apache.NMS.Stomp.Util
         /// <summary>
         /// From a generated id - return the seed (i.e. minus the count)
         /// </summary>
-        /// <param name="id">
-        /// A <see cref="String"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="String"/>
-        /// </returns>
         public static String GetSeedFromId(String id)
         {
             String result = id;
@@ -134,12 +122,6 @@ namespace Apache.NMS.Stomp.Util
         /// <summary>
         /// From a generated id - return the generator count
         /// </summary>
-        /// <param name="id">
-        /// A <see cref="String"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="System.Int64"/>
-        /// </returns>
         public static long GetSequenceFromId(String id)
         {
             long result = -1;
@@ -159,15 +141,6 @@ namespace Apache.NMS.Stomp.Util
         /// <summary>
         /// Does a proper compare on the ids
         /// </summary>
-        /// <param name="id1">
-        /// A <see cref="String"/>
-        /// </param>
-        /// <param name="id2">
-        /// A <see cref="String"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="System.Int32"/>
-        /// </returns>
         public static int Compare(String id1, String id2)
         {
             int result = -1;

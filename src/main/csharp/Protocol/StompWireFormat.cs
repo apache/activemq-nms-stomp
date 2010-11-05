@@ -187,13 +187,19 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual Command ReadConnected(StompFrame frame)
         {
+            Tracer.Debug("CONNECTED command: " + frame.Command + " headers: ");
+            foreach(string key in frame.Properties.Keys)
+            {
+                Tracer.DebugFormat("   property[{0}] = {1}", key, frame.Properties[key]);
+            }
+
             string responseId = frame.RemoveProperty("response-id");
 
             this.remoteWireFormatInfo = new WireFormatInfo();
 
             if(frame.HasProperty("version"))
             {
-                remoteWireFormatInfo.Version = Int32.Parse(frame.RemoveProperty("version"));
+                remoteWireFormatInfo.Version = Single.Parse(frame.RemoveProperty("version"));
 
                 if(frame.HasProperty("session"))
                 {

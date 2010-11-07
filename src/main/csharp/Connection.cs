@@ -572,6 +572,11 @@ namespace Apache.NMS.Stomp
             }
             else if(command.IsWireFormatInfo)
             {
+                // Ignore for now, might need to save if off later.
+            }
+            else if(command.IsKeepAliveInfo)
+            {
+                // Ignore only the InactivityMonitor cares about this one.
             }
             else if(command.IsErrorCommand)
             {

@@ -174,6 +174,11 @@ namespace Apache.NMS.Stomp.Protocol
                     return answer;
                 }
             }
+            else if(command == "KEEPALIVE")
+            {
+                Tracer.Debug("StompWireFormat - Received KEEPALIVE command");
+                return new KeepAliveInfo();
+            }
             else if(command == "MESSAGE")
             {
                 Tracer.Debug("StompWireFormat - Received MESSAGE command");

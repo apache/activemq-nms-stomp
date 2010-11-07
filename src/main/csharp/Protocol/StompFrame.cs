@@ -148,11 +148,12 @@ namespace Apache.NMS.Stomp.Protocol
 
         private void ReadCommandHeader(BinaryReader dataIn)
         {
-            do 
+            this.command = ReadLine(dataIn);
+
+            if(String.IsNullOrEmpty(this.command))
             {
-                this.command = ReadLine(dataIn);
+                this.command = "KEEPALIVE";
             }
-            while(this.command == "");            
         }
 
         private void ReadHeaders(BinaryReader dataIn)

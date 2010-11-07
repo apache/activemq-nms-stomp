@@ -28,7 +28,7 @@ namespace Apache.NMS.Stomp.Commands
         string userName;
 
         long maxInactivityDuration = 30000;
-        long maxInactivityDurationInitialDelay = 10000;
+        long maxInactivityDurationInitialDelay = 0;
 
         /// <summery>
         /// Get the unique identifier that this object and its own
@@ -49,6 +49,8 @@ namespace Apache.NMS.Stomp.Commands
                 "ConnectionId=" + ConnectionId + ", " +
                 "Host=" + Host + ", " +
                 "MaxInactivityDuration=" + MaxInactivityDuration + ", " +
+                "ReadCheckInterval=" + ReadCheckInterval + ", " +
+                "WriteCheckInterval=" + WriteCheckInterval + ", " +
                 "MaxInactivityDurationInitialDelay=" + MaxInactivityDurationInitialDelay + ", " +
                 "ClientId=" + ClientId + ", " +
                 "Password=" + Password + ", " +

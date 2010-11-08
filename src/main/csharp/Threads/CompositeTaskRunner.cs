@@ -116,7 +116,7 @@ namespace Apache.NMS.Stomp.Threads
                 
                 this.pending = true;
                 
-                Monitor.PulseAll(this.mutex);
+                this.waiter.Set();
             }            
         }
 

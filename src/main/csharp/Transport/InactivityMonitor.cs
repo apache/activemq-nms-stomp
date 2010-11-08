@@ -19,6 +19,7 @@ using System;
 using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Threads;
+using Apache.NMS.Stomp.Util;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport
@@ -100,14 +101,14 @@ namespace Apache.NMS.Stomp.Transport
 
             base.Dispose(disposing);
         }
-        
+
         public void CheckConnection(object state)
         {
             Tracer.DebugFormat("CheckConnection: Timer Elapsed at {0}", DateTime.Now.ToLocalTime());
 
             // First see if we have written or can write.
             WriteCheck();
-            
+
             // Now check is we've read anything, if not then we send
             // a new KeepAlive with response required.
             ReadCheck();
@@ -121,7 +122,7 @@ namespace Apache.NMS.Stomp.Transport
         {
             if(this.inWrite.Value || this.failed.Value)
             {
-                Tracer.Debug("Inactivity Monitor is in write or already failed.");              
+                Tracer.Debug("Inactivity Monitor is in write or already failed.");
                 return;
             }
 
@@ -148,7 +149,7 @@ namespace Apache.NMS.Stomp.Transport
 
             if(!AllowReadCheck(elapsed))
             {
-                Tracer.Debug("Inactivity Monitor: A read check is not currently allowed.");             
+                Tracer.Debug("Inactivity Monitor: A read check is not currently allowed.");
                 return;
             }
 
@@ -319,7 +320,7 @@ namespace Apache.NMS.Stomp.Transport
                 }
 
                 initialDelayTime = localWireFormatInfo.MaxInactivityDurationInitialDelay;
-                
+
                 Tracer.DebugFormat("Inactivity: Read Check time interval: {0}", readCheckTime );
                 Tracer.DebugFormat("Inactivity: Initial Delay time interval: {0}", initialDelayTime );
                 Tracer.DebugFormat("Inactivity: Write Check time interval: {0}", writeCheckTime );
@@ -359,12 +360,9 @@ namespace Apache.NMS.Stomp.Transport
             {
                 if(monitorStarted.CompareAndSet(true, false))
                 {
-                    AutoResetEvent shutdownEvent = new AutoResetEvent(false);
-
                     // Attempt to wait for the Timer to shutdown, but don't wait
                     // forever, if they don't shutdown after two seconds, just quit.
-                    this.connectionCheckTimer.Dispose(shutdownEvent);
-                    shutdownEvent.WaitOne(TimeSpan.FromMilliseconds(2000), false);
+                    ThreadUtil.DisposeTimer(connectionCheckTimer, 2000);
 
                     this.asyncTasks.Shutdown();
                     this.asyncTasks = null;

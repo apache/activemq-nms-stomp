@@ -81,6 +81,7 @@ namespace Apache.NMS.Stomp
 
             this.info = new ConnectionInfo();
             this.info.ConnectionId = id;
+            this.info.Host = brokerUri.Host;
 
             this.messageTransformation = new StompMessageTransformation(this);
         }

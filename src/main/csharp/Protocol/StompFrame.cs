@@ -139,6 +139,7 @@ namespace Apache.NMS.Stomp.Protocol
             if(this.Command == KEEPALIVE)
             {
                 dataOut.Write(NEWLINE);
+                dataOut.Flush();
                 return;
             }
 

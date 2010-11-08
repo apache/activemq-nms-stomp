@@ -103,7 +103,7 @@ namespace Apache.NMS.Stomp.Transport
         
         public void CheckConnection(object state)
         {
-            Tracer.DebugFormat("Timer Elapsed at {0}", DateTime.Now.ToLocalTime());
+            Tracer.DebugFormat("CheckConnection: Timer Elapsed at {0}", DateTime.Now.ToLocalTime());
 
             // First see if we have written or can write.
             WriteCheck();
@@ -125,16 +125,16 @@ namespace Apache.NMS.Stomp.Transport
                 return;
             }
 
-//            if(!commandSent.Value)
-//            {
-                Tracer.Debug("No Message sent since last write check. Sending a KeepAliveInfo");
+            if(!commandSent.Value)
+            {
+                //Tracer.Debug("No Message sent since last write check. Sending a KeepAliveInfo");
                 this.asyncWriteTask.IsPending = true;
                 this.asyncTasks.Wakeup();
-//            }
-//            else
-//            {
-//                Tracer.Debug("Message sent since last write check. Resetting flag");
-//            }
+            }
+            else
+            {
+                Tracer.Debug("Message sent since last write check. Resetting flag");
+            }
 
             commandSent.Value = false;
         }
@@ -180,7 +180,7 @@ namespace Apache.NMS.Stomp.Transport
         /// <returns></returns>
         public bool AllowReadCheck(TimeSpan elapsed)
         {
-            return (elapsed.TotalMilliseconds > (readCheckTime + readCheckTime * 0.90) );
+            return (elapsed.TotalMilliseconds > (readCheckTime * 2) );
         }
         #endregion
 
@@ -211,6 +211,16 @@ namespace Apache.NMS.Stomp.Transport
                         }
                     }
                 }
+                else if(command.IsKeepAliveInfo)
+                {
+                    if(Tracer.IsDebugEnabled)
+                    {
+                        Tracer.Debug("InactivityMonitor: New Keep Alive Received at -> " +
+                                     DateTime.Now.ToLongTimeString().TrimEnd(" APM".ToCharArray()) +
+                                     "." + DateTime.Now.Millisecond);
+                    }
+                }
+
                 base.OnCommand(sender, command);
             }
             finally
@@ -420,7 +430,7 @@ namespace Apache.NMS.Stomp.Transport
                     try
                     {
                         KeepAliveInfo info = new KeepAliveInfo();
-                        this.parent.Oneway(info);
+                        this.parent.next.Oneway(info);
                     }
                     catch(IOException e)
                     {

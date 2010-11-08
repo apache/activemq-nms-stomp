@@ -31,6 +31,8 @@ namespace Apache.NMS.Stomp.Protocol
         public const String SEPARATOR = ":";
         /// Used to mark the End of the Frame.
         public const byte FRAME_TERMINUS = (byte) 0;
+        /// Used to denote a Special KeepAlive command that consists of a single newline.
+        public const String KEEPALIVE = "KEEPALIVE";
         
         private string command;
         private IDictionary properties = new Hashtable();
@@ -113,8 +115,33 @@ namespace Apache.NMS.Stomp.Protocol
             this.properties.Clear();
         }
 
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+
+            builder.Append(GetType().Name + "[ ");
+            builder.Append("Command=" + Command);
+            builder.Append(", Properties={");
+            foreach(string key in this.properties.Keys)
+            {
+                builder.Append(" " + key + "=" + this.properties[key]);
+            }
+
+            builder.Append("}, ");
+            builder.Append("Content=" + this.content ?? this.content.ToString());
+            builder.Append("]");
+
+            return builder.ToString();
+        }
+
         public void ToStream(BinaryWriter dataOut)
         {
+            if(this.Command == KEEPALIVE)
+            {
+                dataOut.Write(NEWLINE);
+                return;
+            }
+
             StringBuilder builder = new StringBuilder();
             
             builder.Append(this.Command);
@@ -142,8 +169,12 @@ namespace Apache.NMS.Stomp.Protocol
         public void FromStream(BinaryReader dataIn)
         {
             this.ReadCommandHeader(dataIn);
-            this.ReadHeaders(dataIn);
-            this.ReadContent(dataIn);
+
+            if(this.command != KEEPALIVE)
+            {
+                this.ReadHeaders(dataIn);
+                this.ReadContent(dataIn);
+            }
         }
 
         private void ReadCommandHeader(BinaryReader dataIn)

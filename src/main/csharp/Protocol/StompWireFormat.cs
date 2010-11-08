@@ -125,7 +125,12 @@ namespace Apache.NMS.Stomp.Protocol
         protected virtual Object CreateCommand(StompFrame frame)
         {
             string command = frame.Command;
-            
+
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("StompWireFormat - Received " + frame.ToString());
+            }
+
             if(command == "RECEIPT")
             {
                 string text = frame.RemoveProperty("receipt-id");
@@ -137,15 +142,12 @@ namespace Apache.NMS.Stomp.Protocol
                         text = text.Substring("ignore:".Length);
                     }
 
-                    Tracer.Debug("StompWireFormat - Received RESPONSE command: CorrelationId = " + text);
-                    
                     answer.CorrelationId = Int32.Parse(text);
                     return answer;
                 }
             }
             else if(command == "CONNECTED")
             {
-                Tracer.Debug("StompWireFormat - Received CONNECTED command");
                 return ReadConnected(frame);
             }
             else if(command == "ERROR")
@@ -154,7 +156,6 @@ namespace Apache.NMS.Stomp.Protocol
                 
                 if(text != null && text.StartsWith("ignore:"))
                 {
-                    Tracer.Debug("StompWireFormat - Received ERROR Response command: correlationId = " + text);
                     Response answer = new Response();
                     answer.CorrelationId = Int32.Parse(text.Substring("ignore:".Length));
                     return answer;
@@ -170,18 +171,15 @@ namespace Apache.NMS.Stomp.Protocol
                     BrokerError error = new BrokerError();
                     error.Message = frame.RemoveProperty("message");
                     answer.Exception = error;
-                    Tracer.Debug("StompWireFormat - Received ERROR command: " + error.Message);                    
                     return answer;
                 }
             }
             else if(command == "KEEPALIVE")
             {
-                Tracer.Debug("StompWireFormat - Received KEEPALIVE command");
                 return new KeepAliveInfo();
             }
             else if(command == "MESSAGE")
             {
-                Tracer.Debug("StompWireFormat - Received MESSAGE command");
                 return ReadMessage(frame);
             }
             
@@ -192,12 +190,6 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual Command ReadConnected(StompFrame frame)
         {
-            Tracer.Debug("CONNECTED command: " + frame.Command + " headers: ");
-            foreach(string key in frame.Properties.Keys)
-            {
-                Tracer.DebugFormat("   property[{0}] = {1}", key, frame.Properties[key]);
-            }
-
             string responseId = frame.RemoveProperty("response-id");
 
             this.remoteWireFormatInfo = new WireFormatInfo();
@@ -415,6 +407,11 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty(key, map[key]);
             }
 
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
+            }
+
             frame.ToStream(dataOut);
         }
 
@@ -428,11 +425,14 @@ namespace Apache.NMS.Stomp.Protocol
 
             frame.SetProperty("message-id", command.LastMessageId.ToString());
 
-            Tracer.Debug("ACK - Outbound MessageId = " + frame.GetProperty("message-id"));
-            
             if(command.TransactionId != null)
             {
                 frame.SetProperty("transaction", command.TransactionId.ToString());
+            }
+
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
             }
 
             frame.ToStream(dataOut);
@@ -456,14 +456,26 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty("heart-beat", command.WriteCheckInterval + "," + command.ReadCheckInterval);
             }
 
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
+            }
+
             frame.ToStream(dataOut);
         }
 
         protected virtual void WriteShutdownInfo(ShutdownInfo command, BinaryWriter dataOut)
         {
             System.Diagnostics.Debug.Assert(!command.ResponseRequired);
-            
-            new StompFrame("DISCONNECT").ToStream(dataOut);
+
+            StompFrame frame = new StompFrame("DISCONNECT");
+
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
+            }
+
+            frame.ToStream(dataOut);
         }
 
         protected virtual void WriteConsumerInfo(ConsumerInfo command, BinaryWriter dataOut)
@@ -481,8 +493,6 @@ namespace Apache.NMS.Stomp.Protocol
             frame.SetProperty("selector", command.Selector);
             frame.SetProperty("ack", StompHelper.ToStomp(command.AckMode));
 
-            Tracer.Debug("SUBSCRIBE : Outbound AckMode = " + frame.GetProperty("ack"));
-            
             if(command.NoLocal)
             {
                 frame.SetProperty("no-local", command.NoLocal.ToString());
@@ -523,12 +533,24 @@ namespace Apache.NMS.Stomp.Protocol
                 frame.SetProperty("activemq.retroactive", command.Retroactive);
             }
 
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
+            }
+
             frame.ToStream(dataOut);
         }
 
         protected virtual void WriteKeepAliveInfo(KeepAliveInfo command, BinaryWriter dataOut)
         {
-            dataOut.Write((byte) '\n' );
+            StompFrame frame = new StompFrame(StompFrame.KEEPALIVE);
+
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
+            }
+
+            frame.ToStream(dataOut);
         }
 
         protected virtual void WriteRemoveInfo(RemoveInfo command, BinaryWriter dataOut)
@@ -544,6 +566,12 @@ namespace Apache.NMS.Stomp.Protocol
                     frame.SetProperty("receipt", command.CommandId);
                 }                
                 frame.SetProperty("id", consumerId.ToString() );
+
+                if(Tracer.IsDebugEnabled)
+                {
+                    Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
+                }
+
                 frame.ToStream(dataOut);
             }
         }
@@ -574,6 +602,12 @@ namespace Apache.NMS.Stomp.Protocol
             }
             
             frame.SetProperty("transaction", command.TransactionId.ToString());
+
+            if(Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
+            }
+
             frame.ToStream(dataOut);
         }
 

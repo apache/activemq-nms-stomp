@@ -49,21 +49,21 @@ namespace Apache.NMS.Stomp.Transport
 
         private DateTime lastReadCheckTime;
 
-        private long readCheckTime;
+        private long readCheckTime = 30000;
         public long ReadCheckTime
         {
             get { return this.readCheckTime; }
             set { this.readCheckTime = value; }
         }
 
-        private long writeCheckTime;
+        private long writeCheckTime = 10000;
         public long WriteCheckTime
         {
             get { return this.writeCheckTime; }
             set { this.writeCheckTime = value; }
         }
 
-        private long initialDelayTime;
+        private long initialDelayTime = 0;
         public long InitialDelayTime
         {
             get { return this.initialDelayTime; }
@@ -103,6 +103,8 @@ namespace Apache.NMS.Stomp.Transport
         
         public void CheckConnection(object state)
         {
+            Tracer.DebugFormat("Timer Elapsed at {0}", DateTime.Now.ToLocalTime());
+
             // First see if we have written or can write.
             WriteCheck();
             
@@ -123,16 +125,16 @@ namespace Apache.NMS.Stomp.Transport
                 return;
             }
 
-            if(!commandSent.Value)
-            {
+//            if(!commandSent.Value)
+//            {
                 Tracer.Debug("No Message sent since last write check. Sending a KeepAliveInfo");
                 this.asyncWriteTask.IsPending = true;
                 this.asyncTasks.Wakeup();
-            }
-            else
-            {
-                Tracer.Debug("Message sent since last write check. Resetting flag");
-            }
+//            }
+//            else
+//            {
+//                Tracer.Debug("Message sent since last write check. Resetting flag");
+//            }
 
             commandSent.Value = false;
         }
@@ -178,7 +180,7 @@ namespace Apache.NMS.Stomp.Transport
         /// <returns></returns>
         public bool AllowReadCheck(TimeSpan elapsed)
         {
-            return (elapsed.TotalMilliseconds > (readCheckTime * 9 / 10));
+            return (elapsed.TotalMilliseconds > (readCheckTime + readCheckTime * 0.90) );
         }
         #endregion
 
@@ -316,16 +318,19 @@ namespace Apache.NMS.Stomp.Transport
 
                 if(this.asyncErrorTask != null)
                 {
+                    Tracer.Debug("Inactivity: Adding the Async Read Check Task to the Runner.");
                     this.asyncTasks.AddTask(this.asyncErrorTask);
                 }
 
                 if(this.asyncWriteTask != null)
                 {
+                    Tracer.Debug("Inactivity: Adding the Async Write Check Task to the Runner.");
                     this.asyncTasks.AddTask(this.asyncWriteTask);
                 }
 
                 if(this.asyncErrorTask != null || this.asyncWriteTask != null)
                 {
+                    Tracer.Debug("Inactivity: Starting the Monitor Timer.");
                     monitorStarted.Value = true;
 
                     this.connectionCheckTimer = new Timer(
@@ -410,12 +415,10 @@ namespace Apache.NMS.Stomp.Transport
 
             public bool Iterate()
             {
-                Tracer.Debug("AsyncWriteTask perparing for another Write Check");
                 if(this.pending.CompareAndSet(true, false) && this.parent.monitorStarted.Value)
                 {
                     try
                     {
-                        Tracer.Debug("AsyncWriteTask Write Check required sending KeepAlive.");
                         KeepAliveInfo info = new KeepAliveInfo();
                         this.parent.Oneway(info);
                     }

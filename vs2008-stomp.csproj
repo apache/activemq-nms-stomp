@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{AA51947C-1370-44DC-8692-1C8EFC5945F7}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -103,9 +103,13 @@
     <Compile Include="src\main\csharp\Commands\SubscriptionInfo.cs" />
     <Compile Include="src\main\csharp\Commands\TransactionId.cs" />
     <Compile Include="src\main\csharp\Commands\TransactionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\WireFormatInfo.cs" />
     <Compile Include="src\main\csharp\Protocol\StompFrameStream.cs" />
     <Compile Include="src\main\csharp\Protocol\StompHelper.cs" />
     <Compile Include="src\main\csharp\Protocol\StompWireFormat.cs" />
+    <Compile Include="src\main\csharp\RequestTimedOutException.cs" />
+    <Compile Include="src\main\csharp\Threads\CompositeTask.cs" />
+    <Compile Include="src\main\csharp\Threads\CompositeTaskRunner.cs" />
     <Compile Include="src\main\csharp\Transport\Tcp\TcpTransport.cs" />
     <Compile Include="src\main\csharp\Transport\Tcp\TcpTransportFactory.cs" />
     <Compile Include="src\main\csharp\Transport\FutureResponse.cs" />

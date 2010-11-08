@@ -39,7 +39,8 @@ namespace Apache.NMS.Stomp.Threads
         
         public CompositeTaskRunner()
         {
-            this.theThread = new Thread(Run) {IsBackground = true};
+            this.theThread = new Thread(Run);
+            this.theThread.IsBackground = true;
             this.theThread.Start();
         }
 		

@@ -181,7 +181,7 @@ namespace Apache.NMS.Stomp.Transport
         /// <returns></returns>
         public bool AllowReadCheck(TimeSpan elapsed)
         {
-            return (elapsed.TotalMilliseconds > (readCheckTime * 2) );
+            return (elapsed.TotalMilliseconds > readCheckTime );
         }
         #endregion
 

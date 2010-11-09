@@ -264,9 +264,6 @@ namespace Apache.NMS.Stomp.Protocol
             message.ReplyTo = Destination.ConvertToDestination(frame.RemoveProperty("reply-to"));
             message.TargetConsumerId = new ConsumerId(frame.RemoveProperty("subscription"));
             message.CorrelationId = frame.RemoveProperty("correlation-id");
-
-            Tracer.Debug("RECV - Inbound MessageId = " + frame.GetProperty("message-id"));
-          
             message.MessageId = new MessageId(frame.RemoveProperty("message-id"));
             message.Persistent = StompHelper.ToBool(frame.RemoveProperty("persistent"), false);
 

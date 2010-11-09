@@ -203,7 +203,7 @@ namespace Apache.NMS.Stomp.Protocol
                     // Stomp v1.1+ allows multiple copies of a property, the first
                     // one is considered to be the newest, we could figure out how
                     // to store them all but for now we just throw the rest out.
-                    if(!this.properties.Contains(value))
+                    if(!this.properties.Contains(key))
                     {
                         this.properties[key] = value;
                     }

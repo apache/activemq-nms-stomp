@@ -430,7 +430,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
                         return;
                     }
 
-                    if(command is RemoveInfo)
+                    if(command.IsRemoveInfo)
                     {
                         // Simulate response to RemoveInfo command
                         Response response = new Response();

@@ -197,7 +197,7 @@ namespace Apache.NMS.Stomp.Transport
             inRead.Value = true;
             try
             {
-                if(command is WireFormatInfo)
+                if(command.IsWireFormatInfo)
                 {
                     lock(monitor)
                     {

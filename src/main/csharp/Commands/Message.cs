@@ -70,7 +70,8 @@ namespace Apache.NMS.Stomp.Commands
         {
             Message cloneMessage = (Message) base.Clone();
 
-            cloneMessage.propertyHelper = new MessagePropertyIntercepter(cloneMessage, cloneMessage.properties, this.ReadOnlyProperties) { AllowByteArrays = false };
+            cloneMessage.propertyHelper = new MessagePropertyIntercepter(cloneMessage, cloneMessage.properties, this.ReadOnlyProperties);
+            cloneMessage.propertyHelper.AllowByteArrays = false;
             return cloneMessage;
         }
 

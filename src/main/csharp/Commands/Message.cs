@@ -66,6 +66,14 @@ namespace Apache.NMS.Stomp.Commands
             return thisMsg != null && oMsg != null && oMsg.Equals(thisMsg);
         }
 
+        public override object Clone()
+        {
+            Message cloneMessage = (Message) base.Clone();
+
+            cloneMessage.propertyHelper = new MessagePropertyIntercepter(cloneMessage, cloneMessage.properties, this.ReadOnlyProperties) { AllowByteArrays = false };
+            return cloneMessage;
+        }
+
         public void Acknowledge()
         {
             if(null == Acknowledger)

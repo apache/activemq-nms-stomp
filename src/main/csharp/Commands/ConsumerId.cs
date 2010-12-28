@@ -21,8 +21,6 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class ConsumerId : BaseDataStructure
     {
-        public const byte ID_CONSUMERID = 122;
-
         private string key;
 
         private SessionId parentId;
@@ -87,7 +85,7 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override byte GetDataStructureType()
         {
-            return ID_CONSUMERID;
+            return DataStructureTypes.ConsumerIdType;
         }
 
         ///

@@ -61,6 +61,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         private bool useExponentialBackOff = true;
         private bool randomize = true;
         private int maxReconnectAttempts;
+        private int startupMaxReconnectAttempts;
         private int connectFailures;
         private int reconnectDelay = 10;
         private Exception connectionFailure;
@@ -194,6 +195,12 @@ namespace Apache.NMS.Stomp.Transport.Failover
         {
             get { return maxReconnectAttempts; }
             set { maxReconnectAttempts = value; }
+        }
+
+        public int StartupMaxReconnectAttempts
+        {
+            get { return startupMaxReconnectAttempts; }
+            set { startupMaxReconnectAttempts = value; }
         }
 
         public bool Randomize
@@ -824,7 +831,17 @@ namespace Apache.NMS.Stomp.Transport.Failover
                         }
                     }
 
-                    if(MaxReconnectAttempts > 0 && ++connectFailures >= MaxReconnectAttempts)
+                    int maxAttempts = 0;
+                    if( firstConnection ) {
+                        if( StartupMaxReconnectAttempts != 0 ) {
+                            maxAttempts = StartupMaxReconnectAttempts;
+                        }
+                    }
+                    if( maxAttempts == 0 ) {
+                        maxAttempts = MaxReconnectAttempts;
+                    }
+        
+                    if(maxAttempts > 0 && ++connectFailures >= maxAttempts)
                     {
                         Tracer.ErrorFormat("Failed to connect to transport after {0} attempt(s)", connectFailures);
                         connectionFailure = Failure;

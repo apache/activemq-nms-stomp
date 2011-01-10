@@ -150,15 +150,13 @@ namespace Apache.NMS.Stomp.Transport
 
             if(!AllowReadCheck(elapsed))
             {
-                Tracer.Debug("Inactivity Monitor: A read check is not currently allowed.");
                 return;
             }
 
             this.lastReadCheckTime = now;
 
-            if(this.inRead.Value || this.failed.Value)
+            if(this.inRead.Value || this.failed.Value || this.asyncErrorTask == null)
             {
-                Tracer.Debug("A receive is in progress or already failed.");
                 return;
             }
 
@@ -182,7 +180,7 @@ namespace Apache.NMS.Stomp.Transport
         /// <returns></returns>
         public bool AllowReadCheck(TimeSpan elapsed)
         {
-            return (elapsed.TotalMilliseconds > readCheckTime );
+            return (elapsed.TotalMilliseconds > readCheckTime);
         }
         #endregion
 

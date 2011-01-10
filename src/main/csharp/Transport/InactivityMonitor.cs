@@ -45,6 +45,7 @@ namespace Apache.NMS.Stomp.Transport
         private AsyncWriteTask asyncWriteTask;
 
         private readonly Mutex monitor = new Mutex();
+        private bool disposing = false;
 
         private Timer connectionCheckTimer;
 
@@ -97,8 +98,8 @@ namespace Apache.NMS.Stomp.Transport
                 // get rid of unmanaged stuff
             }
 
+            this.disposing = true;
             StopMonitorThreads();
-
             base.Dispose(disposing);
         }
 
@@ -265,7 +266,7 @@ namespace Apache.NMS.Stomp.Transport
 
         protected override void OnException(ITransport sender, Exception command)
         {
-            if(failed.CompareAndSet(false, true))
+            if(failed.CompareAndSet(false, true) && !this.disposing)
             {
                 Tracer.Debug("Exception received in the Inactivity Monitor: " + command.ToString());
                 StopMonitorThreads();
@@ -277,6 +278,11 @@ namespace Apache.NMS.Stomp.Transport
         {
             lock(monitor)
             {
+                if(this.IsDisposed || this.disposing)
+                {
+                    return;
+                }
+                
                 if(monitorStarted.Value)
                 {
                     return;

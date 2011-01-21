@@ -32,6 +32,7 @@ namespace Apache.NMS.Stomp.Protocol
         private IPrimitiveMapMarshaler mapMarshaler = new XmlPrimitiveMapMarshaler();
         private ITransport transport;
         private WireFormatInfo remoteWireFormatInfo;
+        private int connectedResponseId = -1;
 
         public StompWireFormat()
         {
@@ -190,8 +191,6 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual Command ReadConnected(StompFrame frame)
         {
-            string responseId = frame.RemoveProperty("response-id");
-
             this.remoteWireFormatInfo = new WireFormatInfo();
 
             if(frame.HasProperty("version"))
@@ -222,11 +221,16 @@ namespace Apache.NMS.Stomp.Protocol
                 remoteWireFormatInfo.Version = 1.0f;
             }
 
-            if(responseId != null)
+            if(this.connectedResponseId != -1)
             {
                 Response answer = new Response();
-                answer.CorrelationId = Int32.Parse(responseId);
+                answer.CorrelationId = this.connectedResponseId;
                 SendCommand(answer);
+                this.connectedResponseId = -1;
+            }
+            else
+            {
+                throw new IOException("Received Connected Frame without a set Response Id for it.");
             }
 
             return remoteWireFormatInfo;
@@ -421,6 +425,7 @@ namespace Apache.NMS.Stomp.Protocol
             }   
 
             frame.SetProperty("message-id", command.LastMessageId.ToString());
+            frame.SetProperty("subscription", command.ConsumerId.ToString());
 
             if(command.TransactionId != null)
             {
@@ -442,9 +447,14 @@ namespace Apache.NMS.Stomp.Protocol
             StompFrame frame = new StompFrame("CONNECT");
 
             frame.SetProperty("client-id", command.ClientId);
-            frame.SetProperty("login", command.UserName);
-            frame.SetProperty("passcode", command.Password);
-            frame.SetProperty("request-id", command.CommandId);
+            if(!String.IsNullOrEmpty(command.UserName))
+            {
+                frame.SetProperty("login", command.UserName);
+            }
+            if(!String.IsNullOrEmpty(command.Password))
+            {
+                frame.SetProperty("passcode", command.Password);
+            }
             frame.SetProperty("host", command.Host);
             frame.SetProperty("accept-version", "1.0,1.1");
 
@@ -457,6 +467,8 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 Tracer.Debug("StompWireFormat - Writing " + frame.ToString());
             }
+
+            this.connectedResponseId = command.CommandId;
 
             frame.ToStream(dataOut);
         }

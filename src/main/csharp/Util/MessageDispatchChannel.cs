@@ -25,10 +25,17 @@ namespace Apache.NMS.Stomp.Util
     public class MessageDispatchChannel
     {
         private readonly Mutex mutex = new Mutex();
-        private readonly ManualResetEvent waiter = new ManualResetEvent(false);
+        private readonly ManualResetEvent wakeAll = new ManualResetEvent(false);
+        private readonly AutoResetEvent waiter = new AutoResetEvent(false);
+        private WaitHandle[] waiters;
         private bool closed;
         private bool running;
         private readonly LinkedList<MessageDispatch> channel = new LinkedList<MessageDispatch>();
+
+        public MessageDispatchChannel()
+        {
+            this.waiters = new WaitHandle[] { this.waiter, this.wakeAll };
+        }
 
         #region Properties
 
@@ -106,8 +113,7 @@ namespace Apache.NMS.Stomp.Util
                 if(!Closed)
                 {
                     this.running = true;
-                    this.waiter.Set();
-                    this.waiter.Reset();
+                    this.wakeAll.Reset();
                 }
             }
         }
@@ -117,8 +123,7 @@ namespace Apache.NMS.Stomp.Util
             lock(mutex)
             {
                 this.running = false;
-                this.waiter.Set();
-                this.waiter.Reset();
+                this.wakeAll.Set();
             }
         }
 
@@ -132,7 +137,7 @@ namespace Apache.NMS.Stomp.Util
                     this.closed = true;
                 }
 
-                this.waiter.Set();
+                this.wakeAll.Set();
             }
         }
 
@@ -142,7 +147,6 @@ namespace Apache.NMS.Stomp.Util
             {
                 this.channel.AddLast(dispatch);
                 this.waiter.Set();
-                this.waiter.Reset();
             }
         }
 
@@ -152,7 +156,6 @@ namespace Apache.NMS.Stomp.Util
             {
                 this.channel.AddFirst(dispatch);
                 this.waiter.Set();
-                this.waiter.Reset();
             }
         }
 
@@ -166,7 +169,8 @@ namespace Apache.NMS.Stomp.Util
             if( timeout != TimeSpan.Zero && !Closed && ( Empty || !Running ) )
             {
                 this.mutex.ReleaseMutex();
-                this.waiter.WaitOne((int)timeout.TotalMilliseconds, false);
+                this.waiter.Reset();
+                WaitHandle.WaitAny(this.waiters, (int)timeout.TotalMilliseconds, false);
                 this.mutex.WaitOne();
             }
 

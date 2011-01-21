@@ -425,6 +425,7 @@ namespace Apache.NMS.Stomp.Protocol
             }   
 
             frame.SetProperty("message-id", command.LastMessageId.ToString());
+            frame.SetProperty("subscription", command.ConsumerId.ToString());
 
             if(command.TransactionId != null)
             {

@@ -170,7 +170,7 @@ namespace Apache.NMS.Stomp.Util
             {
                 this.mutex.ReleaseMutex();
                 this.waiter.Reset();
-                WaitHandle.WaitAny(this.waiters, (int)timeout.TotalMilliseconds, false);
+                ThreadUtil.WaitAny(this.waiters, (int)timeout.TotalMilliseconds, false);
                 this.mutex.WaitOne();
             }
 

@@ -33,5 +33,14 @@ namespace Apache.NMS.Stomp.Util
             shutdownEvent.WaitOne(timeout, false);
 #endif
        }
+
+       public static void WaitAny(WaitHandle[] waitHandles, int millisecondsTimeout, bool exitContext)
+       {
+#if NETCF
+           // TODO: Implement .NET CF version of WaitAny().
+#else
+           WaitHandle.WaitAny(waitHandles, millisecondsTimeout, exitContext);
+#endif
+       }
     }
 }

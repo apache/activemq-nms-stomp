@@ -244,6 +244,7 @@ namespace Apache.NMS.Stomp.Transport.Tcp
                 }
 
                 X509Store store = new X509Store(name, location);
+                store.Open(OpenFlags.ReadOnly);
                 collection = store.Certificates;
                 store.Close();
             }

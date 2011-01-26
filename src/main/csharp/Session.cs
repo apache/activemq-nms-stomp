@@ -303,6 +303,7 @@ namespace Apache.NMS.Stomp
                     {
                         foreach(MessageConsumer consumer in consumers.Values)
                         {
+                            consumer.FailureError = this.connection.FirstFailureError;
                             consumer.DoClose();
                         }
                     }

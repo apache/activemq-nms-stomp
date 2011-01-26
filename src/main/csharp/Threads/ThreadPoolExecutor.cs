@@ -58,7 +58,13 @@ namespace Apache.NMS.Stomp.Threads
                     throw new Exception("Future executed with null WaitCallback");
                 }
 
-                this.callback(callbackArg);
+                try
+                {
+                    this.callback(callbackArg);
+                }
+                catch
+                {
+                }
             }
         }
 

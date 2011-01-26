@@ -878,7 +878,7 @@ namespace Apache.NMS.Stomp
         {
             if(this.listener != null)
             {
-                throw new NMSException("Cannot set Async listeners on Consumers with a prefetch limit of zero");
+                throw new NMSException("Cannot perform a Synchronous Receive when there is a registered asynchronous listener.");
             }
         }
 

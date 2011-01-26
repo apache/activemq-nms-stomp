@@ -25,16 +25,13 @@ namespace Apache.NMS.Stomp.Util
     public class MessageDispatchChannel
     {
         private readonly Mutex mutex = new Mutex();
-        private readonly ManualResetEvent wakeAll = new ManualResetEvent(false);
-        private readonly AutoResetEvent waiter = new AutoResetEvent(false);
-        private WaitHandle[] waiters;
+        private readonly ManualResetEvent waiter = new ManualResetEvent(false);
         private bool closed;
         private bool running;
         private readonly LinkedList<MessageDispatch> channel = new LinkedList<MessageDispatch>();
 
         public MessageDispatchChannel()
         {
-            this.waiters = new WaitHandle[] { this.waiter, this.wakeAll };
         }
 
         #region Properties
@@ -113,7 +110,7 @@ namespace Apache.NMS.Stomp.Util
                 if(!Closed)
                 {
                     this.running = true;
-                    this.wakeAll.Reset();
+                    this.waiter.Reset();
                 }
             }
         }
@@ -123,7 +120,7 @@ namespace Apache.NMS.Stomp.Util
             lock(mutex)
             {
                 this.running = false;
-                this.wakeAll.Set();
+                this.waiter.Set();
             }
         }
 
@@ -137,7 +134,7 @@ namespace Apache.NMS.Stomp.Util
                     this.closed = true;
                 }
 
-                this.wakeAll.Set();
+                this.waiter.Set();
             }
         }
 
@@ -168,9 +165,15 @@ namespace Apache.NMS.Stomp.Util
             // Wait until the channel is ready to deliver messages.
             if( timeout != TimeSpan.Zero && !Closed && ( Empty || !Running ) )
             {
-                this.mutex.ReleaseMutex();
+                // This isn't the greatest way to do this but to work on the
+                // .NETCF its the only solution I could find so far.  This
+                // code will only really work for one Thread using the event
+                // channel to wait as all waiters are going to drop out of
+                // here regardless of the fact that only one message could
+                // be on the Queue.  
                 this.waiter.Reset();
-                ThreadUtil.WaitAny(this.waiters, (int)timeout.TotalMilliseconds, false);
+                this.mutex.ReleaseMutex();
+                this.waiter.WaitOne((int)timeout.TotalMilliseconds, false);
                 this.mutex.WaitOne();
             }
 

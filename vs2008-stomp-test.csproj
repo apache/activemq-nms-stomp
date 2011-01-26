@@ -101,6 +101,7 @@
     <Compile Include="src\test\csharp\StompHelperTest.cs" />
     <Compile Include="src\test\csharp\StompRedeliveryPolicyTest.cs" />
     <Compile Include="src\test\csharp\Threads\CompositeTaskRunnerTest.cs" />
+    <Compile Include="src\test\csharp\Threads\ThreadPoolExecutorTest.cs" />
     <Compile Include="src\test\csharp\Util\MessageDispatchChannelTest.cs" />
     <Compile Include="src\test\csharp\MessageListenerRedeliveryTest.cs" />
     <Compile Include="src\test\csharp\StompTopicTransactionTest.cs" />

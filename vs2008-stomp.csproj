@@ -110,6 +110,7 @@
     <Compile Include="src\main\csharp\RequestTimedOutException.cs" />
     <Compile Include="src\main\csharp\Threads\CompositeTask.cs" />
     <Compile Include="src\main\csharp\Threads\CompositeTaskRunner.cs" />
+    <Compile Include="src\main\csharp\Threads\ThreadPoolExecutor.cs" />
     <Compile Include="src\main\csharp\Transport\Tcp\TcpTransport.cs" />
     <Compile Include="src\main\csharp\Transport\Tcp\TcpTransportFactory.cs" />
     <Compile Include="src\main\csharp\Transport\FutureResponse.cs" />

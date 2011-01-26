@@ -55,8 +55,8 @@ namespace Apache.NMS.Stomp
         private bool inProgressClearRequiredFlag;
 
         private event MessageListener listener;
-
         private IRedeliveryPolicy redeliveryPolicy;
+        private Exception failureError;
 
         // Constructor internal to prevent clients from creating an instance.
         internal MessageConsumer(Session session, ConsumerInfo info)
@@ -534,7 +534,14 @@ namespace Apache.NMS.Stomp
                     }
                     else
                     {
-                        return null;
+                        if(this.failureError != null)
+                        {
+                            throw NMSExceptionSupport.Create(FailureError);
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
                 }
                 else if(dispatch.Message == null)
@@ -878,8 +885,14 @@ namespace Apache.NMS.Stomp
         {
             if(this.listener != null)
             {
-                throw new NMSException("Cannot set Async listeners on Consumers with a prefetch limit of zero");
+                throw new NMSException("Cannot perform a Synchronous Receive when there is a registered asynchronous listener.");
             }
+        }
+
+        public Exception FailureError
+        {
+            get { return this.failureError; }
+            set { this.failureError = value; }
         }
 
         #region Nested ISyncronization Types

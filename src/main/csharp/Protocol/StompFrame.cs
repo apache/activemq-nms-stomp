@@ -232,7 +232,7 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 MemoryStream ms = new MemoryStream();
                 int nextChar;
-                while((nextChar = dataIn.Read()) != 0)
+                while((nextChar = dataIn.ReadByte()) != 0)
                 {
                     // The first Null in this case marks the end of data.
                     if(nextChar < 0)

@@ -70,6 +70,26 @@ namespace Apache.NMS.Stomp.Transport
         /// </summary>
         Object Narrow(Type type);            
 
+		/// <summary>
+		/// Timeout in milliseconds to wait for sending synchronous messages or commands.
+		/// Set to -1 for infinite timeout.
+		/// </summary>
+		int Timeout
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Timeout in milliseconds to wait for sending asynchronous messages or commands.
+		/// Set to -1 for infinite timeout.
+		/// </summary>
+		int AsyncTimeout
+		{
+			get;
+			set;
+		}
+
 		CommandHandler Command
 		{
 			get;

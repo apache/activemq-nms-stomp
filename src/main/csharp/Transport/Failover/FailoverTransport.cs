@@ -55,6 +55,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
         private bool started;
 
         private int timeout = -1;
+		private int asyncTimeout = 45000;
         private int initialReconnectDelay = 10;
         private int maxReconnectDelay = 1000 * 30;
         private int backOffMultiplier = 2;
@@ -217,7 +218,17 @@ namespace Apache.NMS.Stomp.Transport.Failover
 
         #endregion
 
-        public bool IsFaultTolerant
+		/// <summary>
+		/// If doing an asynchronous connect, the milliseconds before timing out if no connection can be made
+		/// </summary>
+		/// <value>The async timeout.</value>
+		public int AsyncTimeout
+		{
+			get { return asyncTimeout; }
+			set { asyncTimeout = value; }
+		}
+
+		public bool IsFaultTolerant
         {
             get { return true; }
         }

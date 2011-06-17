@@ -501,14 +501,7 @@ namespace Apache.NMS.Stomp
 
         public Response SyncRequest(Command command)
         {
-            try
-            {
-                return SyncRequest(command, this.RequestTimeout);
-            }
-            catch(Exception ex)
-            {
-                throw NMSExceptionSupport.Create(ex);
-            }
+            return SyncRequest(command, this.RequestTimeout);
         }
 
         public Response SyncRequest(Command command, TimeSpan requestTimeout)
@@ -546,7 +539,13 @@ namespace Apache.NMS.Stomp
             }
         }
 
-        protected void CheckConnected()
+        private object checkConnectedLock = new object();
+
+        /// <summary>
+        /// Check and ensure that the connection objcet is connected.  If it is not
+        /// connected or is closed, a ConnectionClosedException is thrown.
+        /// </summary>
+        internal void CheckConnected()
         {
             if(closed.Value)
             {
@@ -555,17 +554,57 @@ namespace Apache.NMS.Stomp
 
             if(!connected.Value)
             {
-                if(!this.userSpecifiedClientID)
+                DateTime timeoutTime = DateTime.Now + this.RequestTimeout;
+                int waitCount = 1;
+
+                while(true)
                 {
-                    this.info.ClientId = this.clientIdGenerator.GenerateId();
+                    if(Monitor.TryEnter(checkConnectedLock))
+                    {
+                        try
+                        {
+                            if(!connected.Value)
+                            {
+                                if(!this.userSpecifiedClientID)
+                                {
+                                    this.info.ClientId = this.clientIdGenerator.GenerateId();
+                                }
+
+                                try
+                                {
+                                    if(null != transport)
+                                    {
+                                        // Send the connection and see if an ack/nak is returned.
+                                        Response response = transport.Request(this.info, this.RequestTimeout);
+                                        if(!(response is ExceptionResponse))
+                                        {
+                                            connected.Value = true;
+                                        }
+                                    }
+                                }
+                                catch
+                                {
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            Monitor.Exit(checkConnectedLock);
+                        }
+                    }
+
+                    if(connected.Value || DateTime.Now > timeoutTime)
+                    {
+                        break;
+                    }
+
+                    // Back off from being overly aggressive.  Having too many threads
+                    // aggressively trying to connect to a down broker pegs the CPU.
+                    Thread.Sleep(5 * (waitCount++));
                 }
 
-                connected.Value = true;
-                // now lets send the connection and see if we get an ack/nak
-                if(null == SyncRequest(info))
+                if(!connected.Value)
                 {
-                    closed.Value = true;
-                    connected.Value = false;
                     throw new ConnectionClosedException();
                 }
             }

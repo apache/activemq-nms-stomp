@@ -20,6 +20,7 @@ using Apache.NMS.Stomp.Commands;
 
 namespace Apache.NMS.Stomp.Transport
 {
+	/// <summary>
 	/// A Transport which guards access to the next transport using a mutex.
 	/// </summary>
 	public class MutexTransport : TransportFilter
@@ -31,6 +32,7 @@ namespace Apache.NMS.Stomp.Transport
 			if(timeout > 0)
 			{
 				DateTime timeoutTime = DateTime.Now + TimeSpan.FromMilliseconds(timeout);
+				int waitCount = 1;
 
 				while(true)
 				{
@@ -44,7 +46,9 @@ namespace Apache.NMS.Stomp.Transport
 						throw new IOException(string.Format("Oneway timed out after {0} milliseconds.", timeout));
 					}
 
-					Thread.Sleep(10);
+					// Back off from being overly aggressive.  Having too many threads
+					// aggressively trying to get the lock pegs the CPU.
+					Thread.Sleep(3 * (waitCount++));
 				}
 			}
 			else

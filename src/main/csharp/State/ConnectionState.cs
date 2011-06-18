@@ -25,8 +25,7 @@ namespace Apache.NMS.Stomp.State
 	{
 
 		ConnectionInfo info;
-		private readonly AtomicDictionary<ConsumerId, ConsumerState> consumers =
-            new AtomicDictionary<ConsumerId, ConsumerState>();
+		private readonly AtomicDictionary<ConsumerId, ConsumerState> consumers = new AtomicDictionary<ConsumerId, ConsumerState>();
 		private readonly Atomic<bool> _shutdown = new Atomic<bool>(false);
 
 		public ConnectionState(ConnectionInfo info)
@@ -49,26 +48,25 @@ namespace Apache.NMS.Stomp.State
 		{
 			get
 			{
-				#if DEBUG
-				try
+				ConsumerState consumerState;
+				
+				if(consumers.TryGetValue(id, out consumerState))
 				{
-				#endif
-					return consumers[id];
-				#if DEBUG
+					return consumerState;
 				}
-				catch(System.Collections.Generic.KeyNotFoundException ex)
+				
+#if DEBUG
+				// Useful for dignosing missing consumer ids
+				string consumerList = string.Empty;
+				foreach(ConsumerId consumerId in consumers.Keys)
 				{
-					// Useful for dignosing missing consumer ids
-					string consumerList = string.Empty;
-					foreach(ConsumerId consumerId in consumers.Keys)
-					{
-						consumerList += consumerId.ToString() + "\n";
-					}
-					System.Diagnostics.Debug.Assert(false,
-						string.Format("Consumer '{0}' did not exist in the consumers collection.\n\nConsumers:-\n{1}", id, consumerList));
-					throw ex;
+					consumerList += consumerId.ToString() + "\n";
 				}
-				#endif
+				
+				System.Diagnostics.Debug.Assert(false,
+					string.Format("Consumer '{0}' did not exist in the consumers collection.\n\nConsumers:-\n{1}", id, consumerList));
+#endif
+				return null;
 			}
 		}
 
@@ -80,7 +78,9 @@ namespace Apache.NMS.Stomp.State
 
 		public ConsumerState removeConsumer(ConsumerId id)
 		{
-			ConsumerState ret = consumers[id];
+			ConsumerState ret = null;
+			
+			consumers.TryGetValue(id, out ret);
 			consumers.Remove(id);
 			return ret;
 		}

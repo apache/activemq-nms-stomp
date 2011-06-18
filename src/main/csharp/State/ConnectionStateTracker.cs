@@ -31,8 +31,7 @@ namespace Apache.NMS.Stomp.State
 	{
 		private static readonly Tracked TRACKED_RESPONSE_MARKER = new Tracked(null);
 
-		protected Dictionary<ConnectionId, ConnectionState> connectionStates =
-            new Dictionary<ConnectionId, ConnectionState>();
+		protected Dictionary<ConnectionId, ConnectionState> connectionStates = new Dictionary<ConnectionId, ConnectionState>();
 
 		private bool _restoreConsumers = true;
 
@@ -67,10 +66,10 @@ namespace Apache.NMS.Stomp.State
 			{
 				transport.Oneway(connectionState.Info);
 
-                if(RestoreConsumers)
-                {
-                    DoRestoreConsumers(transport, connectionState);
-                }
+				if(RestoreConsumers)
+				{
+					DoRestoreConsumers(transport, connectionState);
+				}
 			}
 		}
 
@@ -97,10 +96,11 @@ namespace Apache.NMS.Stomp.State
 					ConnectionId connectionId = sessionId.ParentId;
 					if(connectionId != null)
 					{
-						ConnectionState cs = connectionStates[connectionId];
-						if(cs != null)
+						ConnectionState cs = null;
+						
+						if(connectionStates.TryGetValue(connectionId, out cs))
 						{
-						    cs.addConsumer(info);
+							cs.addConsumer(info);
 						}
 					}
 				}
@@ -118,8 +118,9 @@ namespace Apache.NMS.Stomp.State
 					ConnectionId connectionId = sessionId.ParentId;
 					if(connectionId != null)
 					{
-						ConnectionState cs = connectionStates[connectionId];
-						if(cs != null)
+						ConnectionState cs = null;
+						
+						if(connectionStates.TryGetValue(connectionId, out cs))
 						{
 							cs.removeConsumer(id);
 						}

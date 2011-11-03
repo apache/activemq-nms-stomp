@@ -33,10 +33,18 @@ namespace Apache.NMS.Stomp.Protocol
         public const byte FRAME_TERMINUS = (byte) 0;
         /// Used to denote a Special KeepAlive command that consists of a single newline.
         public const String KEEPALIVE = "KEEPALIVE";
-        
+
+        public const byte BREAK = (byte)('\n');
+        public const byte COLON = (byte)(':');
+        public const byte ESCAPE = (byte)('\\');
+        public readonly byte[] ESCAPE_ESCAPE_SEQ = new byte[2]{ 92, 92 };
+        public readonly byte[] COLON_ESCAPE_SEQ = new byte[2]{ 92, 99 };
+        public readonly byte[] NEWLINE_ESCAPE_SEQ = new byte[2]{ 92, 110 };
+
         private string command;
         private IDictionary properties = new Hashtable();
         private byte[] content;
+        private bool encodingEnabled;
 
         private readonly Encoding encoding = new UTF8Encoding();
         
@@ -44,9 +52,26 @@ namespace Apache.NMS.Stomp.Protocol
         {
         }
 
+        public StompFrame(bool encodingEnabled)
+        {
+            this.encodingEnabled = encodingEnabled;
+        }
+
         public StompFrame(string command)
         {
             this.command = command;
+        }
+
+        public StompFrame(string command, bool encodingEnabled)
+        {
+            this.command = command;
+            this.encodingEnabled = encodingEnabled;
+        }
+
+        public bool EncodingEnabled
+        {
+            get { return this.encodingEnabled; }
+            set { this.encodingEnabled = value; }
         }
         
         public byte[] Content
@@ -152,7 +177,7 @@ namespace Apache.NMS.Stomp.Protocol
             {
                 builder.Append(key);
                 builder.Append(SEPARATOR);
-                builder.Append(this.Properties[key] as string);
+                builder.Append(EncodeHeader(this.Properties[key] as string));
                 builder.Append(NEWLINE);
             }
 
@@ -205,7 +230,7 @@ namespace Apache.NMS.Stomp.Protocol
                     // to store them all but for now we just throw the rest out.
                     if(!this.properties.Contains(key))
                     {
-                        this.properties[key] = value;
+                        this.properties[key] = DecodeHeader(value);
                     }
                 }
                 else
@@ -267,6 +292,86 @@ namespace Apache.NMS.Stomp.Protocol
             
             byte[] data = ms.ToArray();
             return encoding.GetString(data, 0, data.Length);
-        }        
+        }
+
+        private String EncodeHeader(String header)
+        {
+            String result = header;
+            if(this.encodingEnabled)
+            {
+                byte[] utf8buf = this.encoding.GetBytes(header);
+                MemoryStream stream = new MemoryStream(utf8buf.Length);
+                foreach(byte val in utf8buf)
+                {
+                    switch(val)
+                    {
+                    case ESCAPE:
+                        stream.Write(ESCAPE_ESCAPE_SEQ, 0, ESCAPE_ESCAPE_SEQ.Length);
+                        break;
+                    case BREAK:
+                        stream.Write(NEWLINE_ESCAPE_SEQ, 0, NEWLINE_ESCAPE_SEQ.Length);
+                        break;
+                    case COLON:
+                        stream.Write(COLON_ESCAPE_SEQ, 0, COLON_ESCAPE_SEQ.Length);
+                        break;
+                    default:
+                        stream.WriteByte(val);
+                        break;
+                    }
+                }
+
+                byte[] data = stream.ToArray();
+                result = encoding.GetString(data, 0, data.Length);
+            }
+
+            return result;
+        }
+
+        private String DecodeHeader(String header)
+        {
+            MemoryStream decoded = new MemoryStream();
+
+            int value = -1;
+            byte[] utf8buf = this.encoding.GetBytes(header);
+            MemoryStream stream = new MemoryStream(utf8buf);
+
+            while((value = stream.ReadByte()) != -1)
+            {
+                if(value == 92)
+                {
+                    int next = stream.ReadByte();
+                    if (next != -1)
+                    {
+                        switch(next) {
+                        case 110:
+                            decoded.WriteByte(BREAK);
+                            break;
+                        case 99:
+                            decoded.WriteByte(COLON);
+                            break;
+                        case 92:
+                            decoded.WriteByte(ESCAPE);
+                            break;
+                        default:
+                            stream.Seek(-1, SeekOrigin.Current);
+                            decoded.WriteByte((byte)value);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        decoded.WriteByte((byte)value);
+                    }
+
+                }
+                else
+                {
+                    decoded.WriteByte((byte)value);
+                }
+            }
+
+            byte[] data = decoded.ToArray();
+            return encoding.GetString(data, 0, data.Length);
+        }
     }
 }

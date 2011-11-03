@@ -335,7 +335,8 @@ namespace Apache.NMS.Stomp.Transport
                     this.asyncWriteTask = new AsyncWriteTask(this);
                 }
 
-                initialDelayTime = localWireFormatInfo.MaxInactivityDurationInitialDelay;
+                initialDelayTime = localWireFormatInfo.MaxInactivityDurationInitialDelay > 0 ?
+                                       localWireFormatInfo.MaxInactivityDurationInitialDelay : writeCheckTime;
 
                 Tracer.DebugFormat("InactivityMonitor[{0}]: Read Check time interval: {1}",
                                    instanceId, readCheckTime );

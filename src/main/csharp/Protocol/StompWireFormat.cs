@@ -33,6 +33,7 @@ namespace Apache.NMS.Stomp.Protocol
         private ITransport transport;
         private WireFormatInfo remoteWireFormatInfo;
         private int connectedResponseId = -1;
+        private bool encodeHeaders = false;
 
         public StompWireFormat()
         {
@@ -116,7 +117,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         public Object Unmarshal(BinaryReader dataIn)
         {            
-            StompFrame frame = new StompFrame();
+            StompFrame frame = new StompFrame(this.encodeHeaders);
             frame.FromStream(dataIn);
             
             Object answer = CreateCommand(frame);
@@ -196,6 +197,11 @@ namespace Apache.NMS.Stomp.Protocol
             if(frame.HasProperty("version"))
             {
                 remoteWireFormatInfo.Version = Single.Parse(frame.RemoveProperty("version"));
+
+                if(remoteWireFormatInfo.Version > 1.0f)
+                {
+                    this.encodeHeaders = true;
+                }
 
                 if(frame.HasProperty("session"))
                 {
@@ -333,7 +339,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual void WriteMessage(Message command, BinaryWriter dataOut)
         {
-            StompFrame frame = new StompFrame("SEND");
+            StompFrame frame = new StompFrame("SEND", encodeHeaders);
             if(command.ResponseRequired)
             {
                 frame.SetProperty("receipt", command.CommandId);
@@ -418,7 +424,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual void WriteMessageAck(MessageAck command, BinaryWriter dataOut)
         {
-            StompFrame frame = new StompFrame("ACK");
+            StompFrame frame = new StompFrame("ACK", encodeHeaders);
             if(command.ResponseRequired)
             {
                 frame.SetProperty("receipt", "ignore:" + command.CommandId);
@@ -443,8 +449,7 @@ namespace Apache.NMS.Stomp.Protocol
         protected virtual void WriteConnectionInfo(ConnectionInfo command, BinaryWriter dataOut)
         {
             // lets force a receipt for the Connect Frame.
-            
-            StompFrame frame = new StompFrame("CONNECT");
+            StompFrame frame = new StompFrame("CONNECT", encodeHeaders);
 
             frame.SetProperty("client-id", command.ClientId);
             if(!String.IsNullOrEmpty(command.UserName))
@@ -477,7 +482,7 @@ namespace Apache.NMS.Stomp.Protocol
         {
             System.Diagnostics.Debug.Assert(!command.ResponseRequired);
 
-            StompFrame frame = new StompFrame("DISCONNECT");
+            StompFrame frame = new StompFrame("DISCONNECT", encodeHeaders);
 
             if(Tracer.IsDebugEnabled)
             {
@@ -489,7 +494,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual void WriteConsumerInfo(ConsumerInfo command, BinaryWriter dataOut)
         {
-            StompFrame frame = new StompFrame("SUBSCRIBE");
+            StompFrame frame = new StompFrame("SUBSCRIBE", encodeHeaders);
 
             if(command.ResponseRequired)
             {
@@ -552,7 +557,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual void WriteKeepAliveInfo(KeepAliveInfo command, BinaryWriter dataOut)
         {
-            StompFrame frame = new StompFrame(StompFrame.KEEPALIVE);
+            StompFrame frame = new StompFrame(StompFrame.KEEPALIVE, encodeHeaders);
 
             if(Tracer.IsDebugEnabled)
             {
@@ -564,7 +569,7 @@ namespace Apache.NMS.Stomp.Protocol
 
         protected virtual void WriteRemoveInfo(RemoveInfo command, BinaryWriter dataOut)
         {
-            StompFrame frame = new StompFrame("UNSUBSCRIBE");
+            StompFrame frame = new StompFrame("UNSUBSCRIBE", encodeHeaders);
             object id = command.ObjectId;
 
             if(id is ConsumerId)
@@ -604,7 +609,7 @@ namespace Apache.NMS.Stomp.Protocol
             Tracer.Debug("StompWireFormat - For transaction type: " + transactionType + 
                          " we are using command type: " + type);
 
-            StompFrame frame = new StompFrame(type);
+            StompFrame frame = new StompFrame(type, encodeHeaders);
             if(command.ResponseRequired)
             {
                 frame.SetProperty("receipt", command.CommandId);

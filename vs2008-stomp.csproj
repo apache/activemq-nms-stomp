@@ -104,7 +104,6 @@
     <Compile Include="src\main\csharp\Commands\TransactionId.cs" />
     <Compile Include="src\main\csharp\Commands\TransactionInfo.cs" />
     <Compile Include="src\main\csharp\Commands\WireFormatInfo.cs" />
-    <Compile Include="src\main\csharp\Protocol\StompFrameStream.cs" />
     <Compile Include="src\main\csharp\Protocol\StompHelper.cs" />
     <Compile Include="src\main\csharp\Protocol\StompWireFormat.cs" />
     <Compile Include="src\main\csharp\RequestTimedOutException.cs" />

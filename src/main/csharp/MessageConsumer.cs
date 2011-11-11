@@ -580,17 +580,14 @@ namespace Apache.NMS.Stomp
 
         public void BeforeMessageIsConsumed(MessageDispatch dispatch)
         {
-            if(!this.session.IsAutoAcknowledge)
+            lock(this.dispatchedMessages)
             {
-                lock(this.dispatchedMessages)
-                {
-                    this.dispatchedMessages.AddFirst(dispatch);
-                }
+                this.dispatchedMessages.AddFirst(dispatch);
+            }
 
-                if(this.session.IsTransacted)
-                {
-                    this.AckLater(dispatch);
-                }
+            if(this.session.IsTransacted)
+            {
+                this.AckLater(dispatch);
             }
         }
 
@@ -623,18 +620,25 @@ namespace Apache.NMS.Stomp
                     {
                         lock(this.dispatchedMessages)
                         {
-                            MessageAck ack = new MessageAck();
+                            // If a Recover was called in the async handler then
+                            // we don't want to send an ack otherwise the broker will
+                            // think we consumed the message.
+                            if (this.dispatchedMessages.Count > 0)
+                            {
+                                MessageAck ack = new MessageAck();
 
-                            ack.AckType = (byte) AckType.ConsumedAck;
-                            ack.ConsumerId = this.info.ConsumerId;
-                            ack.Destination = dispatch.Destination;
-                            ack.LastMessageId = dispatch.Message.MessageId;
-                            ack.MessageCount = 1;
+                                ack.AckType = (byte) AckType.ConsumedAck;
+                                ack.ConsumerId = this.info.ConsumerId;
+                                ack.Destination = dispatch.Destination;
+                                ack.LastMessageId = dispatch.Message.MessageId;
+                                ack.MessageCount = 1;
 
-                            this.session.SendAck(ack);
+                                this.session.SendAck(ack);
+                            }
                         }
 
                         this.deliveringAcks.Value = false;
+                        this.dispatchedMessages.Clear();
                     }
                 }
                 else if(this.session.IsClientAcknowledge || this.session.IsIndividualAcknowledge)
@@ -748,7 +752,7 @@ namespace Apache.NMS.Stomp
             }
         }
 
-        private void Commit()
+        internal void Commit()
         {
             lock(this.dispatchedMessages)
             {
@@ -758,12 +762,15 @@ namespace Apache.NMS.Stomp
             this.redeliveryDelay = 0;
         }
 
-        private void Rollback()
+        internal void Rollback()
         {
             lock(this.unconsumedMessages.SyncRoot)
             {
                 lock(this.dispatchedMessages)
                 {
+                    Tracer.DebugFormat("Rollback started, rolling back {0} message",
+                                       dispatchedMessages.Count);
+
                     if(this.dispatchedMessages.Count == 0)
                     {
                         return;
@@ -798,6 +805,7 @@ namespace Apache.NMS.Stomp
 
                         if(redeliveryDelay > 0 && !this.unconsumedMessages.Closed)
                         {
+                            Tracer.DebugFormat("Rollback delayed for {0} seconds", redeliveryDelay);
                             DateTime deadline = DateTime.Now.AddMilliseconds(redeliveryDelay);
                             ThreadPool.QueueUserWorkItem(this.RollbackHelper, deadline);
                         }

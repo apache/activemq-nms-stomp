@@ -588,6 +588,24 @@ namespace Apache.NMS.Stomp
             this.TransactionContext.Rollback();
         }
 
+        public void Recover()
+        {
+            CheckClosed();
+
+            if (acknowledgementMode == AcknowledgementMode.Transactional)
+            {
+                throw new IllegalStateException("Cannot Recover a Transacted Session");
+            }
+
+            lock(this.consumers.SyncRoot)
+            {
+                foreach(MessageConsumer consumer in this.consumers.Values)
+                {
+                    consumer.Rollback();
+                }
+            }
+        }
+
         #endregion
 
         public void DoSend( Message message, MessageProducer producer, TimeSpan sendTimeout )
@@ -843,6 +861,14 @@ namespace Apache.NMS.Stomp
             else
             {
                 this.connection.SyncRequest(ack);
+            }
+        }
+
+        private void CheckClosed()
+        {
+            if(closed)
+            {
+                throw new IllegalStateException("The Session is Closed");
             }
         }
 

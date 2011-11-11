@@ -119,7 +119,12 @@ namespace Apache.NMS.Stomp.Protocol
         {            
             StompFrame frame = new StompFrame(this.encodeHeaders);
             frame.FromStream(dataIn);
-            
+
+            if (Tracer.IsDebugEnabled)
+            {
+                Tracer.Debug("Unmarshalled frame: " + frame);
+            }
+
             Object answer = CreateCommand(frame);
             return answer;
         }
@@ -128,7 +133,7 @@ namespace Apache.NMS.Stomp.Protocol
         {
             string command = frame.Command;
 
-            if(Tracer.IsDebugEnabled)
+            if (Tracer.IsDebugEnabled)
             {
                 Tracer.Debug("StompWireFormat - Received " + frame.ToString());
             }

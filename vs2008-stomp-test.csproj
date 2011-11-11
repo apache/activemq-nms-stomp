@@ -55,23 +55,16 @@
     <NoWarn>3016</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.NMS, Version=1.5.1.2341, Culture=neutral, PublicKeyToken=82756feee3957618, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Apache.NMS\net-2.0\Apache.NMS.dll</HintPath>
-    </Reference>
-    <Reference Include="Apache.NMS.Test, Version=1.5.1.2341, Culture=neutral, PublicKeyToken=82756feee3957618, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Apache.NMS\net-2.0\Apache.NMS.Test.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="nunit.framework, Version=2.5.8.10295, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="nunit.framework">
       <HintPath>lib\NUnit\mono-2.0\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Apache.NMS.Test, Version=1.6.0.2216, Culture=neutral, PublicKeyToken=82756feee3957618">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Apache.NMS.Test">
       <HintPath>lib\Apache.NMS\mono-2.0\Apache.NMS.Test.dll</HintPath>
+    </Reference>
+    <Reference Include="Apache.NMS">
+      <HintPath>lib\Apache.NMS\mono-2.0\Apache.NMS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -99,7 +92,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy FileWidth="120" RemoveTrailingWhitespace="True" inheritsSet="VisualStudio" inheritsScope="text/plain" />
-          <StandardHeader Text="/*&#xA; * Licensed to the Apache Software Foundation (ASF) under one or more&#xA; * contributor license agreements.  See the NOTICE file distributed with&#xA; * this work for additional information regarding copyright ownership.&#xA; * The ASF licenses this file to You under the Apache License, Version 2.0&#xA; * (the &quot;License&quot;); you may not use this file except in compliance with&#xA; * the License.  You may obtain a copy of the License at&#xA; *&#xA; *     http://www.apache.org/licenses/LICENSE-2.0&#xA; *&#xA; * Unless required by applicable law or agreed to in writing, software&#xA; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&#xA; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA; * See the License for the specific language governing permissions and&#xA; * limitations under the License.&#xA; */&#xA;" inheritsSet="Apache2License" />
+          <StandardHeader Text="/*&#xA; * Licensed to the Apache Software Foundation (ASF) under one or more&#xA; * contributor license agreements.  See the NOTICE file distributed with&#xA; * this work for additional information regarding copyright ownership.&#xA; * The ASF licenses this file to You under the Apache License, Version 2.0&#xA; * (the &quot;License&quot;); you may not use this file except in compliance with&#xA; * the License.  You may obtain a copy of the License at&#xA; *&#xA; *     http://www.apache.org/licenses/LICENSE-2.0&#xA; *&#xA; * Unless required by applicable law or agreed to in writing, software&#xA; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,&#xA; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA; * See the License for the specific language governing permissions and&#xA; * limitations under the License.&#xA; */&#xA;" IncludeInNewFiles="True" />
         </Policies>
       </Properties>
     </MonoDevelop>
@@ -126,5 +119,7 @@
     <Compile Include="src\test\csharp\Commands\ConsumerIdTest.cs" />
     <Compile Include="src\test\csharp\Commands\ProducerIdTest.cs" />
     <Compile Include="src\test\csharp\SpecialCharactersTest.cs" />
+    <Compile Include="src\test\csharp\NMSSessionRecoverTest.cs" />
+    <Compile Include="src\test\csharp\NmsConsoleTracer.cs" />
   </ItemGroup>
 </Project>

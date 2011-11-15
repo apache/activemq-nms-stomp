@@ -492,6 +492,10 @@ namespace Apache.NMS.Stomp
             disposed = true;
         }
 
+        public void PurgeTempDestinations()
+        {
+        }
+
         // Implementation methods
 
         /// <summary>

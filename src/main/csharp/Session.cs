@@ -82,6 +82,31 @@ namespace Apache.NMS.Stomp
             Dispose(false);
         }
 
+        #region Session Transaction Events
+
+        // We delegate the events to the TransactionContext since it knows
+        // what the state is at all times.
+
+        public event SessionTxEventDelegate TransactionStartedListener
+        {
+            add { this.transactionContext.TransactionStartedListener += value; }
+            remove { this.transactionContext.TransactionStartedListener += value; }
+        }
+
+        public event SessionTxEventDelegate TransactionCommittedListener
+        {
+            add { this.transactionContext.TransactionCommittedListener += value; }
+            remove { this.transactionContext.TransactionCommittedListener += value; }
+        }
+
+        public event SessionTxEventDelegate TransactionRolledBackListener
+        {
+            add { this.transactionContext.TransactionRolledBackListener += value; }
+            remove { this.transactionContext.TransactionRolledBackListener += value; }
+        }
+
+        #endregion
+
         #region Property Accessors
 
         /// <summary>

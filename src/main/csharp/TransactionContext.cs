@@ -71,6 +71,14 @@ namespace Apache.NMS.Stomp
             }
         }
 
+        #region Transaction State Events
+
+        public event SessionTxEventDelegate TransactionStartedListener;
+        public event SessionTxEventDelegate TransactionCommittedListener;
+        public event SessionTxEventDelegate TransactionRolledBackListener;
+
+        #endregion
+
         public void Begin()
         {
             if(!InTransaction)
@@ -83,6 +91,11 @@ namespace Apache.NMS.Stomp
                 info.Type = (int) TransactionType.Begin;
 
                 this.session.Connection.Oneway(info);
+
+                if(this.TransactionStartedListener != null)
+                {
+                    this.TransactionStartedListener(this.session);
+                }
             }
         }
 
@@ -147,6 +160,11 @@ namespace Apache.NMS.Stomp
                 {
                     synchronization.AfterCommit();
                 }
+
+                if(this.TransactionCommittedListener != null)
+                {
+                    this.TransactionCommittedListener(this.session);
+                }
             }
         }
 
@@ -157,6 +175,11 @@ namespace Apache.NMS.Stomp
                 foreach(ISynchronization synchronization in this.synchronizations)
                 {
                     synchronization.AfterRollback();
+                }
+
+                if(this.TransactionRolledBackListener != null)
+                {
+                    this.TransactionRolledBackListener(this.session);
                 }
             }
         }

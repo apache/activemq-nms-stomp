@@ -18,22 +18,19 @@
 /*
  * The main goal of this test list is to make sure that a producer and a consumer with
  * separate connections can communicate properly and consitently despite a waiting time
- * between messages TestStability500WithSleep would be the important test, as a delay of
+ * between messages TestStability with 500 sleep would be the important test, as a delay of
  * 30s is executed at each 100 (100, 200, 300, ...).
  */
 
-using System.Threading;
-using Apache.NMS;
-using Apache.NMS.Util;
-using Apache.NMS.Test;
-using Apache.NMS.Stomp;
-using NUnit.Framework;
 using System;
+using System.Threading;
+using Apache.NMS.Test;
+using NUnit.Framework;
 
 namespace Apache.NMS.Stomp.Test
 {
     [TestFixture]
-    public class NMSTester : NMSTestSupport
+    public class NMSTestStability : NMSTestSupport
     {
         // TODO set proper configuration parameters
         private const string destination = "test";
@@ -114,15 +111,35 @@ namespace Apache.NMS.Stomp.Test
             producerThread = null;
         }
 
-        [Test]
-        public void TestStability5Continuous()
-        {
-            numberOfMessages = 5;
+#if !NETCF
+		public enum ProducerTestType
+		{
+			CONTINUOUS,
+			WITHSLEEP
+		}
 
-            consumerThread = new Thread(new ThreadStart(NMSTester.ConsumerThread));
+        [Test]
+        public void TestStability(
+            [Values(5, 50, 500)]
+            int testMessages,
+			[Values(ProducerTestType.CONTINUOUS, ProducerTestType.WITHSLEEP)]
+            ProducerTestType producerType)
+        {
+            //At 100,200,300, ... a delay of 30 seconds is executed in the producer to cause an unexpected disconnect, due to a malformed ACK?
+            numberOfMessages = testMessages;
+
+            consumerThread = new Thread(NMSTestStability.ConsumerThread);
             consumerThread.Start();
 
-            producerThread = new Thread(new ThreadStart(NMSTester.ProducerThreadContinuous));
+			if(ProducerTestType.CONTINUOUS == producerType)
+			{
+				producerThread = new Thread(NMSTestStability.ProducerThreadContinuous);
+			}
+			else
+			{
+				producerThread = new Thread(NMSTestStability.ProducerThreadWithSleep);
+			}
+			
             producerThread.Start();
 
             Thread.Sleep(100);
@@ -134,94 +151,12 @@ namespace Apache.NMS.Stomp.Test
                 Thread.Sleep(100);
             }
 
-            Assert.AreEqual("", possibleConsumerException);
-            Assert.AreEqual("", possibleProducerException);
+            Assert.IsEmpty(possibleConsumerException);
+            Assert.IsEmpty(possibleProducerException);
             Assert.AreEqual(numberOfMessages, producerMessageCounter);
             Assert.AreEqual(numberOfMessages, consumerMessageCounter);
         }
-
-        [Test]
-        public void TestStability50Continuous()
-        {
-            numberOfMessages = 50;
-
-            consumerThread = new Thread(new ThreadStart(NMSTester.ConsumerThread));
-            consumerThread.Start();
-
-            producerThread = new Thread(new ThreadStart(NMSTester.ProducerThreadContinuous));
-            producerThread.Start();
-
-            Thread.Sleep(100);
-
-            Assert.IsTrue(consumerThread.IsAlive && producerThread.IsAlive);
-
-            while (consumerThread.IsAlive && producerThread.IsAlive)
-            {
-                Thread.Sleep(100);
-            }
-
-            Assert.AreEqual("", possibleConsumerException);
-            Assert.AreEqual("", possibleProducerException);
-            Assert.AreEqual(numberOfMessages, producerMessageCounter);
-            Assert.AreEqual(numberOfMessages, consumerMessageCounter);
-        }
-
-        [Test]
-        public void TestStability500Continuous()
-        {
-            numberOfMessages = 500; //At 100,200,300, ... a delay of 30 seconds is executed in the producer to cause an unexpected disconnect, due to a malformed ACK?
-
-            consumerThread = new Thread(new ThreadStart(NMSTester.ConsumerThread));
-            consumerThread.Start();
-
-            producerThread = new Thread(new ThreadStart(NMSTester.ProducerThreadContinuous));
-            producerThread.Start();
-
-            Thread.Sleep(100);
-
-            Assert.IsTrue(consumerThread.IsAlive && producerThread.IsAlive);
-
-            while (consumerThread.IsAlive && producerThread.IsAlive)
-            {
-                Thread.Sleep(100);
-            }
-
-            Assert.AreEqual("", possibleConsumerException);
-            Assert.AreEqual("", possibleProducerException);
-            Assert.AreEqual(numberOfMessages, producerMessageCounter);
-            Assert.AreEqual(numberOfMessages, consumerMessageCounter);
-        }
-
-        [Test]
-        public void TestStability500WithSleep()
-        {
-            numberOfMessages = 500; //At 100,200,300, ... a delay of 30 seconds is executed in the producer to cause an unexpected disconnect, due to a malformed ACK?
-
-            consumerThread = new Thread(new ThreadStart(NMSTester.ConsumerThread));
-            consumerThread.Start();
-
-            producerThread = new Thread(new ThreadStart(NMSTester.ProducerThreadWithSleep));
-            producerThread.Start();
-
-            Thread.Sleep(100);
-
-            Assert.IsTrue(consumerThread.IsAlive && producerThread.IsAlive);
-
-            while (consumerThread.IsAlive && producerThread.IsAlive)
-            {
-                Thread.Sleep(100);
-            }
-
-            Assert.AreEqual("", possibleConsumerException);
-            Assert.AreEqual("", possibleProducerException);
-            Assert.AreEqual(numberOfMessages, producerMessageCounter);
-            Assert.AreEqual(numberOfMessages, consumerMessageCounter);
-        }
-
-        public static void Main(string[] args)
-        {
-
-        }
+#endif
 
         #region Consumer
         private static void ConsumerThread()

@@ -163,7 +163,7 @@ namespace Apache.NMS.Stomp.Protocol
         {
             if(this.Command == KEEPALIVE)
             {
-                dataOut.Write(NEWLINE);
+                dataOut.Write(BREAK);
                 dataOut.Flush();
                 return;
             }

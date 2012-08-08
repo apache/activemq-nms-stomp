@@ -20,6 +20,7 @@ using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Threads;
 using Apache.NMS.Stomp.Util;
+using Apache.NMS.Stomp.Protocol;
 using Apache.NMS.Util;
 
 namespace Apache.NMS.Stomp.Transport
@@ -76,17 +77,19 @@ namespace Apache.NMS.Stomp.Transport
         }
 
         // Local and remote Wire Format Information
-        private ConnectionInfo localWireFormatInfo;
+        private StompWireFormat localWireFormatInfo;
         private WireFormatInfo remoteWireFormatInfo;
 
         /// <summary>
         /// Constructor or the Inactivity Monitor
         /// </summary>
         /// <param name="next"></param>
-        public InactivityMonitor(ITransport next)
+        /// <param name="wireFormat"></param>
+        public InactivityMonitor(ITransport next, StompWireFormat wireFormat)
             : base(next)
         {
             this.instanceId = ++id;
+            this.localWireFormatInfo = wireFormat;
             Tracer.Debug("Creating Inactivity Monitor: " + instanceId);
         }
 
@@ -260,7 +263,6 @@ namespace Apache.NMS.Stomp.Transport
                     {
                         lock(monitor)
                         {
-                            localWireFormatInfo = command as ConnectionInfo;
                             StartMonitorThreads();
                         }
                     }
@@ -313,7 +315,7 @@ namespace Apache.NMS.Stomp.Transport
                 {
                     readCheckTime =
                         Math.Max(
-                            localWireFormatInfo.ReadCheckInterval,
+                            localWireFormatInfo.MaxInactivityDuration,
                             remoteWireFormatInfo.WriteCheckInterval);
 
                     this.asyncErrorTask = new AsyncSignalReadErrorkTask(this, next.RemoteAddress);
@@ -324,7 +326,7 @@ namespace Apache.NMS.Stomp.Transport
                     if(remoteWireFormatInfo.Version > 1.0)
                     {
                         writeCheckTime =
-                            Math.Max(localWireFormatInfo.WriteCheckInterval,
+                            Math.Max(localWireFormatInfo.MaxInactivityDuration,
                                      remoteWireFormatInfo.ReadCheckInterval);
                     }
                     else

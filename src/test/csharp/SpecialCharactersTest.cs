@@ -27,15 +27,12 @@ namespace Apache.NMS.Stomp.Test
     public class SpecialCharactersTest : NMSTestSupport
     {
         private Connection connection;
-        private int counter;
         private ISession session;
 
         [SetUp]
         public override void SetUp()
         {
             this.connection = (Connection) CreateConnection();
-
-            this.counter = 0;
         }
 
         [TearDown]

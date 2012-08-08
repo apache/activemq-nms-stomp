@@ -115,7 +115,7 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 			socket.SendTimeout = SendTimeout;
 #endif
 
-			IWireFormat wireformat = new StompWireFormat();
+			StompWireFormat wireformat = new StompWireFormat();
 			// Set wireformat. properties on the wireformat owned by the tcpTransport
 			URISupport.SetProperties(wireformat, map, "wireFormat.");
             ITransport transport = DoCreateTransport(location, socket, wireformat);
@@ -129,7 +129,7 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 
             if(UseInactivityMonitor)
             {
-               transport = new InactivityMonitor(transport);
+               transport = new InactivityMonitor(transport, wireformat);
             }
             
 			if(setTransport != null)

@@ -34,6 +34,8 @@ namespace Apache.NMS.Stomp.Protocol
         private WireFormatInfo remoteWireFormatInfo;
         private int connectedResponseId = -1;
         private bool encodeHeaders = false;
+        private int maxInactivityDuration = 30000;
+        private int maxInactivityDurationInitialDelay = 0;
 
         public StompWireFormat()
         {
@@ -60,6 +62,28 @@ namespace Apache.NMS.Stomp.Protocol
         {
             get { return this.mapMarshaler; }
             set { this.mapMarshaler = value; }
+        }
+
+        public int MaxInactivityDuration
+        {
+            get { return this.maxInactivityDuration; }
+            set { this.maxInactivityDuration = value; }
+        }
+
+        public int MaxInactivityDurationInitialDelay
+        {
+            get { return this.maxInactivityDurationInitialDelay; }
+            set { this.maxInactivityDurationInitialDelay = value; }
+        }
+
+        public long ReadCheckInterval
+        {
+            get { return this.MaxInactivityDuration; }
+        }
+
+        public long WriteCheckInterval
+        {
+            get { return maxInactivityDuration > 3 ? maxInactivityDuration / 3 : maxInactivityDuration; }
         }
 
         public void Marshal(Object o, BinaryWriter dataOut)
@@ -468,9 +492,9 @@ namespace Apache.NMS.Stomp.Protocol
             frame.SetProperty("host", command.Host);
             frame.SetProperty("accept-version", "1.0,1.1");
 
-            if(command.MaxInactivityDuration != 0)
+            if(MaxInactivityDuration != 0)
             {
-                frame.SetProperty("heart-beat", command.WriteCheckInterval + "," + command.ReadCheckInterval);
+                frame.SetProperty("heart-beat", WriteCheckInterval + "," + ReadCheckInterval);
             }
 
             if(Tracer.IsDebugEnabled)

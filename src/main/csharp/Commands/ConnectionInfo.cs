@@ -27,9 +27,6 @@ namespace Apache.NMS.Stomp.Commands
         string password;
         string userName;
 
-        long maxInactivityDuration = 30000;
-        long maxInactivityDurationInitialDelay = 0;
-
         /// <summery>
         /// Get the unique identifier that this object and its own
         /// Marshaler share.
@@ -48,10 +45,6 @@ namespace Apache.NMS.Stomp.Commands
             return GetType().Name + "[" +
                 "ConnectionId=" + ConnectionId + ", " +
                 "Host=" + Host + ", " +
-                "MaxInactivityDuration=" + MaxInactivityDuration + ", " +
-                "ReadCheckInterval=" + ReadCheckInterval + ", " +
-                "WriteCheckInterval=" + WriteCheckInterval + ", " +
-                "MaxInactivityDurationInitialDelay=" + MaxInactivityDurationInitialDelay + ", " +
                 "ClientId=" + ClientId + ", " +
                 "Password=" + Password + ", " +
                 "UserName=" + UserName +
@@ -86,28 +79,6 @@ namespace Apache.NMS.Stomp.Commands
         {
             get { return userName; }
             set { this.userName = value; }
-        }
-
-        public long MaxInactivityDuration
-        {
-            get { return this.maxInactivityDuration; }
-            set { this.maxInactivityDuration = value; }
-        }
-
-        public long MaxInactivityDurationInitialDelay
-        {
-            get { return this.maxInactivityDurationInitialDelay; }
-            set { this.maxInactivityDurationInitialDelay = value; }
-        }
-
-        public long ReadCheckInterval
-        {
-            get { return this.MaxInactivityDuration; }
-        }
-
-        public long WriteCheckInterval
-        {
-            get { return maxInactivityDuration > 3 ? maxInactivityDuration / 3 : maxInactivityDuration; }
         }
 
         /// <summery>

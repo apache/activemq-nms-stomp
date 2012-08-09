@@ -315,7 +315,7 @@ namespace Apache.NMS.Stomp.Transport
                 {
                     readCheckTime =
                         Math.Max(
-                            localWireFormatInfo.MaxInactivityDuration,
+                            localWireFormatInfo.ReadCheckInterval,
                             remoteWireFormatInfo.WriteCheckInterval);
 
                     this.asyncErrorTask = new AsyncSignalReadErrorkTask(this, next.RemoteAddress);
@@ -326,12 +326,12 @@ namespace Apache.NMS.Stomp.Transport
                     if(remoteWireFormatInfo.Version > 1.0)
                     {
                         writeCheckTime =
-                            Math.Max(localWireFormatInfo.MaxInactivityDuration,
+                            Math.Max(localWireFormatInfo.WriteCheckInterval,
                                      remoteWireFormatInfo.ReadCheckInterval);
                     }
                     else
                     {
-                        writeCheckTime = localWireFormatInfo.MaxInactivityDuration;
+                        writeCheckTime = localWireFormatInfo.WriteCheckInterval;
                     }
 
                     this.asyncWriteTask = new AsyncWriteTask(this);

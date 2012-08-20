@@ -682,10 +682,7 @@ namespace Apache.NMS.Stomp
                 }
             }
 
-            Tracer.ErrorFormat("No such consumer active: {0}.  Removing...", dispatch.ConsumerId);
-            RemoveInfo info  = new RemoveInfo();
-            info.ObjectId = dispatch.ConsumerId;
-            transport.Oneway(info);
+            Tracer.ErrorFormat("No such consumer active: {0}.", dispatch.ConsumerId);
         }
 
         protected void OnTransportException(ITransport sender, Exception exception)

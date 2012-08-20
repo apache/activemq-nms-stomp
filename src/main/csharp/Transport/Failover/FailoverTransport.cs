@@ -450,6 +450,7 @@ namespace Apache.NMS.Stomp.Transport.Failover
 
                     if(command.IsRemoveInfo)
                     {
+                        stateTracker.track(command);
                         // Simulate response to RemoveInfo command
                         Response response = new Response();
                         response.CorrelationId = command.CommandId;

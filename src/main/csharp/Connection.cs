@@ -443,6 +443,7 @@ namespace Apache.NMS.Stomp
                     }
 
                     Tracer.Info("Disposing of the Transport.");
+					transport.Stop();
                     transport.Dispose();
                 }
                 catch(Exception ex)

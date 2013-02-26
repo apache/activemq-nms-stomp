@@ -29,7 +29,7 @@ namespace Apache.NMS.Stomp.Test
     [TestFixture]
     public class StompRedeliveryPolicyTest : NMSTestSupport
     {
-        private const string DESTINATION_NAME = "RedeliveryPolicyTestDest";
+		private const string DESTINATION_NAME = "TEST.RedeliveryPolicyTestDest";
 
         [Test]
         public void TestExponentialRedeliveryPolicyDelaysDeliveryOnRollback()

@@ -57,42 +57,42 @@ namespace Apache.NMS.Stomp.Test
         [Test]
         public void TestQueueSynchRecover()
         {
-            destination = new Queue("Queue-" + DateTime.Now.Ticks);
+            destination = new Queue("TEST.Queue-" + DateTime.Now.Ticks);
             DoTestSynchRecover();
         }
 
         [Test]
         public void TestQueueAsynchRecover()
         {
-            destination = new Queue("Queue-" + DateTime.Now.Ticks);
+			destination = new Queue("TEST.Queue-" + DateTime.Now.Ticks);
             DoTestAsynchRecover();
         }
 
         [Test]
         public void TestTopicSynchRecover()
         {
-            destination = new Topic("Topic-" + DateTime.Now.Ticks);
+			destination = new Topic("TEST.Topic-" + DateTime.Now.Ticks);
             DoTestSynchRecover();
         }
 
         [Test]
         public void TestTopicAsynchRecover()
         {
-            destination = new Topic("Topic-" + DateTime.Now.Ticks);
+			destination = new Topic("TEST.Topic-" + DateTime.Now.Ticks);
             DoTestAsynchRecover();
         }
 
         [Test]
         public void TestQueueAsynchRecoverWithAutoAck()
         {
-            destination = new Queue("Queue-" + DateTime.Now.Ticks);
+			destination = new Queue("TEST.Queue-" + DateTime.Now.Ticks);
             DoTestAsynchRecoverWithAutoAck();
         }
 
         [Test]
         public void TestTopicAsynchRecoverWithAutoAck()
         {
-            destination = new Topic("Topic-" + DateTime.Now.Ticks);
+			destination = new Topic("TEST.Topic-" + DateTime.Now.Ticks);
             DoTestAsynchRecoverWithAutoAck();
         }
 

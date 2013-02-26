@@ -18,6 +18,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Reflection;
 using System.Threading;
 using Apache.NMS.Stomp.Commands;
 using Apache.NMS.Stomp.Threads;
@@ -74,11 +75,7 @@ namespace Apache.NMS.Stomp
             this.brokerUri = connectionUri;
             this.clientIdGenerator = clientIdGenerator;
 
-            this.transport = transport;
-            this.transport.Command = new CommandHandler(OnCommand);
-            this.transport.Exception = new ExceptionHandler(OnTransportException);
-            this.transport.Interrupted = new InterruptedHandler(OnTransportInterrupted);
-            this.transport.Resumed = new ResumedHandler(OnTransportResumed);
+			SetTransport(transport);
 
             ConnectionId id = new ConnectionId();
             id.Value = CONNECTION_ID_GENERATOR.GenerateId();
@@ -310,7 +307,16 @@ namespace Apache.NMS.Stomp
 
         #endregion
 
-        /// <summary>
+		private void SetTransport(ITransport newTransport)
+		{
+			this.transport = newTransport;
+			this.transport.Command = new CommandHandler(OnCommand);
+			this.transport.Exception = new ExceptionHandler(OnTransportException);
+			this.transport.Interrupted = new InterruptedHandler(OnTransportInterrupted);
+			this.transport.Resumed = new ResumedHandler(OnTransportResumed);
+		}
+
+		/// <summary>
         /// Starts asynchronous message delivery of incoming messages for this connection.
         /// Synchronous delivery is unaffected.
         /// </summary>
@@ -448,7 +454,7 @@ namespace Apache.NMS.Stomp
                 }
                 catch(Exception ex)
                 {
-                    Tracer.ErrorFormat("Error during connection close: {0}", ex);
+                    Tracer.ErrorFormat("Error during connection close: {0}", ex.Message);
                 }
                 finally
                 {
@@ -583,13 +589,34 @@ namespace Apache.NMS.Stomp
                                 {
                                     if(null != transport)
                                     {
-                                        // Send the connection and see if an ack/nak is returned.
+										// Make sure the transport is started.
+										if(!this.transport.IsStarted)
+										{
+											this.transport.Start();
+										}
+										
+										// Send the connection and see if an ack/nak is returned.
                                         Response response = transport.Request(this.info, this.RequestTimeout);
                                         if(!(response is ExceptionResponse))
                                         {
                                             connected.Value = true;
                                         }
-                                    }
+										else
+										{
+											ExceptionResponse error = response as ExceptionResponse;
+											NMSException exception = CreateExceptionFromBrokerError(error.Exception);
+											if(exception is InvalidClientIDException)
+											{
+												// This is non-recoverable.
+												// Shutdown the transport connection, and re-create it, but don't start it.
+												// It will be started if the connection is re-attempted.
+												this.transport.Stop();
+												ITransport newTransport = TransportFactory.CreateTransport(this.brokerUri);
+												SetTransport(newTransport);
+												throw exception;
+											}
+										}
+									}
                                 }
                                 catch
                                 {
@@ -664,7 +691,7 @@ namespace Apache.NMS.Stomp
             }
             else
             {
-                Tracer.Error("Unknown command: " + command);
+                Tracer.ErrorFormat("Unknown command: {0}", command);
             }
         }
 
@@ -717,7 +744,7 @@ namespace Apache.NMS.Stomp
                 }
                 else
                 {
-                    Tracer.Debug("Async exception with no exception listener: " + error);
+                    Tracer.DebugFormat("Async exception with no exception listener: {0}", error.Message);
                 }
             }
         }
@@ -753,7 +780,7 @@ namespace Apache.NMS.Stomp
             }
             catch(Exception ex)
             {
-                Tracer.Debug("Caught Exception While disposing of Transport: " + ex);
+                Tracer.DebugFormat("Caught Exception While disposing of Transport: {0}", ex.Message);
             }
 
             IList sessionsCopy = null;
@@ -772,7 +799,7 @@ namespace Apache.NMS.Stomp
                 }
                 catch(Exception ex)
                 {
-                    Tracer.Debug("Caught Exception While disposing of Sessions: " + ex);
+                    Tracer.DebugFormat("Caught Exception While disposing of Sessions: {0}", ex.Message);
                 }
             }
         }
@@ -784,7 +811,7 @@ namespace Apache.NMS.Stomp
             this.transportInterruptionProcessingComplete = new CountDownLatch(dispatchers.Count);
             if(Tracer.IsDebugEnabled)
             {
-                Tracer.Debug("transport interrupted, dispatchers: " + dispatchers.Count);
+                Tracer.DebugFormat("transport interrupted, dispatchers: {0}", dispatchers.Count);
             }
 
             foreach(Session session in this.sessions)
@@ -880,8 +907,8 @@ namespace Apache.NMS.Stomp
             {
                 if(!closed.Value && cdl.Remaining > 0)
                 {
-                    Tracer.Warn("dispatch paused, waiting for outstanding dispatch interruption " +
-                                "processing (" + cdl.Remaining + ") to complete..");
+                    Tracer.WarnFormat("dispatch paused, waiting for outstanding dispatch interruption " +
+								"processing ({0}) to complete..", cdl.Remaining);
                     cdl.await(TimeSpan.FromSeconds(10));
                 }
             }
@@ -895,5 +922,73 @@ namespace Apache.NMS.Stomp
                 cdl.countDown();
             }
         }
-    }
+
+		private NMSException CreateExceptionFromBrokerError(BrokerError brokerError)
+		{
+			String exceptionClassName = brokerError.ExceptionClass;
+
+			if(String.IsNullOrEmpty(exceptionClassName))
+			{
+				return new BrokerException(brokerError);
+			}
+
+			NMSException exception = null;
+			String message = brokerError.Message;
+
+			// We only create instances of exceptions from the NMS API
+			Assembly nmsAssembly = Assembly.GetAssembly(typeof(NMSException));
+
+			// First try and see if it's one we populated ourselves in which case
+			// it will have the correct namespace and exception name.
+			Type exceptionType = nmsAssembly.GetType(exceptionClassName, false, true);
+
+			// Exceptions from the broker don't have the same namespace, so we
+			// trim that and try using the NMS namespace to see if we can get an
+			// NMSException based version of the same type.  We have to convert
+			// the JMS prefixed exceptions to NMS also.
+			if(null == exceptionType)
+			{
+				if(exceptionClassName.StartsWith("java.lang.SecurityException"))
+				{
+					exceptionClassName = "Apache.NMS.InvalidClientIDException";
+				}
+				else if(!exceptionClassName.StartsWith("Apache.NMS"))
+				{
+					string transformClassName;
+
+					if(exceptionClassName.Contains("."))
+					{
+						int pos = exceptionClassName.LastIndexOf(".");
+						transformClassName = exceptionClassName.Substring(pos + 1).Replace("JMS", "NMS");
+					}
+					else
+					{
+						transformClassName = exceptionClassName;
+					}
+
+					exceptionClassName = "Apache.NMS." + transformClassName;
+				}
+
+				exceptionType = nmsAssembly.GetType(exceptionClassName, false, true);
+			}
+
+			if(exceptionType != null)
+			{
+				object[] args = null;
+				if(!String.IsNullOrEmpty(message))
+				{
+					args = new object[1];
+					args[0] = message;
+				}
+
+				exception = Activator.CreateInstance(exceptionType, args) as NMSException;
+			}
+			else
+			{
+				exception = new BrokerException(brokerError);
+			}
+
+			return exception;
+		}
+	}
 }

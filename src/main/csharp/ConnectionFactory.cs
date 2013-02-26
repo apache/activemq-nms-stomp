@@ -118,8 +118,6 @@ namespace Apache.NMS.Stomp
                     connection.DefaultClientId = this.clientId;
                 }
 
-                connection.ITransport.Start();
-
                 return connection;
             }
             catch(NMSException e)

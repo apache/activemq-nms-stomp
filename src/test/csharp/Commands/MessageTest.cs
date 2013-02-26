@@ -44,8 +44,8 @@ namespace Apache.NMS.Stomp.Test.Commands
         {
             this.nmsMessageID = "testid";
             this.nmsCorrelationID = "testcorrelationid";
-            this.nmsDestination = new Topic("test.topic");
-            this.nmsReplyTo = new TempTopic("test.replyto.topic:001");
+            this.nmsDestination = new Topic("TEST.Message");
+			this.nmsReplyTo = new TempTopic("TEST.Message.replyto.topic:001");
             this.nmsDeliveryMode = MsgDeliveryMode.NonPersistent;
             this.nmsRedelivered = true;
             this.nmsType = "test type";

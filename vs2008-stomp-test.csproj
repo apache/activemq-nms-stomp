@@ -55,17 +55,20 @@
     <NoWarn>3016</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Apache.NMS, Version=1.6.0.2963, Culture=neutral, PublicKeyToken=82756feee3957618, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Apache.NMS\net-2.0\Apache.NMS.dll</HintPath>
+    </Reference>
+    <Reference Include="Apache.NMS.Test, Version=1.6.0.2963, Culture=neutral, PublicKeyToken=82756feee3957618, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Apache.NMS\net-2.0\Apache.NMS.Test.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.5.8.10295, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\NUnit\net-2.0\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="nunit.framework">
-      <HintPath>lib\NUnit\mono-2.0\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Apache.NMS.Test">
-      <HintPath>lib\Apache.NMS\mono-2.0\Apache.NMS.Test.dll</HintPath>
-    </Reference>
-    <Reference Include="Apache.NMS">
-      <HintPath>lib\Apache.NMS\mono-2.0\Apache.NMS.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
@@ -100,6 +103,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <Compile Include="src\test\csharp\AMQNET383Test.cs" />
+    <Compile Include="src\test\csharp\InvalidCredentialsTest.cs" />
     <Compile Include="src\test\csharp\StompHelperTest.cs" />
     <Compile Include="src\test\csharp\StompRedeliveryPolicyTest.cs" />
     <Compile Include="src\test\csharp\Threads\CompositeTaskRunnerTest.cs" />

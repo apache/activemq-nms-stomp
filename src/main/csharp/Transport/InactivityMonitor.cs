@@ -90,7 +90,7 @@ namespace Apache.NMS.Stomp.Transport
         {
             this.instanceId = ++id;
             this.localWireFormatInfo = wireFormat;
-            Tracer.Debug("Creating Inactivity Monitor: " + instanceId);
+            Tracer.DebugFormat("Creating Inactivity Monitor: {0}", instanceId);
         }
 
         ~InactivityMonitor()
@@ -280,7 +280,7 @@ namespace Apache.NMS.Stomp.Transport
         {
             if(failed.CompareAndSet(false, true) && !this.disposing)
             {
-                Tracer.Debug("Exception received in the Inactivity Monitor: " + command.ToString());
+                Tracer.DebugFormat("Exception received in the Inactivity Monitor: {0}", command.Message);
                 StopMonitorThreads();
                 base.OnException(sender, command);
             }

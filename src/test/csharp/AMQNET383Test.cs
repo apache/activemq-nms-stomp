@@ -33,7 +33,7 @@ namespace Apache.NMS.Stomp.Test
     public class NMSTestStability : NMSTestSupport
     {
         // TODO set proper configuration parameters
-        private const string destination = "test";
+        private const string destination = "TEST.Stability";
 
         private static int numberOfMessages = 0;
         private static IConnection producerConnection = null;

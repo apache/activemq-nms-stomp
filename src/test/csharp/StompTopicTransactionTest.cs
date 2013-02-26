@@ -28,7 +28,7 @@ namespace Apache.NMS.Stomp.Test
     public class StompTopicTransactionTest : StompTransactionTestSupport
     {
         public const String CLIENT_ID = "TopicTransactionTest";
-        public const String DESTINATION_NAME = "StompTopicTransactionTestDestination";
+		public const String DESTINATION_NAME = "TEST.StompTopicTransactionTestDestination";
         public const String SUBSCRIPTION_NAME = "TopicTransactionTest";
 
         protected override bool Topic

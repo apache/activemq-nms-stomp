@@ -48,40 +48,52 @@ namespace Apache.NMS.Stomp.State
 		{
 			get
 			{
-				ConsumerState consumerState;
-				
-				if(consumers.TryGetValue(id, out consumerState))
-				{
-					return consumerState;
-				}
+				ConsumerState consumerState = null;
+
+				consumers.TryGetValue(id, out consumerState);
 				
 #if DEBUG
-				// Useful for dignosing missing consumer ids
-				string consumerList = string.Empty;
-				foreach(ConsumerId consumerId in consumers.Keys)
+				if(null == consumerState)
 				{
-					consumerList += consumerId.ToString() + "\n";
+					// Useful for dignosing missing consumer ids
+					string consumerList = string.Empty;
+					foreach(ConsumerId consumerId in consumers.Keys)
+					{
+						consumerList += consumerId.ToString() + "\n";
+					}
+
+					System.Diagnostics.Debug.Assert(false,
+						string.Format("Consumer '{0}' did not exist in the consumers collection.\n\nConsumers:-\n{1}", id, consumerList));
 				}
-				
-				System.Diagnostics.Debug.Assert(false,
-					string.Format("Consumer '{0}' did not exist in the consumers collection.\n\nConsumers:-\n{1}", id, consumerList));
 #endif
-				return null;
+				return consumerState;
 			}
 		}
 
 		public void addConsumer(ConsumerInfo info)
 		{
 			checkShutdown();
-			consumers.Add(info.ConsumerId, new ConsumerState(info));
+
+			ConsumerState consumerState = new ConsumerState(info);
+
+			if(consumers.ContainsKey(info.ConsumerId))
+			{
+				consumers[info.ConsumerId] = consumerState;
+			}
+			else
+			{
+				consumers.Add(info.ConsumerId, consumerState);
+			}
 		}
 
 		public ConsumerState removeConsumer(ConsumerId id)
 		{
 			ConsumerState ret = null;
-			
-			consumers.TryGetValue(id, out ret);
-			consumers.Remove(id);
+
+			if(consumers.TryGetValue(id, out ret))
+			{
+				consumers.Remove(id);
+			}
 			return ret;
 		}
 

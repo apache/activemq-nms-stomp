@@ -36,6 +36,7 @@ namespace Apache.NMS.Stomp.Test
 			base.TearDown();
 		}
 
+#if !NETCF
 		// Maximum time to run is 20 seconds.
 		[Test] //, Timeout(20000)]
 		public void TestRestartInvalidCredentialsWithFailover()
@@ -57,5 +58,6 @@ namespace Apache.NMS.Stomp.Test
 				Assert.DoesNotThrow(() => { connection.Start(); }, "You may not have set the InvalidCredentials-AuthenticUser node in the nmsprovider-test.config file.");
 			}
 		}
+#endif
 	}
 }

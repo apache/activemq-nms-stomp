@@ -605,16 +605,13 @@ namespace Apache.NMS.Stomp
 										{
 											ExceptionResponse error = response as ExceptionResponse;
 											NMSException exception = CreateExceptionFromBrokerError(error.Exception);
-											if(exception is InvalidClientIDException)
-											{
-												// This is non-recoverable.
-												// Shutdown the transport connection, and re-create it, but don't start it.
-												// It will be started if the connection is re-attempted.
-												this.transport.Stop();
-												ITransport newTransport = TransportFactory.CreateTransport(this.brokerUri);
-												SetTransport(newTransport);
-												throw exception;
-											}
+											// This is non-recoverable.
+											// Shutdown the transport connection, and re-create it, but don't start it.
+											// It will be started if the connection is re-attempted.
+											this.transport.Stop();
+											ITransport newTransport = TransportFactory.CreateTransport(this.brokerUri);
+											SetTransport(newTransport);
+											throw exception;
 										}
 									}
                                 }
@@ -932,63 +929,7 @@ namespace Apache.NMS.Stomp
 				return new BrokerException(brokerError);
 			}
 
-			NMSException exception = null;
-			String message = brokerError.Message;
-
-			// We only create instances of exceptions from the NMS API
-			Assembly nmsAssembly = Assembly.GetAssembly(typeof(NMSException));
-
-			// First try and see if it's one we populated ourselves in which case
-			// it will have the correct namespace and exception name.
-			Type exceptionType = nmsAssembly.GetType(exceptionClassName, false, true);
-
-			// Exceptions from the broker don't have the same namespace, so we
-			// trim that and try using the NMS namespace to see if we can get an
-			// NMSException based version of the same type.  We have to convert
-			// the JMS prefixed exceptions to NMS also.
-			if(null == exceptionType)
-			{
-				if(exceptionClassName.StartsWith("java.lang.SecurityException"))
-				{
-					exceptionClassName = "Apache.NMS.InvalidClientIDException";
-				}
-				else if(!exceptionClassName.StartsWith("Apache.NMS"))
-				{
-					string transformClassName;
-
-					if(exceptionClassName.Contains("."))
-					{
-						int pos = exceptionClassName.LastIndexOf(".");
-						transformClassName = exceptionClassName.Substring(pos + 1).Replace("JMS", "NMS");
-					}
-					else
-					{
-						transformClassName = exceptionClassName;
-					}
-
-					exceptionClassName = "Apache.NMS." + transformClassName;
-				}
-
-				exceptionType = nmsAssembly.GetType(exceptionClassName, false, true);
-			}
-
-			if(exceptionType != null)
-			{
-				object[] args = null;
-				if(!String.IsNullOrEmpty(message))
-				{
-					args = new object[1];
-					args[0] = message;
-				}
-
-				exception = Activator.CreateInstance(exceptionType, args) as NMSException;
-			}
-			else
-			{
-				exception = new BrokerException(brokerError);
-			}
-
-			return exception;
+			return new InvalidClientIDException(brokerError.Message);
 		}
 	}
 }

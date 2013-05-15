@@ -20,6 +20,7 @@ using Apache.NMS.Util;
 using System;
 using System.IO;
 using System.Text;
+using System.Globalization;
 
 namespace Apache.NMS.Stomp.Protocol
 {
@@ -196,7 +197,8 @@ namespace Apache.NMS.Stomp.Protocol
 
             if(frame.HasProperty("version"))
             {
-                remoteWireFormatInfo.Version = Single.Parse(frame.RemoveProperty("version"));
+                remoteWireFormatInfo.Version = Single.Parse(
+                    frame.RemoveProperty("version"), CultureInfo.InvariantCulture);
 
                 if(remoteWireFormatInfo.Version > 1.0f)
                 {

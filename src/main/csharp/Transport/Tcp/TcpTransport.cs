@@ -40,8 +40,8 @@ namespace Apache.NMS.Stomp.Transport.Tcp
         private readonly Atomic<bool> closed = new Atomic<bool>(false);
         private volatile bool seenShutdown;
         private readonly Uri connectedUri;
-		private int timeout = -1;
-		private int asynctimeout = -1;
+        private int timeout = -1;
+        private int asynctimeout = -1;
 
         private CommandHandler commandHandler;
         private ExceptionHandler exceptionHandler;
@@ -168,6 +168,8 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 
         public void Close()
         {
+            Thread theReadThread = null;
+
             if(closed.CompareAndSet(false, true))
             {
                 lock(myLock)
@@ -218,24 +220,30 @@ namespace Apache.NMS.Stomp.Transport.Tcp
                     {
                     }
 
-                    if(null != readThread)
-                    {
-                        if(Thread.CurrentThread != readThread
+                    theReadThread = this.readThread;
+                    this.readThread = null;
+                    started = false;
+                }
+            }
+
+            if(null != theReadThread)
+            {
+                try
+                {
+                    if(Thread.CurrentThread != theReadThread
 #if !NETCF
- && readThread.IsAlive
+ && theReadThread.IsAlive
 #endif
 )
+                    {
+                        if(!theReadThread.Join((int) MAX_THREAD_WAIT.TotalMilliseconds))
                         {
-                            if(!readThread.Join((int) MAX_THREAD_WAIT.TotalMilliseconds))
-                            {
-                                readThread.Abort();
-                            }
+                            theReadThread.Abort();
                         }
-
-                        readThread = null;
                     }
-
-                    started = false;
+                }
+                catch
+                {
                 }
             }
         }
@@ -316,27 +324,27 @@ namespace Apache.NMS.Stomp.Transport.Tcp
 
         // Implementation methods
 
-		/// <summary>
-		/// Timeout in milliseconds to wait for sending synchronous messages or commands.
-		/// Set to -1 for infinite timeout.
-		/// </summary>
-		public int Timeout
-		{
-			get { return this.timeout; }
-			set { this.timeout = value; }
-		}
+        /// <summary>
+        /// Timeout in milliseconds to wait for sending synchronous messages or commands.
+        /// Set to -1 for infinite timeout.
+        /// </summary>
+        public int Timeout
+        {
+            get { return this.timeout; }
+            set { this.timeout = value; }
+        }
 
-		/// <summary>
-		/// Timeout in milliseconds to wait for sending asynchronous messages or commands.
-		/// Set to -1 for infinite timeout.
-		/// </summary>
-		public int AsyncTimeout
-		{
-			get { return this.asynctimeout; }
-			set { this.asynctimeout = value; }
-		}
+        /// <summary>
+        /// Timeout in milliseconds to wait for sending asynchronous messages or commands.
+        /// Set to -1 for infinite timeout.
+        /// </summary>
+        public int AsyncTimeout
+        {
+            get { return this.asynctimeout; }
+            set { this.asynctimeout = value; }
+        }
 
-		public CommandHandler Command
+        public CommandHandler Command
         {
             get { return commandHandler; }
             set { this.commandHandler = value; }

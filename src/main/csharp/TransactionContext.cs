@@ -103,7 +103,7 @@ namespace Apache.NMS.Stomp
         {
             if(!InTransaction)
             {
-                throw new NMSException("Invliad State: Not Currently in a Transaction");
+                throw new NMSException("Invalid State: Not Currently in a Transaction");
             }
 
             this.BeforeEnd();
@@ -124,7 +124,7 @@ namespace Apache.NMS.Stomp
         {
             if(!InTransaction)
             {
-                throw new NMSException("Invliad State: Not Currently in a Transaction");
+                throw new NMSException("Invalid State: Not Currently in a Transaction");
             }
 
             this.BeforeEnd();

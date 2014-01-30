@@ -175,7 +175,7 @@ namespace Apache.NMS.Stomp.Transport.Tcp
                 Tracer.Error("The Remote Certificate was not Available.");
             }
 
-            // Configuration may or may not allow us to connect with an invliad broker cert.
+            // Configuration may or may not allow us to connect with an invalid broker cert.
             return AcceptInvalidBrokerCert;
         }
 
@@ -239,7 +239,7 @@ namespace Apache.NMS.Stomp.Transport.Tcp
                     }
                     else
                     {
-                        throw new NMSException("Invlalid StoreLocation given on URI");
+                        throw new NMSException("Invalid StoreLocation given on URI");
                     }
                 }
 

@@ -67,6 +67,10 @@ namespace Apache.NMS.Stomp.Commands
             SetPhysicalName(name);
         }
 
+        public void Dispose()
+        {
+        }
+
         public bool IsTopic
         {
             get

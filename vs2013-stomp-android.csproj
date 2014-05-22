@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DDC72862-2D1F-41C1-B4A2-F190E36EF235}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>src\main\csharp\Properties</AppDesignerFolder>
+    <RootNamespace>Apache.NMS.Stomp</RootNamespace>
+    <AssemblyName>Apache.NMS.Stomp</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <BaseIntermediateOutputPath>obj\android</BaseIntermediateOutputPath>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>build\android\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>build\android\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Apache.NMS">
+      <HintPath>lib\Apache.NMS\android\Apache.NMS.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Android" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="src\main\csharp\BrokerException.cs" />
+    <Compile Include="src\main\csharp\Commands\BaseCommand.cs" />
+    <Compile Include="src\main\csharp\Commands\BaseDataStructure.cs" />
+    <Compile Include="src\main\csharp\Commands\BaseMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\BrokerError.cs" />
+    <Compile Include="src\main\csharp\Commands\BytesMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\Command.cs" />
+    <Compile Include="src\main\csharp\Commands\ConnectionError.cs" />
+    <Compile Include="src\main\csharp\Commands\ConnectionId.cs" />
+    <Compile Include="src\main\csharp\Commands\ConnectionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\ConsumerId.cs" />
+    <Compile Include="src\main\csharp\Commands\ConsumerInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\DataStructure.cs" />
+    <Compile Include="src\main\csharp\Commands\DataStructureTypes.cs" />
+    <Compile Include="src\main\csharp\Commands\Destination.cs" />
+    <Compile Include="src\main\csharp\Commands\ExceptionResponse.cs" />
+    <Compile Include="src\main\csharp\Commands\KeepAliveInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\MapMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\MarshallAware.cs" />
+    <Compile Include="src\main\csharp\Commands\Message.cs" />
+    <Compile Include="src\main\csharp\Commands\MessageAck.cs" />
+    <Compile Include="src\main\csharp\Commands\MessageDispatch.cs" />
+    <Compile Include="src\main\csharp\Commands\MessageId.cs" />
+    <Compile Include="src\main\csharp\Commands\ProducerId.cs" />
+    <Compile Include="src\main\csharp\Commands\ProducerInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\Queue.cs" />
+    <Compile Include="src\main\csharp\Commands\RemoveInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\RemoveSubscriptionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\Response.cs" />
+    <Compile Include="src\main\csharp\Commands\SessionId.cs" />
+    <Compile Include="src\main\csharp\Commands\SessionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\ShutdownInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\StreamMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\SubscriptionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\TempDestination.cs" />
+    <Compile Include="src\main\csharp\Commands\TempQueue.cs" />
+    <Compile Include="src\main\csharp\Commands\TempTopic.cs" />
+    <Compile Include="src\main\csharp\Commands\TextMessage.cs" />
+    <Compile Include="src\main\csharp\Commands\Topic.cs" />
+    <Compile Include="src\main\csharp\Commands\TransactionId.cs" />
+    <Compile Include="src\main\csharp\Commands\TransactionInfo.cs" />
+    <Compile Include="src\main\csharp\Commands\WireFormatInfo.cs" />
+    <Compile Include="src\main\csharp\CommonAssemblyInfo.cs" />
+    <Compile Include="src\main\csharp\Connection.cs" />
+    <Compile Include="src\main\csharp\ConnectionClosedException.cs" />
+    <Compile Include="src\main\csharp\ConnectionFactory.cs" />
+    <Compile Include="src\main\csharp\ConnectionMetaData.cs" />
+    <Compile Include="src\main\csharp\IDispatcher.cs" />
+    <Compile Include="src\main\csharp\IOException.cs" />
+    <Compile Include="src\main\csharp\ISynchronization.cs" />
+    <Compile Include="src\main\csharp\MessageConsumer.cs" />
+    <Compile Include="src\main\csharp\MessageProducer.cs" />
+    <Compile Include="src\main\csharp\PrefetchPolicy.cs" />
+    <Compile Include="src\main\csharp\Protocol\IPrimitiveMapMarshaler.cs" />
+    <Compile Include="src\main\csharp\Protocol\StompFrame.cs" />
+    <Compile Include="src\main\csharp\Protocol\StompHelper.cs" />
+    <Compile Include="src\main\csharp\Protocol\StompWireFormat.cs" />
+    <Compile Include="src\main\csharp\Protocol\XmlPrimitiveMapMarshaler.cs" />
+    <Compile Include="src\main\csharp\RequestTimedOutException.cs" />
+    <Compile Include="src\main\csharp\Session.cs" />
+    <Compile Include="src\main\csharp\SessionExecutor.cs" />
+    <Compile Include="src\main\csharp\State\CommandVisitorAdapter.cs" />
+    <Compile Include="src\main\csharp\State\ConnectionState.cs" />
+    <Compile Include="src\main\csharp\State\ConnectionStateTracker.cs" />
+    <Compile Include="src\main\csharp\State\ConsumerState.cs" />
+    <Compile Include="src\main\csharp\State\ICommandVisitor.cs" />
+    <Compile Include="src\main\csharp\State\SynchronizedObjects.cs" />
+    <Compile Include="src\main\csharp\State\ThreadSimulator.cs" />
+    <Compile Include="src\main\csharp\State\Tracked.cs" />
+    <Compile Include="src\main\csharp\Threads\CompositeTask.cs" />
+    <Compile Include="src\main\csharp\Threads\CompositeTaskRunner.cs" />
+    <Compile Include="src\main\csharp\Threads\DedicatedTaskRunner.cs" />
+    <Compile Include="src\main\csharp\Threads\Task.cs" />
+    <Compile Include="src\main\csharp\Threads\TaskRunner.cs" />
+    <Compile Include="src\main\csharp\Threads\ThreadPoolExecutor.cs" />
+    <Compile Include="src\main\csharp\TransactionContext.cs" />
+    <Compile Include="src\main\csharp\Transport\Failover\FailoverTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\Failover\FailoverTransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\FutureResponse.cs" />
+    <Compile Include="src\main\csharp\Transport\ICompositeTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\InactivityMonitor.cs" />
+    <Compile Include="src\main\csharp\Transport\ITransport.cs" />
+    <Compile Include="src\main\csharp\Transport\ITransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\IWireFormat.cs" />
+    <Compile Include="src\main\csharp\Transport\LoggingTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\MutexTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\ResponseCorrelator.cs" />
+    <Compile Include="src\main\csharp\Transport\Tcp\SslTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\Tcp\SslTransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\Tcp\TcpTransport.cs" />
+    <Compile Include="src\main\csharp\Transport\Tcp\TcpTransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\TransportFactory.cs" />
+    <Compile Include="src\main\csharp\Transport\TransportFilter.cs" />
+    <Compile Include="src\main\csharp\Util\IdGenerator.cs" />
+    <Compile Include="src\main\csharp\Util\MessageDispatchChannel.cs" />
+    <Compile Include="src\main\csharp\Util\StompMessageTransformation.cs" />
+    <Compile Include="src\main\csharp\Util\ThreadUtil.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AboutResources.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE.txt" />
+    <Content Include="NOTICE.txt" />
+    <Content Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\main\csharp\Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>cd $(ProjectDir)
+nant -nologo -q generate-assemblyinfo -D:assemblyinfo.filename="src/main/csharp/CommonAssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

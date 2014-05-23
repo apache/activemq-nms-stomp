@@ -68,6 +68,7 @@
       <HintPath>lib\NUnit\net-2.0\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +105,7 @@
   <ItemGroup>
     <Compile Include="src\test\csharp\AMQNET383Test.cs" />
     <Compile Include="src\test\csharp\InvalidCredentialsTest.cs" />
+    <Compile Include="src\test\csharp\MessageConsumerTest.cs" />
     <Compile Include="src\test\csharp\StompHelperTest.cs" />
     <Compile Include="src\test\csharp\StompRedeliveryPolicyTest.cs" />
     <Compile Include="src\test\csharp\Threads\CompositeTaskRunnerTest.cs" />

@@ -416,40 +416,47 @@ namespace Apache.NMS.Stomp
                 throw new InvalidDestinationException("Cannot create a Consumer with a Null destination");
             }
 
-            ConsumerInfo command = CreateConsumerInfo(destination, selector);
-            command.NoLocal = noLocal;
-            ConsumerId consumerId = command.ConsumerId;
-            MessageConsumer consumer = null;
+			int prefetchSize = this.Connection.PrefetchPolicy.DurableTopicPrefetch;
 
-            // Registered with Connection before we register at the broker.
-            connection.addDispatcher(consumerId, this);
+			if(destination.IsTopic)
+			{
+				prefetchSize = this.connection.PrefetchPolicy.TopicPrefetch;
+			}
+			else if(destination.IsQueue)
+			{
+				prefetchSize = this.connection.PrefetchPolicy.QueuePrefetch;
+			}
+			
+            MessageConsumer consumer = null;
 
             try
             {
-                consumer = new MessageConsumer(this, command);
+	            Destination dest = destination as Destination;
+				consumer = new MessageConsumer(this, GetNextConsumerId(), dest, null, selector, prefetchSize, noLocal);
                 consumer.ConsumerTransformer = this.ConsumerTransformer;
-                consumers[consumerId] = consumer;
+				this.AddConsumer(consumer);
 
-                if(this.Started)
+				// lets register the consumer first in case we start dispatching messages immediately
+				this.Connection.SyncRequest(consumer.ConsumerInfo);
+
+				if(this.Started)
                 {
                     consumer.Start();
                 }
-
-                // lets register the consumer first in case we start dispatching messages immediately
-                this.Connection.SyncRequest(command);
-
-                return consumer;
             }
             catch(Exception)
             {
                 if(consumer != null)
                 {
+					this.RemoveConsumer(consumer);
                     consumer.Close();
                 }
 
                 throw;
             }
-        }
+
+			return consumer;
+		}
 
         public IMessageConsumer CreateDurableConsumer(ITopic destination, string name, string selector, bool noLocal)
         {
@@ -458,33 +465,26 @@ namespace Apache.NMS.Stomp
                 throw new InvalidDestinationException("Cannot create a Consumer with a Null destination");
             }
 
-            ConsumerInfo command = CreateConsumerInfo(destination, selector);
-            ConsumerId consumerId = command.ConsumerId;
-            command.SubscriptionName = name;
-            command.NoLocal = noLocal;
-            command.PrefetchSize = this.connection.PrefetchPolicy.DurableTopicPrefetch;
             MessageConsumer consumer = null;
-
-            // Registered with Connection before we register at the broker.
-            connection.addDispatcher(consumerId, this);
 
             try
             {
-                consumer = new MessageConsumer(this, command);
-                consumer.ConsumerTransformer = this.ConsumerTransformer;
-                consumers[consumerId] = consumer;
+				Destination dest = destination as Destination;
+				consumer = new MessageConsumer(this, GetNextConsumerId(), dest, name, selector, this.connection.PrefetchPolicy.DurableTopicPrefetch, noLocal);
+				consumer.ConsumerTransformer = this.ConsumerTransformer;
+				this.AddConsumer(consumer);
+				this.connection.SyncRequest(consumer.ConsumerInfo);
 
-                if(this.Started)
+				if(this.Started)
                 {
                     consumer.Start();
                 }
-
-                this.connection.SyncRequest(command);
             }
             catch(Exception)
             {
                 if(consumer != null)
                 {
+					this.RemoveConsumer(consumer);
                     consumer.Close();
                 }
 
@@ -633,7 +633,26 @@ namespace Apache.NMS.Stomp
 
         #endregion
 
-        public void DoSend( Message message, MessageProducer producer, TimeSpan sendTimeout )
+		public void AddConsumer(MessageConsumer consumer)
+		{
+			if(!this.closing)
+			{
+				// Registered with Connection before we register at the broker.
+				consumers[consumer.ConsumerId] = consumer;
+				connection.addDispatcher(consumer.ConsumerId, this);
+			}
+		}
+
+		public void RemoveConsumer(MessageConsumer consumer)
+		{
+			connection.removeDispatcher(consumer.ConsumerId);
+			if(!this.closing)
+			{
+				consumers.Remove(consumer.ConsumerId);
+			}
+		}
+
+		public void DoSend(Message message, MessageProducer producer, TimeSpan sendTimeout)
         {
             Message msg = message;
 
@@ -699,52 +718,10 @@ namespace Apache.NMS.Stomp
             }
         }
 
-        protected virtual ConsumerInfo CreateConsumerInfo(IDestination destination, string selector)
-        {
-            ConsumerInfo answer = new ConsumerInfo();
-            ConsumerId id = new ConsumerId();
-            id.ConnectionId = info.SessionId.ConnectionId;
-            id.SessionId = info.SessionId.Value;
-            id.Value = Interlocked.Increment(ref consumerCounter);
-            answer.ConsumerId = id;
-            answer.Destination = Destination.Transform(destination);
-            answer.Selector = selector;
-            answer.Priority = this.Priority;
-            answer.Exclusive = this.Exclusive;
-            answer.DispatchAsync = this.DispatchAsync;
-            answer.Retroactive = this.Retroactive;
-            answer.MaximumPendingMessageLimit = this.connection.PrefetchPolicy.MaximumPendingMessageLimit;
-            answer.AckMode = this.AcknowledgementMode;
-
-            if(destination is ITopic || destination is ITemporaryTopic)
-            {
-                answer.PrefetchSize = this.connection.PrefetchPolicy.TopicPrefetch;
-            }
-            else if(destination is IQueue || destination is ITemporaryQueue)
-            {
-                answer.PrefetchSize = this.connection.PrefetchPolicy.QueuePrefetch;
-            }
-
-            // If the destination contained a URI query, then use it to set public properties
-            // on the ConsumerInfo
-            Destination amqDestination = destination as Destination;
-            if(amqDestination != null && amqDestination.Options != null)
-            {
-                StringDictionary options = URISupport.GetProperties(amqDestination.Options, "consumer.");
-                URISupport.SetProperties(answer, options);
-            }
-
-            return answer;
-        }
-
         protected virtual ProducerInfo CreateProducerInfo(IDestination destination)
         {
             ProducerInfo answer = new ProducerInfo();
-            ProducerId id = new ProducerId();
-            id.ConnectionId = info.SessionId.ConnectionId;
-            id.SessionId = info.SessionId.Value;
-            id.Value = Interlocked.Increment(ref producerCounter);
-            answer.ProducerId = id;
+            answer.ProducerId = GetNextProducerId();
             answer.Destination = Destination.Transform(destination);
 
             // If the destination contained a URI query, then use it to set public
@@ -759,7 +736,27 @@ namespace Apache.NMS.Stomp
             return answer;
         }
 
-        public void Stop()
+		public ConsumerId GetNextConsumerId()
+		{
+			ConsumerId id = new ConsumerId();
+			id.ConnectionId = info.SessionId.ConnectionId;
+			id.SessionId = info.SessionId.Value;
+			id.Value = Interlocked.Increment(ref consumerCounter);
+
+			return id;
+		}
+
+		public ProducerId GetNextProducerId()
+		{
+			ProducerId id = new ProducerId();
+			id.ConnectionId = info.SessionId.ConnectionId;
+			id.SessionId = info.SessionId.Value;
+			id.Value = Interlocked.Increment(ref producerCounter);
+
+			return id;
+		}
+
+		public void Stop()
         {
             if(this.executor != null)
             {

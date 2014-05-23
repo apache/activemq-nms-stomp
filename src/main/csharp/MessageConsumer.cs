@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 using System;
+using System.Collections.Specialized;
 using System.Threading;
 using System.Collections.Generic;
 using Apache.NMS.Stomp.Commands;
@@ -58,14 +59,45 @@ namespace Apache.NMS.Stomp
         private IRedeliveryPolicy redeliveryPolicy;
         private Exception failureError;
 
-        // Constructor internal to prevent clients from creating an instance.
-        internal MessageConsumer(Session session, ConsumerInfo info)
+		// Constructor internal to prevent clients from creating an instance.
+        internal MessageConsumer(Session session, ConsumerId id, Destination destination, string name, string selector, int prefetch, bool noLocal)
         {
-            this.session = session;
-            this.info = info;
+			if(destination == null)
+			{
+				throw new InvalidDestinationException("Consumer cannot receive on Null Destinations.");
+			}
+			
+			this.session = session;
             this.redeliveryPolicy = this.session.Connection.RedeliveryPolicy;
             this.messageTransformation = this.session.Connection.MessageTransformation;
-        }
+
+			this.info = new ConsumerInfo();
+			this.info.ConsumerId = id;
+			this.info.Destination = Destination.Transform(destination);
+			this.info.SubscriptionName = name;
+			this.info.Selector = selector;
+			this.info.PrefetchSize = prefetch;
+			this.info.MaximumPendingMessageLimit = session.Connection.PrefetchPolicy.MaximumPendingMessageLimit;
+			this.info.NoLocal = noLocal;
+			this.info.DispatchAsync = session.DispatchAsync;
+			this.info.Retroactive = session.Retroactive;
+			this.info.Exclusive = session.Exclusive;
+			this.info.Priority = session.Priority;
+			this.info.AckMode = session.AcknowledgementMode;
+
+			// If the destination contained a URI query, then use it to set public properties
+			// on the ConsumerInfo
+			if(destination.Options != null)
+			{
+				// Get options prefixed with "consumer.*"
+				StringDictionary options = URISupport.GetProperties(destination.Options, "consumer.");
+				// Extract out custom extension options "consumer.nms.*"
+				StringDictionary customConsumerOptions = URISupport.ExtractProperties(options, "nms.");
+
+				URISupport.SetProperties(this.info, options);
+				URISupport.SetProperties(this, customConsumerOptions, "nms.");
+			}
+		}
 
         ~MessageConsumer()
         {
@@ -79,7 +111,12 @@ namespace Apache.NMS.Stomp
             get { return info.ConsumerId; }
         }
 
-        public int PrefetchSize
+		public ConsumerInfo ConsumerInfo
+		{
+			get { return this.info; }
+		}
+		
+		public int PrefetchSize
         {
             get { return this.info.PrefetchSize; }
         }
@@ -90,18 +127,26 @@ namespace Apache.NMS.Stomp
             set { this.redeliveryPolicy = value; }
         }
 
-        private ConsumerTransformerDelegate consumerTransformer;
-        public ConsumerTransformerDelegate ConsumerTransformer
-        {
-            get { return this.consumerTransformer; }
-            set { this.consumerTransformer = value; }
-        }
+		// Custom Options
+		private bool ignoreExpiration = false;
+		public bool IgnoreExpiration
+		{
+			get { return ignoreExpiration; }
+			set { ignoreExpiration = value; }
+		}
 
-        #endregion
+		#endregion
 
         #region IMessageConsumer Members
 
-        public event MessageListener Listener
+		private ConsumerTransformerDelegate consumerTransformer;
+		public ConsumerTransformerDelegate ConsumerTransformer
+		{
+			get { return this.consumerTransformer; }
+			set { this.consumerTransformer = value; }
+		}
+
+		public event MessageListener Listener
         {
             add
             {
@@ -424,7 +469,7 @@ namespace Apache.NMS.Stomp
 
                             try
                             {
-                                bool expired = message.IsExpired();
+								bool expired = (!IgnoreExpiration && message.IsExpired());
 
                                 if(!expired)
                                 {
@@ -548,7 +593,7 @@ namespace Apache.NMS.Stomp
                 {
                     return null;
                 }
-                else if(dispatch.Message.IsExpired())
+				else if(!IgnoreExpiration && dispatch.Message.IsExpired())
                 {
                     Tracer.DebugFormat("{0} received expired message: {1}", info.ConsumerId, dispatch.Message.MessageId);
 

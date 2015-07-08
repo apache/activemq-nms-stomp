@@ -21,20 +21,19 @@ namespace Apache.NMS.Stomp.Commands
 {
     public class MessageId : BaseDataStructure
     {
-        ProducerId producerId;
-        long producerSequenceId;
-        long brokerSequenceId;
-
+        private ProducerId producerId;
+        private long producerSequenceId;
+        private long brokerSequenceId;
         private string key = null;
 
         public MessageId() : base()
         {
         }
 
-        public MessageId(ProducerId producerId, long producerSequenceId) : base()
+        public MessageId(ProducerId prodId, long producerSeqId) : base()
         {
-            this.producerId = producerId;
-            this.producerSequenceId = producerSequenceId;
+            this.producerId = prodId;
+            this.producerSequenceId = producerSeqId;
         }
 
         public MessageId(string value) : base()
@@ -61,12 +60,12 @@ namespace Apache.NMS.Stomp.Commands
         ///
         public override string ToString()
         {
-            if( key == null )
+            if(null == this.key)
             {
-                key = producerId.ToString() + ":" + producerSequenceId;
+                this.key = string.Format("{0}:{1}", this.producerId.ToString(), this.producerSequenceId);
             }
 
-            return key;
+            return this.key;
         }
 
         /// <summary>
@@ -74,33 +73,42 @@ namespace Apache.NMS.Stomp.Commands
         /// </summary>
         public void SetValue(string messageKey)
         {
-            this.key = messageKey;
+            string mkey = messageKey;
+
+            this.key = mkey;
 
             // Parse off the sequenceId
-            int p = messageKey.LastIndexOf(":");
+            int p = mkey.LastIndexOf(":");
             if(p >= 0)
             {
-                producerSequenceId = Int64.Parse(messageKey.Substring(p + 1));
-                messageKey = messageKey.Substring(0, p);
+                if(Int64.TryParse(mkey.Substring(p + 1), out this.producerSequenceId))
+                {
+                    mkey = mkey.Substring(0, p);
+                }
+                else
+                {
+                    this.producerSequenceId = 0;
+                }
             }
-            producerId = new ProducerId(messageKey);
+
+            producerId = new ProducerId(mkey);
         }
 
         public ProducerId ProducerId
         {
-            get { return producerId; }
+            get { return this.producerId; }
             set { this.producerId = value; }
         }
 
         public long ProducerSequenceId
         {
-            get { return producerSequenceId; }
+            get { return this.producerSequenceId; }
             set { this.producerSequenceId = value; }
         }
 
         public long BrokerSequenceId
         {
-            get { return brokerSequenceId; }
+            get { return this.brokerSequenceId; }
             set { this.brokerSequenceId = value; }
         }
 
@@ -108,9 +116,9 @@ namespace Apache.NMS.Stomp.Commands
         {
             int answer = 0;
 
-            answer = (answer * 37) + HashCode(ProducerId);
-            answer = (answer * 37) + HashCode(ProducerSequenceId);
-            answer = (answer * 37) + HashCode(BrokerSequenceId);
+            answer = (answer * 37) + HashCode(this.ProducerId);
+            answer = (answer * 37) + HashCode(this.ProducerSequenceId);
+            answer = (answer * 37) + HashCode(this.BrokerSequenceId);
 
             return answer;
         }
@@ -121,26 +129,15 @@ namespace Apache.NMS.Stomp.Commands
             {
                 return Equals((MessageId) that);
             }
+
             return false;
         }
 
         public virtual bool Equals(MessageId that)
         {
-            if(!Equals(this.ProducerId, that.ProducerId))
-            {
-                return false;
-            }
-            if(!Equals(this.ProducerSequenceId, that.ProducerSequenceId))
-            {
-                return false;
-            }
-            if(!Equals(this.BrokerSequenceId, that.BrokerSequenceId))
-            {
-                return false;
-            }
-
-            return true;
+            return (Equals(this.ProducerId, that.ProducerId)
+                    && Equals(this.ProducerSequenceId, that.ProducerSequenceId)
+                    && Equals(this.BrokerSequenceId, that.BrokerSequenceId));
         }
-    };
+    }
 }
-
